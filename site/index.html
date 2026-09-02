@@ -3654,6 +3654,24 @@ function _renderTenorChartFor(sid) {
     cv.parentElement.querySelector('.macro-empty-note')?.remove()
     cv.style.display = ''
   }
+  // Sparse accumulating series: label the card so a few dots don't read as a
+  // broken chart, and note that range buttons only matter once history builds
+  if (cv) {
+    const card = cv.closest('.macro-mini-chart')
+    let note = card?.querySelector('.macro-sparse-note')
+    if (fullObs.length < 15) {
+      if (!note && card) {
+        note = document.createElement('div')
+        note.className = 'macro-sparse-note'
+        note.style.cssText = 'font-size:10px;color:var(--subtext);padding:2px 8px 6px;opacity:0.75;'
+        card.appendChild(note)
+      }
+      if (note) note.textContent =
+        `Accumulating daily since ${fullObs[0].ts} — ${fullObs.length} observation${fullObs.length === 1 ? '' : 's'} so far (no public back-history exists for this series)`
+    } else if (note) {
+      note.remove()
+    }
+  }
   let obs
   if (days === 0) {
     obs = fullObs
@@ -3901,10 +3919,11 @@ function _renderMacroLineChart(canvasId, obs, sid) {
     borderColor: color,
     backgroundColor: isSharp ? _hexToRgba(color, 0.06) : _hexToRgba(color, 0.10),
     borderWidth: isSharp ? 1.0 : 1.6,
-    // Visible markers when a series is still accumulating (e.g. IBIT_BTC) so a
-    // handful of observations reads as points, not a spurious trend line
-    pointRadius: obs.length < 15 ? 3 : 0,
+    // Accumulating series (e.g. IBIT_BTC): plot markers only, no connecting
+    // line — two dots joined by a line reads as a trend that isn't there
+    pointRadius: obs.length < 15 ? 4 : 0,
     pointBackgroundColor: color,
+    showLine: obs.length >= 15,
     pointHoverRadius: 4,
     pointHoverBackgroundColor: color,
     tension: isSharp ? 0 : 0.15,   // no bezier smoothing → daily noise visible
@@ -4646,7 +4665,6 @@ function _renderLiqSimpleChart(canvasId, obs, color, sid, units) {
 }
 
 // Liquidity sentinel handling is integrated directly into _renderMacroModalChart() above.
-
 
 // ── Public-build init ────────────────────────────────────────────────────────
 loadMacroSection()
