@@ -1,0 +1,4663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brave Hunter Trading</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #161a23;
+      --border:   #242836;
+      --muted:    #4a5168;
+      --text:     #dce1f0;
+      --subtext:  #8a93ad;
+      --green:    #2fd18c;
+      --red:      #f05252;
+      --amber:    #f5a623;
+      --blue:     #4a8ff7;
+      --purple:   #9f7aea;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      min-height: 100vh;
+    }
+
+    /* ── layout ─────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    header h1 { font-size: 15px; font-weight: 600; letter-spacing: .04em; color: var(--text); }
+    header h1 span { color: var(--blue); }
+    #status { font-size: 11px; color: var(--subtext); display: flex; align-items: center; gap: 6px; }
+    #dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+    #dot.live { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+    main { padding: 20px 24px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── section headers ─────────────────────────────── */
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--subtext);
+      margin-bottom: 10px;
+    }
+
+    /* ── generic card ────────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    /* ── DVOL hero cards ─────────────────────────────── */
+    .dvol-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .dvol-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dvol-card .label { font-size: 11px; color: var(--subtext); font-weight: 600; letter-spacing: .08em; }
+    .dvol-card .value { font-size: 38px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+    .dvol-card .meta  { font-size: 11px; color: var(--muted); }
+    .btc .value { color: var(--amber); }
+    .eth .value { color: var(--purple); }
+
+    /* ── IV rank grid ────────────────────────────────── */
+    .rank-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .rank-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .rank-card .period { font-size: 10px; color: var(--subtext); font-weight: 700; letter-spacing: .08em; }
+    .rank-card .rank-val { font-size: 22px; font-weight: 700; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+    .rank-card .rank-bar-bg {
+      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 6px;
+    }
+    .rank-card .rank-bar-fill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+    .rank-card .range { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+    .rank-low   .rank-val { color: var(--green); }
+    .rank-mid   .rank-val { color: var(--amber); }
+    .rank-high  .rank-val { color: var(--red); }
+    .rank-low   .rank-bar-fill { background: var(--green); }
+    .rank-mid   .rank-bar-fill { background: var(--amber); }
+    .rank-high  .rank-bar-fill { background: var(--red); }
+
+    .ivrank-symbol-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+    .ivrank-symbol-tabs button {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--subtext);
+      padding: 4px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .ivrank-symbol-tabs button.active {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: rgba(74,143,247,.08);
+    }
+
+    /* ── scanner table ───────────────────────────────── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: right;
+      padding: 10px 16px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--subtext);
+      border-bottom: 1px solid var(--border);
+    }
+    thead th:first-child { text-align: left; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+    tbody td { padding: 10px 16px; text-align: right; font-variant-numeric: tabular-nums; }
+    tbody td:first-child { text-align: left; font-weight: 600; color: var(--text); }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pill-green  { background: rgba(47,209,140,.12); color: var(--green); }
+    .pill-amber  { background: rgba(245,166,35,.12);  color: var(--amber); }
+    .pill-red    { background: rgba(240,82,82,.12);   color: var(--red); }
+    .pill-muted  { background: rgba(255,255,255,.05); color: var(--subtext); }
+
+    /* ── chart cards (shared) ────────────────────────── */
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .chart-header .section-title { margin: 0; }
+    .tab-group { display: flex; gap: 6px; }
+    .tab-group button {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--subtext);
+      padding: 3px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .tab-group button.active { border-color: var(--blue); color: var(--blue); background: rgba(74,143,247,.08); }
+    .cat-tabs { margin-bottom: 8px; }
+    /* keep old class working */
+    .chart-days { display: flex; gap: 6px; }
+    .chart-days button {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      padding: 3px 10px; border-radius: 5px; cursor: pointer; font-size: 11px;
+    }
+    .chart-days button.active { border-color: var(--blue); color: var(--blue); background: rgba(74,143,247,.08); }
+    #dvolChart { height: 200px !important; }
+
+    /* ── histogram ───────────────────────────────────── */
+    .hist-meta {
+      font-size: 12px;
+      margin-top: 3px;
+      line-height: 1.5;
+    }
+    .hist-controls {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      gap: 12px;
+    }
+    .hist-right-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .hist-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 10px;
+      color: var(--subtext);
+      margin-top: 10px;
+    }
+    .hist-legend-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 2px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    #histChart { height: 190px !important; }
+
+    /* ── alerts ──────────────────────────────────────── */
+    #alerts-section { display: none; }
+    .alert-row {
+      background: rgba(240,82,82,.07);
+      border: 1px solid rgba(240,82,82,.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .alert-row .alert-icon { color: var(--red); font-size: 14px; }
+    .alert-row .alert-msg  { flex: 1; color: var(--text); }
+    .alert-row .alert-time { font-size: 10px; color: var(--subtext); }
+
+    /* ── BB chart ────────────────────────────────────── */
+    #bbChart, #vbbChart { height: 220px !important; }
+
+    /* ── tech table column groups ────────────────────── */
+    .grp-atr { background: rgba(245,166,35,0.05); }
+    .grp-rv  { background: rgba(74,143,247,0.05); }
+    .grp-bb  { background: rgba(159,122,234,0.05); }
+    th.grp-atr, th.grp-rv, th.grp-bb { font-size: 10px; }
+    .trend-arrow { font-weight: 700; font-size: 13px; }
+    .trend-up   { color: var(--red);   }
+    .trend-down { color: var(--green); }
+    .trend-flat { color: var(--subtext); }
+
+    /* ── IV vs RV overlay ────────────────────────────── */
+    #ivrvChart { height: 260px !important; }
+    .ivrv-select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .ivrv-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--subtext);
+    }
+    .ivrv-stats .ivrv-stat-label { color: var(--muted); margin-right: 4px; }
+    .ivrv-stats .ivrv-stat-val { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .ivrv-stats .ivrv-verdict { margin-left: auto; font-weight: 600; }
+    .ivrv-stats .ivrv-verdict.good { color: var(--green); }
+    .ivrv-stats .ivrv-verdict.bad  { color: var(--red); }
+    .ivrv-note {
+      margin-top: 10px;
+      font-size: 10px;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* ── collapsible sections ────────────────────────── */
+    .collapsible > .section-title,
+    .collapsible > .chart-header .section-title,
+    .collapsible > .hist-controls .section-title {
+      cursor: pointer;
+      user-select: none;
+      transition: color 150ms ease;
+    }
+    .collapsible > .section-title::before,
+    .collapsible > .chart-header .section-title::before,
+    .collapsible > .hist-controls .section-title::before {
+      content: "▼";
+      display: inline-block;
+      font-size: 9px;
+      color: var(--subtext);
+      margin-right: 7px;
+      transition: transform 200ms ease;
+    }
+    .collapsible.collapsed > .section-title::before,
+    .collapsible.collapsed > .chart-header .section-title::before,
+    .collapsible.collapsed > .hist-controls .section-title::before {
+      content: "▶";
+    }
+    .collapsible > .section-title:hover,
+    .collapsible > .chart-header .section-title:hover,
+    .collapsible > .hist-controls .section-title:hover {
+      color: var(--text);
+    }
+    .collapsible.collapsed > *:not(.section-title):not(.chart-header):not(.hist-controls) {
+      display: none !important;
+    }
+    .collapsible.collapsed > .chart-header { margin-bottom: 0; }
+    .collapsible.collapsed > .hist-controls { margin-bottom: 0; }
+
+    /* ── %B gauge ────────────────────────────────────── */
+    .pct-b-wrap {
+      display: flex; align-items: center; gap: 6px; justify-content: flex-end;
+    }
+    .pct-b-track {
+      width: 60px; height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: visible;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .pct-b-fill {
+      height: 100%; border-radius: 3px;
+      transition: width .3s ease, background .3s ease;
+    }
+    .pct-b-marker {
+      position: absolute;
+      top: -3px;
+      width: 2px; height: 12px;
+      background: var(--text);
+      border-radius: 1px;
+      transform: translateX(-50%);
+    }
+    .pct-b-num { font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 36px; text-align:right; }
+
+    /* ── loading skeleton ────────────────────────────── */
+    .skel { background: var(--border); border-radius: 4px; animation: pulse 1.4s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── IBIT strike card ────────────────────────────── */
+    .ibit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .ibit-col {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .ibit-col-header {
+      padding: 7px 12px;
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--subtext);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+    }
+    .ibit-col.ibit-call .ibit-col-header { color: var(--green); }
+    .ibit-col.ibit-put  .ibit-col-header { color: var(--red); }
+    .ibit-meta {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ibit-meta-item .cond-label { font-size: 10px; color: var(--muted); letter-spacing:.06em; text-transform:uppercase; }
+    .ibit-meta-item .cond-val   { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* ── volatility regime analysis ──────────────────── */
+    .regime-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .regime-grid > .chart-card.full { grid-column: 1 / -1; }
+    #regimeMapChart { height: 320px !important; }
+    #regimeZScoreChart { height: 320px !important; }
+    .regime-asset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .regime-asset-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .regime-asset-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; margin-bottom: 4px;
+    }
+    .regime-asset-sym { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: .04em; }
+    .regime-asset-status { font-size: 11px; color: var(--subtext); }
+    .regime-momentum-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .regime-momentum-badge.up   { background: rgba(240,82,82,.15); color: var(--red); }
+    .regime-momentum-badge.down { background: rgba(47,209,140,.15); color: var(--green); }
+    .regime-momentum-badge.flat { background: rgba(138,147,173,.12); color: var(--subtext); }
+    .regime-asset-card { cursor: pointer; transition: border-color .15s, background .15s; }
+    .regime-asset-card:hover { border-color: var(--blue); background: rgba(74,143,247,.04); }
+    .regime-asset-card canvas { height: 110px !important; margin-top: 6px; }
+    .regime-metric-badge {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      vertical-align: middle;
+    }
+    .regime-metric-badge.iv { background: rgba(74,143,247,.15); color: var(--blue); }
+    .regime-metric-badge.iv-partial { background: rgba(74,143,247,.10); color: #6b8fbf; }
+    .regime-metric-badge.rv { background: rgba(245,166,35,.18); color: var(--amber); }
+    .regime-metric-badge.rv-only { background: rgba(245,166,35,.12); color: #b08830; }
+
+    /* ── equity rv histogram grid ────────────────────── */
+    .rv-hist-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 1100px) { .rv-hist-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 720px)  { .rv-hist-grid { grid-template-columns: 1fr; } }
+    .rv-hist-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .rv-hist-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 8px; margin-bottom: 6px;
+    }
+    .rv-hist-sym { font-size: 13px; font-weight: 700; color: var(--text); }
+    .rv-hist-meta { font-size: 11px; color: var(--subtext); margin-top: 2px; line-height: 1.4; }
+    .rv-hist-tabs { display: flex; gap: 4px; }
+    .rv-hist-tabs button {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--subtext);
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .rv-hist-tabs button.active {
+      border-color: var(--blue); color: var(--blue); background: rgba(74,143,247,.08);
+    }
+    .rv-hist-card canvas { height: 130px !important; margin-top: 4px; }
+    .rv-hist-context { font-size: 11px; color: var(--subtext); margin-top: 6px; }
+    .rv-hist-context b { color: var(--text); font-weight: 600; }
+    .rv-hist-empty {
+      font-size: 11px; color: var(--subtext); padding: 30px 10px; text-align: center;
+    }
+
+    /* ── regime expand modal ─────────────────────────── */
+    .regime-modal-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 24px; width: 760px; max-width: 95vw;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .regime-modal-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .regime-modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .regime-modal-sub   { font-size: 11px; color: var(--subtext); margin-top: 3px; }
+    .regime-modal-close {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1;
+    }
+    .regime-modal-close:hover { color: var(--text); border-color: var(--blue); }
+    #regimeModalChart { height: 360px !important; }
+
+    /* ── BB expand modal ───────────────────────────── */
+    .bb-modal-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 24px; width: 820px; max-width: 95vw;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .bb-modal-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .bb-modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .bb-modal-sub   { font-size: 11px; color: var(--subtext); margin-top: 3px; }
+    .bb-modal-close {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1;
+    }
+    .bb-modal-close:hover { color: var(--text); border-color: var(--blue); }
+    #bbModalChart { height: 420px !important; }
+
+    /* ── Regime Map expand modal ───────────────────── */
+    .rmap-modal-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 24px; width: 860px; max-width: 95vw;
+      max-height: 92vh; overflow-y: auto;
+    }
+    .rmap-modal-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .rmap-modal-title { font-size: 16px; font-weight: 700; color: var(--text); }
+    .rmap-modal-sub   { font-size: 11px; color: var(--subtext); margin-top: 3px; }
+    .rmap-modal-close {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-size: 16px; line-height: 1;
+    }
+    .rmap-modal-close:hover { color: var(--text); border-color: var(--blue); }
+    #rmapModalChart { height: 520px !important; }
+    .regime-legend {
+      margin-top: 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .regime-legend h4 {
+      font-size: 10px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--subtext);
+      margin: 0 0 8px 0;
+    }
+    .regime-legend h4:not(:first-child) { margin-top: 12px; }
+    .regime-legend-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+    }
+    .regime-legend-swatch {
+      width: 22px; height: 0; border-top-width: 2px; border-top-style: solid; flex-shrink: 0;
+    }
+    .regime-legend-swatch.dashed { border-top-style: dashed; }
+    .regime-legend-swatch.vert {
+      width: 0; height: 18px; border-top: none; border-left-width: 2px;
+      border-left-style: dashed;
+    }
+    .regime-legend-text { flex: 1; }
+    .regime-legend-text b { color: var(--text); font-weight: 600; }
+    .regime-legend-text .muted { color: var(--subtext); }
+    .regime-loading {
+      grid-column: 1 / -1;
+      color: var(--subtext);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+    }
+    @media (max-width: 980px) {
+      .regime-grid { grid-template-columns: 1fr; }
+      .regime-asset-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── meta nav (top-level: Volatility / Macro) ─── */
+    .meta-nav {
+      display: flex;
+      gap: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .meta-nav button {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--subtext);
+      padding: 14px 26px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      margin-bottom: -1px;
+    }
+    .meta-nav button.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .section-panel { display: none; }
+    .section-panel.active { display: block; }
+
+    /* ── tab nav ─────────────────────────────────────── */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .tab-nav button {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--subtext);
+      padding: 11px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color .15s, border-color .15s;
+      margin-bottom: -1px;
+    }
+    .tab-nav button.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Macro watchlist (table style) ──────────────── */
+    .macro-watchlist-wrap {
+      padding: 12px 24px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .macro-watchlist-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange, #ff9a3c);
+      letter-spacing: .6px;
+      padding: 4px 0 8px;
+    }
+    .macro-watchlist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 14px;
+    }
+    @media (max-width: 900px) {
+      .macro-watchlist-grid { grid-template-columns: 1fr; }
+    }
+    .macro-watchlist-col { min-width: 0; }
+    .mw-section-header {
+      color: var(--orange, #ff9a3c);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .3px;
+      padding: 8px 0 2px;
+    }
+    .mw-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      /* Fixed layout so numeric columns line up across stacked sections
+         regardless of how long any one section's ticker names run */
+      table-layout: fixed;
+    }
+    .mw-table th:nth-child(2), .mw-table td:nth-child(2) { width: 80px; }
+    .mw-table th:nth-child(n+3), .mw-table td:nth-child(n+3) { width: 56px; }
+    .mw-table thead th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      padding: 2px 6px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+    }
+    .mw-table thead th:first-child { text-align: left; }
+    .mw-table tbody td {
+      padding: 2px 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.025);
+      text-align: right;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.4;
+    }
+    .mw-table tbody td:first-child {
+      text-align: left;
+      color: var(--subtext);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mw-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    .mw-pos { color: var(--green); }
+    .mw-neg { color: var(--red); }
+    .mw-flat { color: var(--muted); }
+    .macro-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2px 4px 8px;
+      font-size: 10px;
+      color: var(--subtext);
+    }
+
+    /* ── Macro yield curves & spreads ───────────────── */
+    .macro-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 14px 24px 6px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+    .macro-nav-btn {
+      background: rgba(0,0,0,.3);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 10px 18px;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .macro-nav-btn:hover { border-color: rgba(255,255,255,.35); }
+    .macro-nav-btn.active {
+      border-color: var(--orange, #ff9a3c);
+      color: var(--orange, #ff9a3c);
+    }
+    .macro-section { padding: 22px 24px 8px; max-width: 1600px; margin: 0 auto; scroll-margin-top: 16px; }
+    .macro-guide-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--subtext);
+    }
+    .macro-guide-card b { color: var(--text, #e8e8e8); }
+    .macro-guide-card .rs-vals {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .macro-guide-card .rs-vals b { color: var(--orange, #ff9a3c); font-weight: 700; }
+    .macro-guide-card ul { margin: 6px 0 0; padding-left: 18px; }
+    .velocity-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .velocity-table th {
+      text-align: right; padding: 6px 12px; color: var(--subtext);
+      font-weight: 600; border-bottom: 1px solid var(--border);
+      text-transform: uppercase; font-size: 10px; letter-spacing: .5px;
+    }
+    .velocity-table th:first-child, .velocity-table td:first-child { text-align: left; }
+    .velocity-table td {
+      text-align: right; padding: 6px 12px; white-space: nowrap;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .velocity-table tr:last-child td { border-bottom: none; }
+    .macro-guide-card li { margin-bottom: 7px; }
+    .macro-guide-card li:last-child { margin-bottom: 0; }
+    .macro-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--orange, #ff9a3c);
+      letter-spacing: .8px;
+      padding: 0 0 14px;
+      text-align: center;
+      text-transform: uppercase;
+      position: relative;
+    }
+    .macro-section-title::before,
+    .macro-section-title::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: calc(50% - 130px);
+      border-top: 1px solid var(--border);
+    }
+    .macro-section-title::before { left: 0; }
+    .macro-section-title::after  { right: 0; }
+    .macro-snapshot-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      height: 380px;
+    }
+    .macro-chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 1100px) { .macro-chart-grid { grid-template-columns: 1fr; } }
+    .macro-mini-chart {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px 8px;
+    }
+    .macro-mini-chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+    .macro-mini-chart-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .macro-mini-chart-value {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 3px;
+      color: #111;
+      font-variant-numeric: tabular-nums;
+    }
+    .macro-mini-chart-canvas { height: 280px; position: relative; }
+    .macro-snapshot-wrap { height: 440px; cursor: pointer; }
+    .macro-mini-chart { cursor: pointer; transition: border-color .15s; }
+    .macro-mini-chart:hover { border-color: var(--blue); }
+    .macro-snapshot-wrap:hover { border-color: var(--blue); }
+    /* swallow clicks on interactive controls so they don't open the modal */
+    .macro-chart-range, .macro-chart-range * { cursor: pointer; }
+
+    /* ── Macro expand modal ───────────────────────── */
+    .macro-modal-box {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 22px 24px; width: min(92vw, 1280px);
+      max-height: 92vh; overflow: hidden;
+    }
+    .macro-modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .macro-modal-title { font-size: 18px; font-weight: 700; color: var(--text); }
+    .macro-modal-close {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      width: 32px; height: 32px; border-radius: 6px; cursor: pointer; font-size: 18px; line-height: 1;
+    }
+    .macro-modal-close:hover { color: var(--text); border-color: var(--blue); }
+    #macroModalCanvas { height: 70vh !important; max-height: 720px; }
+    .macro-chart-range {
+      display: flex;
+      gap: 2px;
+      font-size: 10px;
+    }
+    .macro-chart-range button {
+      background: none;
+      border: none;
+      color: var(--subtext);
+      padding: 2px 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: .3px;
+    }
+    .macro-chart-range button.active { color: var(--orange, #ff9a3c); }
+    .macro-chart-range button:hover { color: var(--text); }
+
+    /* ── Vol Scanner tab ─────────────────────────────── */
+    .vs-header { display:flex; align-items:center; gap:22px; flex-wrap:wrap; padding:14px 18px;
+      background:var(--surface); border:1px solid var(--border); border-radius:8px; }
+    .vs-header-item { display:flex; flex-direction:column; font-size:13px; font-weight:600; color:var(--text); }
+    .vs-label { font-size:10px; text-transform:uppercase; letter-spacing:.7px; color:var(--subtext); font-weight:500; }
+    .vs-run-btn { background:var(--blue); color:#fff; border:none; padding:8px 16px;
+      border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; }
+    .vs-run-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .vs-filter-bar { display:flex; gap:22px; flex-wrap:wrap; padding:14px 18px;
+      background:var(--surface); border:1px solid var(--border); border-radius:8px; }
+    .vs-filter { display:flex; flex-direction:column; gap:6px; font-size:12px; }
+    .vs-filter input[type=range] { width:200px; accent-color:var(--blue); }
+    #vs-table td, #vs-table th { padding:9px 10px; font-size:12.5px; }
+    #vs-table tbody tr { cursor:pointer; }
+    #vs-table tbody tr:hover { background:rgba(74,143,247,.06); }
+    #vs-table tbody tr.vs-pinned { background:rgba(245,166,35,.06); }
+    #vs-table tbody tr.vs-pinned:hover { background:rgba(245,166,35,.12); }
+    .vs-quad-badge { display:inline-block; padding:3px 8px; border-radius:4px;
+      font-size:10px; font-weight:700; letter-spacing:.4px; }
+    .vs-quad-panic      { background:rgba(240,82,82,.18); color:#f87171; }
+    .vs-quad-expansion  { background:rgba(245,166,35,.18); color:#fbbf24; }
+    .vs-quad-mean       { background:rgba(74,143,247,.18); color:#60a5fa; }
+    .vs-quad-compressed { background:rgba(47,209,140,.18); color:#34d399; }
+    .vs-quad-unknown    { background:rgba(140,140,160,.18); color:#94a3b8; }
+    .vs-signal { font-size:11.5px; }
+    .vs-pin { font-size:12px; margin-right:4px; }
+    .vs-detail-row td { padding:16px 18px; background:rgba(74,143,247,.04);
+      border-top:1px solid var(--border); }
+    .vs-detail-grid { display:flex; flex-direction:column; gap:14px; }
+    .vs-detail-chart-row { position:relative; height:240px; }
+    .vs-detail-hist-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .vs-detail-vrp-stats { display:flex; gap:18px; flex-wrap:wrap; font-size:12px;
+      color:var(--subtext); padding:8px 12px; background:rgba(148,163,184,.06);
+      border-radius:6px; }
+    .vs-detail-vrp-stats b { color:var(--text); font-size:13px; }
+    .vs-detail-metrics { display:flex; gap:20px; flex-wrap:wrap; margin-top:10px;
+      font-size:12px; color:var(--subtext); }
+    .vs-detail-metrics b { color:var(--text); font-size:13px; }
+    .vs-detail-actions { display:flex; gap:10px; margin-top:12px; }
+    .vs-detail-actions button { background:var(--bg); border:1px solid var(--border);
+      color:var(--text); padding:7px 14px; border-radius:5px; font-size:12px;
+      font-weight:600; cursor:pointer; }
+    .vs-detail-actions button.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+    .vs-detail-chart-wrap { position:relative; height:240px; }
+    .vs-detail-hist-wrap { position:relative; height:220px; }
+    .vs-mom-up { color:#f87171; }
+    .vs-mom-down { color:#34d399; }
+    .vs-z-high { color:#fbbf24; font-weight:700; }
+
+    /* ── strategy layout ─────────────────────────────── */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* Primary recommendation card */
+    .strat-primary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+    }
+    .strat-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 6px 0 8px;
+    }
+    .strat-badges { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+    .badge-sym  { background: rgba(74,143,247,.15); color: var(--blue); }
+    .badge-high { background: rgba(47,209,140,.12); color: var(--green); }
+    .badge-med  { background: rgba(245,166,35,.12);  color: var(--amber); }
+    .badge-low  { background: rgba(255,255,255,.06); color: var(--subtext); }
+    .strat-rationale { font-size: 13px; color: var(--subtext); margin-bottom: 14px; }
+    .strat-conditions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .cond-chip {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 90px;
+    }
+    .cond-chip .cond-label { font-size: 10px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+    .cond-chip .cond-val   { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* Checklist */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .icon-pass   { background: rgba(47,209,140,.15);  color: var(--green); }
+    .icon-fail   { background: rgba(240,82,82,.15);   color: var(--red); }
+    .icon-manual { background: rgba(245,166,35,.15);  color: var(--amber); }
+    .icon-info   { background: rgba(74,143,247,.15);  color: var(--blue); }
+    .icon-warn   { background: rgba(255,255,255,.06); color: var(--muted); }
+    .check-label  { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .check-detail { font-size: 11px; color: var(--subtext); margin-top: 2px; }
+
+    /* Strike calculator */
+    .strike-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .strike-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .strike-header {
+      padding: 8px 12px;
+      font-size: 11px; font-weight: 700; letter-spacing: .08em;
+      border-bottom: 1px solid var(--border);
+    }
+    .strike-header.btc { color: var(--amber); background: rgba(245,166,35,.06); }
+    .strike-header.eth { color: var(--purple); background: rgba(159,122,234,.06); }
+    .strike-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      font-size: 12px;
+    }
+    .strike-row:last-child { border-bottom: none; }
+    .strike-row .sk-label { color: var(--subtext); }
+    .strike-row .sk-val   { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text); }
+    .strike-row.sk-call .sk-val { color: var(--green); }
+    .strike-row.sk-put  .sk-val { color: var(--red); }
+    .strike-row.sk-premium .sk-val { color: var(--amber); }
+    .strike-row.sk-target  .sk-val { color: var(--blue); }
+
+    /* Other recommendations grid */
+    .other-recs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .rec-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .rec-card.rec-triggered  { border-color: rgba(74,143,247,.3); }
+    .rec-card.rec-untriggered { opacity: .65; }
+    .rec-card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .rec-strategy { font-size: 14px; font-weight: 700; color: var(--text); margin-top: 2px; }
+    .rec-rationale { font-size: 12px; color: var(--subtext); line-height: 1.4; }
+
+    /* Exit rules */
+    .exit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .exit-rule {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 12px; color: var(--text);
+    }
+    .exit-num {
+      flex-shrink: 0;
+      width: 20px; height: 20px;
+      background: rgba(74,143,247,.12);
+      color: var(--blue);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+    }
+
+    /* ── calculator ──────────────────────────────────── */
+    .calc-top-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .calc-global-card {
+      flex: 0 0 200px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+    .calc-legs-panel { flex: 1; min-width: 0; }
+    .calc-form-card, .calc-results-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 10px;
+    }
+    .form-row:last-child { margin-bottom: 0; }
+    .form-row label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--subtext);
+    }
+    .form-row input, .form-row select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 6px 9px;
+      width: 100%;
+      font-variant-numeric: tabular-nums;
+      transition: border-color .15s;
+    }
+    .form-row input:focus, .form-row select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+    .form-row select option { background: var(--surface); }
+    .calc-btn {
+      padding: 9px 20px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .04em;
+      transition: opacity .15s;
+    }
+    .calc-btn:hover { opacity: .85; }
+    .calc-btn:disabled { opacity: .4; cursor: default; }
+    .calc-add-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--blue);
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background .15s;
+    }
+    .calc-add-btn:hover { background: rgba(74,143,247,.08); }
+    .calc-add-btn:disabled { opacity: .35; cursor: default; }
+
+    /* leg cards */
+    .leg-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px 14px;
+      margin-bottom: 8px;
+    }
+    .leg-card:last-child { margin-bottom: 0; }
+    .leg-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+    .leg-inputs {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+    .leg-remove-btn {
+      background: none;
+      border: 1px solid rgba(240,82,82,.3);
+      color: var(--red);
+      padding: 2px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .leg-remove-btn:hover { background: rgba(240,82,82,.08); }
+
+    /* results */
+    .calc-hero-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .calc-hero-card {
+      flex: 1;
+      min-width: 120px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .calc-hero-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .calc-hero-val {
+      font-size: 20px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .calc-hero-sub { font-size: 11px; color: var(--subtext); margin-top: 1px; }
+    .calc-section-head {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 14px 0 8px;
+    }
+    .calc-leg-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 4px; }
+    .calc-leg-table th {
+      text-align: right; padding: 4px 10px; font-size: 10px; font-weight: 700;
+      letter-spacing: .07em; text-transform: uppercase; color: var(--subtext);
+      border-bottom: 1px solid var(--border);
+    }
+    .calc-leg-table th:first-child { text-align: left; }
+    .calc-leg-table td {
+      text-align: right; padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,.04);
+      font-variant-numeric: tabular-nums;
+    }
+    .calc-leg-table td:first-child { text-align: left; font-weight: 600; }
+    .calc-leg-table tr:last-child td { border-bottom: none; }
+    .calc-greeks-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .calc-greek-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 12px;
+    }
+    .calc-greek-label { font-size: 10px; color: var(--muted); font-weight: 700; letter-spacing:.07em; text-transform:uppercase; margin-bottom:2px; }
+    .calc-greek-val   { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .calc-greek-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    .calc-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    #pnlChart, #thetaChart { height: 220px !important; }
+    .calc-empty {
+      color: var(--subtext);
+      font-size: 12px;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    /* ── Collapsible sections (Kelly / Monte Carlo) ─────── */
+    .calc-collapsible {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+    .calc-collapsible-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .calc-collapsible-head:hover { background: rgba(255,255,255,.03); }
+    .calc-collapsible-head .calc-coll-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .calc-collapsible-head .calc-coll-sub {
+      font-size: 11px;
+      color: var(--subtext);
+      margin-left: 12px;
+      font-weight: 400;
+    }
+    .calc-coll-arrow {
+      font-size: 14px;
+      color: var(--muted);
+      transition: transform .25s;
+    }
+    .calc-collapsible.open .calc-coll-arrow { transform: rotate(90deg); }
+    .calc-collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease, padding .25s ease;
+      padding: 0 18px;
+    }
+    .calc-collapsible.open .calc-collapsible-body {
+      max-height: 3000px;
+      padding: 4px 18px 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Kelly + MC layout */
+    .kelly-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .kelly-out-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .kelly-warning {
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: rgba(245,166,35,.08);
+      border-left: 3px solid var(--amber);
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+      font-size: 12px;
+    }
+    .kelly-warning.high-risk {
+      background: rgba(240,82,82,.08);
+      border-left-color: var(--red);
+    }
+    .mc-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .mc-run-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      letter-spacing: .04em;
+    }
+    .mc-run-btn:hover { opacity: .87; }
+    .mc-run-btn:disabled { opacity: .4; cursor: default; }
+    .mc-metric-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .mc-chart-row {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    #mcHistChart { height: 240px !important; }
+    #mcExitChart { height: 240px !important; }
+    .mc-summary {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--subtext);
+      line-height: 1.6;
+    }
+    .mc-summary b { color: var(--text); }
+    .mc-empty {
+      color: var(--subtext);
+      font-size: 12px;
+      text-align: center;
+      padding: 28px 0;
+    }
+    /* Stock leg card accent */
+    .leg-card.stock-leg {
+      border-style: dashed !important;
+    }
+    .stock-leg-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      margin-left: 6px;
+      border-radius: 3px;
+      background: rgba(159,122,234,.15);
+      color: var(--purple);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    /* ── BSM equation + popout ────────────────────────── */
+    .bsm-eq-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px 14px;
+      margin-bottom: 14px;
+    }
+    .bsm-formulas {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      align-items: baseline;
+    }
+    .bsm-formula {
+      font-size: 19px;
+      font-family: Georgia, 'Times New Roman', serif;
+      line-height: 2;
+      white-space: nowrap;
+      transition: opacity .25s;
+    }
+    .bsm-formula.dim { opacity: .28; pointer-events: none; }
+    .bsm-output { color: var(--text); font-weight: 600; margin-right: 2px; }
+    .bsm-punct  { color: var(--muted); }
+    .bsm-where-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: baseline;
+      font-size: 14px;
+      font-family: Georgia, 'Times New Roman', serif;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      color: var(--text);
+    }
+    .bsm-italic  { font-style: italic; color: var(--muted); font-size: 12px; }
+    .bsm-def-item { white-space: nowrap; }
+    .bsm-sym {
+      cursor: pointer;
+      padding: 1px 4px;
+      border-radius: 3px;
+      transition: background .15s;
+      font-weight: 700;
+    }
+    .bsm-sym:hover { background: rgba(255,255,255,.13); }
+    .bsm-sym.sym-active { background: rgba(255,255,255,.15); outline: 1px solid rgba(255,255,255,.28); }
+    .bsm-s     { color: var(--amber)  !important; }
+    .bsm-k     { color: var(--blue)   !important; }
+    .bsm-sigma { color: var(--purple) !important; }
+    .bsm-t     { color: var(--green)  !important; }
+    .bsm-r     { color: #94a3b8       !important; }
+    .bsm-nd1, .bsm-nd2 { color: var(--text); }
+    .bsm-d1, .bsm-d2   { color: var(--subtext); }
+    @keyframes symPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(74,143,247,.75); background: rgba(74,143,247,.22); }
+      100% { box-shadow: 0 0 0 8px rgba(74,143,247,0); background: transparent; }
+    }
+    .sym-pulse { animation: symPulse .7s ease-out; }
+    .bsm-popout {
+      background: var(--surface);
+      border: 1px solid var(--blue);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+    }
+    .bsm-popout-hdr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    #bsm-popout-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .bsm-close-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--subtext);
+      padding: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    #bsm-popout-body { font-size: 12px; color: var(--subtext); line-height: 1.6; }
+    .pop-def  { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+    .pop-math {
+      font-family: Georgia, serif; font-size: 13px;
+      color: var(--subtext); padding: 5px 10px;
+      background: var(--bg); border-radius: 5px; margin-bottom: 7px;
+    }
+    .pop-live {
+      padding: 8px 12px;
+      background: rgba(74,143,247,.08);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 6px 6px 0;
+      color: var(--text); margin-top: 8px; font-size: 12px;
+    }
+    .pop-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .pop-call-side {
+      padding: 8px 10px; border-radius: 6px; font-size: 11px;
+      background: rgba(47,209,140,.07); border: 1px solid rgba(47,209,140,.25);
+    }
+    .pop-put-side {
+      padding: 8px 10px; border-radius: 6px; font-size: 11px;
+      background: rgba(240,82,82,.07); border: 1px solid rgba(240,82,82,.25);
+    }
+    .pop-side-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px; }
+    .pop-call-side .pop-side-label { color: var(--green); }
+    .pop-put-side  .pop-side-label { color: var(--red); }
+    .calc-hero-card[data-topic], .calc-greek-card[data-topic] { cursor: pointer; }
+    .calc-hero-card[data-topic]:hover  { border-color: var(--blue); background: rgba(74,143,247,.06); }
+    .calc-greek-card[data-topic]:hover { border-color: var(--blue); background: rgba(74,143,247,.06); }
+    @keyframes resultPulse {
+      0%   { border-color: var(--blue); box-shadow: 0 0 8px rgba(74,143,247,.4); }
+      100% { border-color: var(--border); box-shadow: none; }
+    }
+    .result-pulse { animation: resultPulse .7s ease-out; }
+
+    /* ── data source flags ────────────────────────────────── */
+    .data-flag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; color: var(--amber); font-weight: 600;
+      padding: 2px 7px; border-radius: 4px;
+      background: rgba(245,166,35,.08); border: 1px solid rgba(245,166,35,.2);
+      letter-spacing: .02em;
+    }
+    .data-flag::before { content: '⚠'; font-size: 9px; }
+    .data-flags-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .data-flag-inline {
+      font-size: 9px; color: var(--amber); font-weight: 600;
+      opacity: .85;
+    }
+    .data-flag-inline::before { content: '⚠ '; }
+    .source-badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px; letter-spacing: .03em;
+      vertical-align: middle; margin-left: 4px;
+    }
+    .source-live { background: rgba(47,209,140,.12); color: var(--green); }
+    .source-model { background: rgba(245,166,35,.12); color: var(--amber); }
+    .source-est { background: rgba(240,82,82,.12); color: var(--red); }
+
+    /* ── active trades ──────────────────────────────────── */
+    .trades-mode-bar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+    .trades-mode-bar button {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      padding: 5px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
+    }
+    .trades-mode-bar button.active { border-color: var(--blue); color: var(--blue); background: rgba(74,143,247,.08); }
+
+    .mode-badge {
+      display: inline-block; padding: 2px 10px; border-radius: 4px;
+      font-size: 10px; font-weight: 700; letter-spacing: .06em;
+    }
+    .mode-live { background: rgba(47,209,140,.15); color: var(--green); border: 1px solid rgba(47,209,140,.3); }
+    .mode-paper { background: rgba(255,255,255,.05); color: var(--subtext); border: 1px dashed var(--muted); }
+
+    .trade-summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .trade-summary-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .trade-summary-card .ts-label { font-size: 10px; color: var(--subtext); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .trade-summary-card .ts-value { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .trade-summary-card .ts-sub { font-size: 11px; color: var(--muted); }
+
+    .var-meter { margin-top: 6px; }
+    .var-bar-bg { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .var-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+
+    .trades-table-wrap { margin-bottom: 18px; }
+    .trade-row-expand { display: none; }
+    .trade-row-expand.open { display: table-row; }
+    .trade-row-expand td { padding: 12px 16px; background: rgba(255,255,255,.02); }
+
+    .trade-legs-mini { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin: 8px 0; }
+    .leg-mini-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 8px 10px; font-size: 11px;
+    }
+    .leg-mini-card .lm-head { font-weight: 700; margin-bottom: 4px; }
+    .leg-mini-card .lm-row { display: flex; justify-content: space-between; color: var(--subtext); }
+
+    .guidance-list { list-style: none; padding: 0; margin: 8px 0 0; }
+    .guidance-list li {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border);
+    }
+    .guidance-list li:last-child { border-bottom: none; }
+    .guidance-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .guidance-dot.pass { background: var(--green); }
+    .guidance-dot.fail { background: var(--red); }
+    .guidance-dot.warn { background: var(--amber); }
+    .guidance-dot.info { background: var(--blue); }
+
+    .dte-pill { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+    .dte-green { background: rgba(47,209,140,.12); color: var(--green); }
+    .dte-amber { background: rgba(245,166,35,.12); color: var(--amber); }
+    .dte-red { background: rgba(240,82,82,.12); color: var(--red); }
+
+    .trade-form-wrap {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 20px; margin-bottom: 18px;
+    }
+    .trade-form-wrap.collapsed .trade-form-body { display: none; }
+    .trade-form-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .trade-form-toggle .section-title { margin: 0; }
+    .trade-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px;
+      margin-top: 14px;
+    }
+    .trade-form-grid label { font-size: 11px; color: var(--subtext); font-weight: 600; display: flex; flex-direction: column; gap: 4px; }
+    .trade-form-grid input, .trade-form-grid select, .trade-form-grid textarea {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 7px 10px; border-radius: 6px; font-size: 12px; font-family: inherit;
+    }
+    .trade-form-grid textarea { grid-column: span 4; resize: vertical; min-height: 40px; }
+
+    .trade-legs-builder { margin-top: 12px; }
+    .trade-legs-builder .section-title { margin-bottom: 8px; }
+    .trade-leg-row {
+      display: grid; grid-template-columns: 100px 80px 1fr 1fr 80px 80px 80px 32px;
+      gap: 6px; align-items: center; margin-bottom: 6px;
+    }
+    .trade-leg-row select, .trade-leg-row input {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 6px 8px; border-radius: 5px; font-size: 12px;
+    }
+    .trade-leg-row .remove-leg {
+      background: rgba(240,82,82,.15); color: var(--red); border: none;
+      border-radius: 5px; cursor: pointer; font-size: 14px; padding: 4px;
+    }
+
+    .trade-form-actions { display: flex; gap: 10px; margin-top: 14px; align-items: center; }
+    .trade-form-actions button {
+      padding: 8px 20px; border-radius: 6px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none;
+    }
+    .btn-submit-trade { background: var(--blue); color: #fff; }
+    .btn-submit-trade:hover { opacity: .9; }
+    .btn-add-leg { background: none; border: 1px solid var(--border) !important; color: var(--subtext); }
+    .btn-mode-toggle {
+      padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 700;
+      cursor: pointer; border: none; letter-spacing: .04em;
+    }
+    .btn-mode-live { background: rgba(47,209,140,.18); color: var(--green); }
+    .btn-mode-paper { background: rgba(255,255,255,.08); color: var(--subtext); border: 1px dashed var(--muted) !important; }
+
+    .no-trades-msg {
+      text-align: center; padding: 40px 20px; color: var(--subtext);
+      font-size: 13px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .trade-actions { display: flex; gap: 6px; }
+    .trade-actions button {
+      background: none; border: 1px solid var(--border); color: var(--subtext);
+      padding: 3px 10px; border-radius: 5px; cursor: pointer; font-size: 11px;
+    }
+    .trade-actions button:hover { color: var(--text); border-color: var(--text); }
+    .trade-actions .btn-close-trade:hover { color: var(--green); border-color: var(--green); }
+    .trade-actions .btn-delete-trade:hover { color: var(--red); border-color: var(--red); }
+
+    tbody tr.clickable-row { cursor: pointer; }
+    tbody tr.clickable-row:hover { background: rgba(74,143,247,.04); }
+
+    /* ── footer ──────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 10px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Trade Journal ────────────────────────────────── */
+    .j-chip {
+      padding: 4px 11px; border-radius: 14px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface); color: var(--subtext); transition: all .15s;
+    }
+    .j-chip.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .j-chip:hover:not(.active) { border-color: var(--blue); color: var(--text); }
+
+    .j-entry-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 9px; padding: 14px 16px; cursor: default;
+      transition: border-color .15s;
+    }
+    .j-entry-card:hover { border-color: var(--amber); }
+
+    .j-entry-header {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .j-entry-date { font-size: 13px; font-weight: 700; color: var(--text); }
+    .j-sym-chip {
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+      background: rgba(74,143,247,.15); color: #4a8ff7; border: 1px solid rgba(74,143,247,.25);
+    }
+    .j-status-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+      text-transform: uppercase; letter-spacing: .04em;
+    }
+    .j-status-Open    { background: rgba(79,158,255,.18); color: #4f9eff; }
+    .j-status-Acted   { background: rgba(47,209,140,.18); color: #2fd18c; }
+    .j-status-Skipped { background: rgba(138,147,173,.18); color: #8a93ad; }
+    .j-status-Closed  { background: rgba(255,154,60,.18);  color: #ff9a3c; }
+
+    .j-entry-actions { margin-left: auto; display: flex; gap: 6px; }
+    .j-btn-edit, .j-btn-del {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; cursor: pointer;
+      border: 1px solid var(--border); background: var(--panel, var(--surface)); color: var(--subtext);
+    }
+    .j-btn-edit:hover { color: var(--text); border-color: var(--blue); }
+    .j-btn-del:hover  { color: var(--red);  border-color: var(--red);  }
+
+    .j-thesis-preview {
+      font-size: 12px; color: var(--subtext); line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .j-decision-preview {
+      font-size: 12px; color: var(--text); margin-top: 6px; line-height: 1.5;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .j-decision-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--subtext); margin-top: 8px;
+    }
+
+    .j-empty-state {
+      text-align: center; color: var(--subtext); padding: 48px 24px;
+      font-size: 13px; line-height: 1.7;
+    }
+
+    /* ── hedge modal ──────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .modal-box {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 24px; width: 340px; max-width: 95vw;
+    }
+    .modal-title {
+      font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px;
+    }
+    .modal-field { margin-bottom: 12px; }
+    .modal-field label { display: block; font-size: 11px; color: var(--subtext); margin-bottom: 4px; }
+    .modal-field select, .modal-field input {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); border-radius: 5px; padding: 6px 8px; font-size: 13px;
+      box-sizing: border-box;
+    }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+    .modal-btn { padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--panel); color: var(--text); }
+    .modal-btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .modal-error { color: var(--red); font-size: 11px; margin-top: 8px; display: none; }
+    .modal-hedge-suggestion {
+      font-size: 11px; color: var(--subtext); margin-top: 6px; padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .hedge-link { color: var(--blue); text-decoration: none; cursor: pointer; }
+    .hedge-link:hover { text-decoration: underline; }
+    .btn-add-hedge { background: rgba(56,139,253,.12); color: #58a6ff; border: 1px solid rgba(56,139,253,.25); border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 600; cursor: pointer; }
+    .btn-add-hedge:hover { background: rgba(56,139,253,.22); }
+
+    /* ── pnl history chart + verdict ──────────────────── */
+    .pnl-history-section { margin-top: 14px; grid-column: span 2; }
+    .pnl-history-chart-wrap { height: 200px; position: relative; }
+    .pnl-verdict {
+      margin-top: 10px; padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.45;
+    }
+    .pnl-history-loading { color: var(--subtext); font-size: 12px; padding: 20px; text-align: center; }
+
+    /* ── Delta Band gauge ────────────────────────────── */
+    .delta-gauge {
+      margin-top: 12px; padding: 10px 14px;
+      background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .delta-gauge-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext); margin-bottom: 8px;
+    }
+    .dg-track {
+      position: relative; height: 18px; background: var(--border); border-radius: 9px; overflow: visible;
+    }
+    .dg-zone { position: absolute; top: 0; height: 100%; border-radius: 9px; }
+    .dg-zone-red-left  { left: 0; background: rgba(240,82,82,.18); }
+    .dg-zone-yellow-left  { background: rgba(245,166,35,.18); }
+    .dg-zone-green     { background: rgba(47,209,140,.18); }
+    .dg-zone-yellow-right { background: rgba(245,166,35,.18); }
+    .dg-zone-red-right { right: 0; background: rgba(240,82,82,.18); }
+    .dg-marker {
+      position: absolute; top: -3px; width: 3px; height: 24px;
+      background: var(--text); border-radius: 2px; transform: translateX(-50%);
+      box-shadow: 0 0 4px rgba(255,255,255,.3);
+    }
+    .dg-tick {
+      position: absolute; top: 22px; font-size: 9px; color: var(--muted);
+      transform: translateX(-50%);
+    }
+    .dg-status {
+      margin-top: 16px; font-size: 11px; line-height: 1.5;
+    }
+    .dg-status-badge {
+      display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px;
+      border-radius: 4px; letter-spacing: .04em;
+    }
+    .dg-badge-green  { background: rgba(47,209,140,.15); color: var(--green); }
+    .dg-badge-yellow { background: rgba(245,166,35,.15); color: var(--amber); }
+    .dg-badge-red    { background: rgba(240,82,82,.15); color: var(--red); }
+    .dg-hedge-action {
+      margin-top: 4px; font-size: 11px;
+    }
+    .dg-hedge-action a {
+      color: var(--blue); cursor: pointer; text-decoration: underline;
+    }
+
+    /* ── Greeks Efficiency ──────────────────────────── */
+    .greeks-eff {
+      margin-top: 12px; padding: 10px 14px;
+      background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 8px;
+    }
+    .greeks-eff-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext); margin-bottom: 8px;
+    }
+    .ge-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; font-size: 12px;
+    }
+    .ge-row { display: flex; justify-content: space-between; }
+    .ge-divider {
+      grid-column: span 2; border-top: 1px solid var(--border); margin: 4px 0;
+    }
+    .ge-ratio-badge {
+      display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
+      border-radius: 4px; margin-top: 6px;
+    }
+
+    /* ── Trade Ideas tab ────────────────────────────── */
+    .ti-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden;
+    }
+    .ti-card-header {
+      display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .ti-rank { font-size: 18px; font-weight: 800; color: var(--blue); min-width: 28px; }
+    .ti-sym { font-size: 16px; font-weight: 700; color: var(--text); }
+    .ti-strat { font-size: 12px; font-weight: 600; color: var(--subtext); text-transform: uppercase; letter-spacing: .06em; }
+    .ti-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .ti-badge.high   { background: rgba(47,209,140,.15); color: var(--green); }
+    .ti-badge.medium { background: rgba(245,166,35,.15); color: var(--amber); }
+    .ti-badge.low    { background: rgba(240,82,82,.15); color: var(--red); }
+    .ti-score { font-size: 12px; font-weight: 700; color: var(--muted); margin-left: auto; }
+
+    .ti-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+
+    .ti-thesis {
+      font-size: 12px; line-height: 1.55; color: var(--text);
+      padding: 10px 14px; background: rgba(255,255,255,.02); border-radius: 6px;
+      border-left: 3px solid var(--blue);
+    }
+    .ti-timing-note {
+      font-size: 11px; color: var(--amber); margin-top: 6px; font-style: italic;
+    }
+
+    .ti-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .ti-cols { grid-template-columns: 1fr; } }
+
+    .ti-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext); margin-bottom: 6px;
+    }
+
+    .ti-legs-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .ti-legs-table th { text-align: left; font-size: 10px; color: var(--subtext); padding: 3px 8px 3px 0; font-weight: 600; }
+    .ti-legs-table td { padding: 3px 8px 3px 0; color: var(--text); }
+    .ti-legs-table .dir-short { color: var(--red); font-weight: 600; }
+    .ti-legs-table .dir-long { color: var(--green); font-weight: 600; }
+
+    .ti-kelly-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 12px;
+    }
+    .ti-kelly-label { color: var(--subtext); font-size: 10px; }
+    .ti-kelly-value { color: var(--text); font-weight: 600; }
+
+    .ti-greeks {
+      display: flex; gap: 18px; font-size: 12px; flex-wrap: wrap;
+    }
+    .ti-greek-item { display: flex; flex-direction: column; align-items: center; }
+    .ti-greek-name { font-size: 10px; color: var(--subtext); font-weight: 600; }
+    .ti-greek-val { font-weight: 700; color: var(--text); }
+
+    .ti-mc-chart-wrap { height: 180px; position: relative; }
+
+    .ti-mc-stats {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; font-size: 11px;
+    }
+    @media (max-width: 700px) { .ti-mc-stats { grid-template-columns: repeat(3, 1fr); } }
+    .ti-mc-stat {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 6px; background: rgba(255,255,255,.02); border-radius: 5px;
+    }
+    .ti-mc-stat-label { font-size: 9px; color: var(--subtext); text-transform: uppercase; letter-spacing: .05em; }
+    .ti-mc-stat-val { font-weight: 700; color: var(--text); font-size: 12px; }
+    .ti-mc-stat-val.pos { color: var(--green); }
+    .ti-mc-stat-val.neg { color: var(--red); }
+
+    /* ── Backtest tab ───────────────────────────────── */
+    .bt-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; }
+    @media (max-width: 900px) { .bt-layout { grid-template-columns: 1fr; } }
+
+    .bt-params {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px; display: flex; flex-direction: column; gap: 14px; align-self: start;
+      position: sticky; top: 20px;
+    }
+    .bt-params h3 {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext); margin: 0;
+    }
+    .bt-field { display: flex; flex-direction: column; gap: 4px; }
+    .bt-field label {
+      font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--subtext);
+    }
+    .bt-field input, .bt-field select {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 7px 10px; border-radius: 6px; font-size: 12px; font-family: inherit;
+    }
+    .bt-field input[type="range"] {
+      -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
+      background: var(--border); border-radius: 3px; outline: none; border: none; padding: 0;
+    }
+    .bt-field input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--blue); cursor: pointer;
+    }
+    .bt-slider-row { display: flex; justify-content: space-between; align-items: center; }
+    .bt-slider-val {
+      font-size: 12px; font-weight: 700; color: var(--blue); min-width: 42px; text-align: right;
+    }
+    .bt-radio-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .bt-radio-group label {
+      display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text);
+      text-transform: none; letter-spacing: 0; font-weight: 500; cursor: pointer;
+    }
+    .bt-radio-group input[type="radio"] { accent-color: var(--blue); }
+    .bt-run-btn {
+      background: var(--blue); color: #fff; border: none; padding: 10px 0; border-radius: 6px;
+      font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: .03em;
+    }
+    .bt-run-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .bt-results { display: flex; flex-direction: column; gap: 18px; }
+
+    .bt-strat-tabs { display: flex; gap: 0; margin-bottom: 0; }
+    .bt-strat-tabs button {
+      background: var(--surface); border: 1px solid var(--border); color: var(--subtext);
+      padding: 9px 22px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .bt-strat-tabs button:first-child { border-radius: 8px 0 0 8px; }
+    .bt-strat-tabs button:last-child { border-radius: 0 8px 8px 0; }
+    .bt-strat-tabs button.active {
+      background: rgba(74,143,247,.1); border-color: var(--blue); color: var(--blue);
+    }
+
+    .bt-metrics-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    }
+    @media (max-width: 1100px) { .bt-metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px) { .bt-metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+    .bt-metric-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 2px;
+    }
+    .bt-metric-label {
+      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext);
+    }
+    .bt-metric-val {
+      font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--text);
+    }
+    .bt-metric-val.pos { color: var(--green); }
+    .bt-metric-val.neg { color: var(--red); }
+
+    .bt-chart-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px;
+    }
+    .bt-chart-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--subtext); margin-bottom: 10px;
+    }
+    .bt-chart-wrap { position: relative; height: 280px; }
+
+    .bt-trades-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .bt-trades-table th {
+      text-align: right; padding: 8px 12px; font-size: 10px; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; color: var(--subtext);
+      border-bottom: 1px solid var(--border);
+    }
+    .bt-trades-table th:first-child { text-align: left; }
+    .bt-trades-table td {
+      text-align: right; padding: 7px 12px; border-bottom: 1px solid rgba(255,255,255,.03);
+      font-variant-numeric: tabular-nums;
+    }
+    .bt-trades-table td:first-child { text-align: left; }
+    .bt-trades-table tr:hover { background: rgba(255,255,255,.02); }
+
+    .bt-summary {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px 20px; font-size: 13px; line-height: 1.7; color: var(--subtext);
+    }
+    .bt-summary strong { color: var(--text); }
+
+    .bt-assumptions {
+      font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.6;
+    }
+    .bt-assumptions li { margin-bottom: 2px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1 style="display:flex;align-items:center;gap:10px;">
+    <img src="static/img/archer_watermark.png" alt=""
+         style="height:32px;filter:brightness(0) invert(1);opacity:0.95;"/>
+    Brave Hunter <span>Trading</span>
+  </h1>
+  <div id="status"><div id="dot"></div><span id="status-text">Connecting…</span></div>
+</header>
+
+
+<nav class="meta-nav">
+  <button class="active" data-section="macro">Macro</button>
+  <button data-section="liquidity">Liquidity</button>
+</nav>
+<div id="section-macro" class="section-panel active">
+  <div class="macro-watchlist-wrap">
+    <div class="macro-status-row">
+      <div class="macro-watchlist-title">
+        <img src="static/img/archer_watermark.png" alt=""
+             style="height:22px;vertical-align:-5px;margin-right:6px;
+                    filter:brightness(0) invert(1);opacity:0.95;"/>Global Macro Watchlist
+      </div>
+      <span id="macro-status">—</span>
+    </div>
+    <div id="macro-watchlist" class="macro-watchlist-grid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--subtext);padding:40px;">Loading macro indicators…</div>
+    </div>
+  </div>
+
+  <div class="macro-nav">
+    <button class="macro-nav-btn active" onclick="macroNavGo('macro-anchor-yields', this)">Yields</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('repression-signposts', this)">Signposts</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-debase', this)">Debasement</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-velocity', this)">Velocity</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-fiscal', this)">Fiscal</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-fed',    this)">FED</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-money',  this)">Money Supply</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-credit', this)">Credit &amp; Inflation</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-fx',     this)">Fx</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-cmdty',  this)">Commodities</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-vol',    this)">Volatility</button>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-yields">
+    <div class="macro-section-title">Yields</div>
+    <div class="macro-snapshot-wrap"><canvas id="macro-yc-snapshot"></canvas></div>
+    <div class="macro-chart-grid" id="macro-yields-grid" style="margin-top:18px;"></div>
+
+    <!-- ── Forward Curves subsection ──────────────────────────────────────── -->
+    <div class="macro-section-title" style="margin-top:24px;font-size:14px;color:var(--subtext);">Forward Curves</div>
+
+    <!-- Chart A1: 5y5y Forward Inflation time-series -->
+    <div class="macro-mini-chart" data-sid="__fwd_inflation__"
+         data-name="5y5y Forward Inflation Expectation"
+         style="margin-top:10px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">5y5y Forward Inflation</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span id="fwd-infl-val" style="font-size:12px;color:#ffc94e;font-weight:600;">—</span>
+          <div class="macro-chart-range" id="fwd-infl-range">
+            <button data-days="365">1Y</button>
+            <button data-days="730">2Y</button>
+            <button data-days="1825" class="active">5Y</button>
+            <button data-days="3650">10Y</button>
+            <button data-days="0">All</button>
+          </div>
+        </div>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-fwd-inflation"></canvas></div>
+    </div>
+
+    <!-- Chart A2: Breakeven inflation tenor curve -->
+    <div class="macro-mini-chart" data-sid="__fwd_breakeven__"
+         data-name="Breakeven Inflation Curve (5Y / 10Y / 30Y)"
+         style="margin-top:12px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Breakeven Inflation Curve</span>
+        <span style="font-size:11px;color:var(--subtext);">5Y · 10Y · 30Y tenors</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-fwd-breakeven"></canvas></div>
+    </div>
+
+    <!-- Chart B: Forward Treasury yield curves -->
+    <div class="macro-mini-chart" data-sid="__fwd_treasury__"
+         data-name="Forward Treasury Yield Curves (Spot / 1Y-Fwd / 5Y-Fwd)"
+         style="margin-top:12px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Forward Treasury Curves</span>
+        <span style="font-size:11px;color:var(--subtext);">Spot · 1Y-Fwd · 5Y-Fwd</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-fwd-treasury"></canvas></div>
+      <div style="font-size:10px;color:var(--subtext);padding:4px 8px 6px;opacity:0.7;">
+        Forward yields computed via par-yield bootstrapping approximation from current spot curve.
+      </div>
+    </div>
+
+    <!-- Chart C: Fed Funds futures curve -->
+    <div class="macro-mini-chart" data-sid="__fwd_fedfunds__"
+         data-name="Fed Funds Futures Curve (CME ZQ)"
+         style="margin-top:12px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Fed Funds Futures Path</span>
+        <span class="macro-mini-chart-value" id="mcv-fwd-fedfunds" style="background:#ff9a3c;">—</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-fwd-fedfunds"></canvas></div>
+      <div style="font-size:10px;color:var(--subtext);padding:4px 8px 6px;opacity:0.7;">
+        Market-implied Fed funds path from CME 30-day Fed Funds futures (ZQ) via Yahoo Finance. Vertical dashed lines mark scheduled FOMC meeting dates.
+      </div>
+      <div style="font-size:10px;color:#f5a623;padding:0 8px 8px;opacity:0.85;font-style:italic;">
+        💡 For higher resolution (real-time, official settlements): subscribe to <b>IBKR CME market data</b> (~$10-15/mo) and swap the data source in <code>cme_client.py</code> — schema and API surface stay the same.
+      </div>
+    </div>
+
+    <div class="macro-mini-chart" data-sid="__gdp_vs_30y__"
+         data-name="Nominal GDP Growth (YoY) vs 30Y Treasury Yield"
+         style="margin-top:18px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Nominal GDP Growth (YoY) vs 30Y Treasury Yield</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="macro-chart-range" id="gdp-y30-range">
+            <button data-days="365">1Y</button>
+            <button data-days="730">2Y</button>
+            <button data-days="1825">5Y</button>
+            <button data-days="3650" class="active">10Y</button>
+            <button data-days="0">All</button>
+          </div>
+        </div>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-gdp-vs-30y"></canvas></div>
+    </div>
+
+    <!-- Repression Signposts — how to read real yields & breakevens -->
+    <div class="macro-section-title" style="margin-top:24px;font-size:14px;color:var(--subtext);">Repression Signposts</div>
+    <div class="macro-guide-card" id="repression-signposts" style="scroll-margin-top:16px;">
+      <div class="rs-vals">
+        <span>Real 10Y (TIPS): <b id="rs-real10">—</b></span>
+        <span>10Y Breakeven: <b id="rs-be10">—</b></span>
+        <span>5y5y Fwd Inflation: <b id="rs-5y5y">—</b></span>
+        <span>2s10s: <b id="rs-2s10s">—</b></span>
+      </div>
+      <b>How to read.</b> The <b>Real 10Y</b> (chart above, "10-Year Real Yield") is the 10Y yield minus market-implied inflation — the true price of long-term money and the cleanest gauge of financial repression: ~+2% means lenders are fully compensated; grinding toward 0 while inflation runs above target means the long end is being captured. <b>Breakevens</b> (5Y/10Y) are the market's implied average inflation; the <b>5y5y forward</b> is where the market thinks inflation settles beyond 5 years — the anchor. <b>2s10s</b> is the market's vote on funding the long end: bear-steepening = term premium being demanded.
+      <ul>
+        <li><b>Repression working</b> — real 10Y grinds down while breakevens drift up (yields held below the inflation being priced). Slow-grind debasement: gold / BTC / hard assets grind higher, vol stays sellable.</li>
+        <li><b>Repression failing</b> — nominal 10Y and breakevens rise <i>together</i>, real 10Y flat-to-up, 2s10s bear-steepens. The market is refusing to fund it at the offered price; expect forceful policy response (SLR relief, buybacks, YCC-lite) and a violent rather than gradual hard-asset move. Long rate-vol (MOVE) pays here.</li>
+        <li><b>Anchor slipping</b> — 5y5y forward sustained above ~2.5% and rising while growth stalls: the 1970s branch. Stagflation basket (gold, energy, commodities) over equities; equity vol structurally higher, VRP unreliable.</li>
+        <li><b>Lid on</b> — real 10Y ≈ 2%+, breakevens anchored ~2.3%, curve modestly steep: compensation still fair, nothing forced yet. This is the current regime.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-debase">
+    <div class="macro-section-title">Debasement Watch</div>
+    <div class="macro-guide-card" style="margin-bottom:14px;">
+      <b>How to read.</b> Stage-two detectors: did the <i>western</i> debasement bid arrive? The eastern bid (PBoC + Chinese households) drove the 2024–26 gold repricing while western ETF holdings bled — so the tell for stage two is <b>ETF creations</b>, which only happen when western money buys. <b>Gold in GLD Trust</b> is actual tonnes held (SPDR official, daily since 2004): metal only enters the trust on creations, so its 4-week change is the western gold flow, price-independent. <b>BTC in IBIT Trust</b> is actual coins held (iShares official) — the BTC ETF bid, the fastest-horse detector. <b>Fed BS Growth (13W ann.)</b> is the RMP throttle: positive and rising = the balance sheet re-expansion is live, the impulse these flows should respond to.
+      <ul>
+        <li><b>Flows chasing the throttle</b> — WALCL growth turns positive, GLD/IBIT creations follow within weeks: stage two confirmed, add on flushes.</li>
+        <li><b>Throttle without flows</b> — balance sheet growing but no creations: repression running ahead of recognition; the entry window is still open.</li>
+        <li><b>Flows without throttle</b> — creations spike while the Fed still shrinks: front-running or a fear bid; check credit spreads before reading it as stage two.</li>
+      </ul>
+      <span style="opacity:.7;font-size:11px;">GLD tonnes + flow have full history. iShares publishes only current IBIT holdings, so BTC-in-trust accumulates daily from 2026-08-28 and its 4-week flow populates from late Sep 2026.</span>
+    </div>
+    <div class="macro-chart-grid" id="macro-debase-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-velocity">
+    <div class="macro-section-title">Velocity</div>
+    <div class="macro-guide-card" style="margin-bottom:14px;">
+      <b>How to read.</b> Speed breaks the system, not levels — every leveraged actor (VaR, margin, hedge ratios) is calibrated to recent history, and forced flows chase fast moves in their own direction. Each row shows the 1-week and 1-month change <b>z-scored against ~5 years of that instrument's own same-length moves</b> (robust MAD scale, so a violent quarter doesn't stretch the yardstick). Gray inside ±1σ is the design goal: a boring board. Amber ≥1σ deserves a look; <b>red ≥2σ on a rates row</b> is the short-gamma system being tested — that's the 2019/2020/gilt-crisis signature. The <b>Realized vs MOVE</b> chart is the suppression test: realized 10Y vol persistently <i>above</i> MOVE = implied vol is underpricing reality (and convexity is cheap). <b>Fed BS Acceleration</b> is the throttle hand moving: 13W growth now minus 13W growth a quarter ago.
+      <div class="velocity-board-wrap" style="margin-top:12px;overflow-x:auto;">
+        <table class="velocity-table" id="velocity-board"><tbody><tr><td style="color:var(--subtext);">Loading…</td></tr></tbody></table>
+      </div>
+    </div>
+    <div class="macro-mini-chart" data-sid="__vol_vs_move__"
+         data-name="10Y Realized Vol (20d, bp/yr) vs MOVE Index"
+         title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">10Y Realized Vol vs MOVE</span>
+        <span id="vrp-gap-chip" style="font-size:12px;color:#2fd18c;font-weight:600;">—</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-vol-vs-move"></canvas></div>
+      <div style="font-size:10px;color:var(--subtext);padding:4px 8px 6px;opacity:0.7;">
+        Realized = 20-day stdev of daily 10Y yield changes, annualized to bp/yr (same units as MOVE). Chip shows MOVE − realized (rates VRP): negative = realized exceeding implied.
+      </div>
+    </div>
+    <div class="macro-chart-grid" id="macro-velocity-grid" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-fiscal">
+    <div class="macro-section-title">Fiscal</div>
+    <div class="macro-guide-card" style="margin-bottom:14px;">
+      <b>How to read.</b> Gromen's "True Interest Expense" treats entitlements as senior implicit debt: benefits are politically harder to cut than bond coupons, CPI-indexed, and demographically compounding — so bond interest + Social Security + Medicare + Medicaid + VA is the real fixed-cost line, measured against tax receipts. Two versions: <b>Gross</b> is the headline construction (entitlement outlays in the numerator, the payroll taxes that fund them excluded from the denominator — critics call this asymmetric); <b>Net</b> subtracts payroll receipts from the numerator, the symmetric accounting that survives the critique. <b>Above the dashed 100% line, fixed obligations exceed revenue and every discretionary dollar — all of defense included — is borrowed.</b> <b>Avg Rate vs 10Y</b> is the rollover ratchet: the implied average coupon on the whole debt stock vs the rate new borrowing actually costs; while the 10Y sits above the average rate, the interest bill rises mechanically every quarter even with zero new deficits.
+      <ul>
+        <li><b>Gross &gt;100%, Net &lt;100%</b> — fixed costs exceed non-payroll revenue but the symmetric version still clears: hooped-adjacent, running on payroll surplus and borrowing.</li>
+        <li><b>Net crosses 100%</b> — fixed obligations exceed all revenue under the most favorable accounting: monetization or repression is no longer a forecast, it's the operating state.</li>
+        <li><b>Avg rate converging on the 10Y</b> — the rollover ratchet exhausting: the legacy low-coupon stock is gone and the full debt reprices at market.</li>
+      </ul>
+    </div>
+    <div class="macro-mini-chart" data-sid="__debt_cost__"
+         data-name="Avg Rate on Federal Debt vs 10Y Treasury"
+         title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Avg Debt Cost vs 10Y (Rollover Ratchet)</span>
+        <span id="rollover-gap-chip" style="font-size:12px;color:#ff6b6b;font-weight:600;">—</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-debt-cost"></canvas></div>
+      <div style="font-size:10px;color:var(--subtext);padding:4px 8px 6px;opacity:0.7;">
+        Avg rate = NIPA interest expense ÷ gross federal debt (quarterly). Chip = 10Y − avg rate: positive means maturing debt rolls over at higher cost.
+      </div>
+    </div>
+    <div class="macro-chart-grid" id="macro-fiscal-grid" style="margin-top:12px;"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-fed">
+    <div class="macro-section-title">FED</div>
+    <div class="macro-chart-grid" id="macro-fed-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-money">
+    <div class="macro-section-title">Money Supply</div>
+    <div class="macro-chart-grid" id="macro-moneysupply-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-credit">
+    <div class="macro-section-title">Credit &amp; Inflation</div>
+    <div class="macro-chart-grid" id="macro-credit-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-fx">
+    <div class="macro-section-title">Fx</div>
+    <div class="macro-chart-grid" id="macro-fx-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-cmdty">
+    <div class="macro-section-title">Commodities</div>
+    <div class="macro-chart-grid" id="macro-cmdty-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-vol">
+    <div class="macro-section-title">Volatility</div>
+    <div class="macro-chart-grid" id="macro-vol-grid"></div>
+  </div>
+</div><!-- /section-macro -->
+
+<div id="section-liquidity" class="section-panel">
+
+  <!-- Header -->
+  <div class="macro-watchlist-wrap">
+    <div class="macro-status-row">
+      <div class="macro-watchlist-title">
+        <img src="static/img/archer_watermark.png" alt=""
+             style="height:22px;vertical-align:-5px;margin-right:6px;
+                    filter:brightness(0) invert(1);opacity:0.95;"/>Global Liquidity
+      </div>
+      <span id="liq-status">—</span>
+    </div>
+  </div>
+
+  <!-- Sub-section nav -->
+  <div class="macro-nav">
+    <button class="macro-nav-btn active" onclick="liqNavGo('liq-anchor-headline', this)">Headline</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('liq-anchor-cycle',    this)">Cycle</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('liq-anchor-drilldown',this)">Sub-Indices</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('liq-anchor-quality',  this)">Quality</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('liq-anchor-reserves', this)">Reserves</button>
+  </div>
+
+  <!-- ── Regime strip ─────────────────────────────────────────────────────── -->
+  <div id="liq-anchor-headline" class="macro-section" style="scroll-margin-top:16px">
+    <div class="macro-section-title">Regime</div>
+    <div id="liq-regime-strip" style="display:flex;gap:0;flex-wrap:wrap;overflow:hidden;border-radius:6px;min-height:28px;margin-bottom:10px;"></div>
+    <div id="liq-regime-current" style="font-size:13px;color:var(--subtext);margin-bottom:16px;">Loading…</div>
+
+    <!-- ── Headline chart: Composite vs BTC ─────────────────────────────── -->
+    <div class="macro-section-title" style="margin-top:8px;">Global Liquidity Composite vs Bitcoin</div>
+    <div class="macro-mini-chart" data-sid="__liq_composite__"
+         data-name="Global Liquidity Composite vs Bitcoin"
+         style="margin-bottom:0;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Composite z-score (L) · BTC/USD (R)</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="macro-chart-range" id="liq-headline-range">
+            <button data-days="365">1Y</button>
+            <button data-days="730">2Y</button>
+            <button class="active" data-days="1825">5Y</button>
+            <button data-days="3650">10Y</button>
+            <button data-days="0">All</button>
+          </div>
+        </div>
+      </div>
+      <div class="macro-mini-chart-canvas" style="height:380px;"><canvas id="liq-headline-chart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ── Cycle indicators ──────────────────────────────────────────────────── -->
+  <div id="liq-anchor-cycle" class="macro-section">
+    <div class="macro-section-title">Cycle Indicators</div>
+    <div class="macro-chart-grid" id="liq-cycle-grid" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- ── Sub-index drilldown ───────────────────────────────────────────────── -->
+  <div id="liq-anchor-drilldown" class="macro-section">
+    <div class="macro-section-title">Sub-Index Drilldown</div>
+    <div class="macro-chart-grid" id="liq-subindex-grid" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- ── Quality overlays ──────────────────────────────────────────────────── -->
+  <div id="liq-anchor-quality" class="macro-section">
+    <div class="macro-section-title">Quality Overlays</div>
+    <div id="liq-quality-chips" style="display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 18px;"></div>
+    <div class="macro-chart-grid" id="liq-quality-grid" style="margin-top:4px;"></div>
+  </div>
+
+  <!-- ── Reserve adequacy (moved from FED section in Macro) ────────────────── -->
+  <div id="liq-anchor-reserves" class="macro-section">
+    <div class="macro-section-title">Reserve Adequacy</div>
+    <div class="macro-chart-grid" id="liq-reserves-grid" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- ── Methodology footer ────────────────────────────────────────────────── -->
+  <div style="max-width:1200px;margin:32px auto 0;padding:20px 24px 32px;
+              border-top:1px solid rgba(255,255,255,0.08);
+              color:var(--subtext);font-size:11.5px;line-height:1.7;">
+    <p style="font-weight:700;color:var(--text);margin-bottom:6px;">
+      Global Liquidity Proxy — Howell-style methodology, ~80-85% replication of his published Global Liquidity Index. This is NOT CrossBorder Capital's licensed index.
+    </p>
+    <p><strong style="color:var(--text);">v1 coverage:</strong>
+      Central Bank Liquidity uses Fed + ECB + BoJ (≈75-80% of major-CB magnitude).
+      PBoC, BoE, and 5 smaller CBs are documented gaps.
+      Z.1 contribution uses <code>BOGZ1FL892090005Q</code> (modern Z.1 line item);
+      <code>TCMDO</code> is shown as a separate reference series.
+      Offshore $ rate spread is winsorized at ±100bps to prevent single-day outliers
+      (e.g., Sept 2019 SOFR spike) from dominating z-score normalization.
+    </p>
+    <p><strong style="color:var(--text);">Regime classifier:</strong>
+      12-month YoY % change of the 3-month smoothed composite.
+      Expansion ≥+5%; Late-Cycle ≥0% with negative slope; Inflection in [−5%, 0%) or with trailing-30d sign change; Contraction &lt;−5%.
+      Matches Howell's published regime calls at sanity-check dates (Mar 2020 Inflection, Jun 2020 Expansion, Oct 2022 Contraction).
+    </p>
+    <p><strong style="color:var(--text);">What's missing:</strong>
+      non-US shadow banking detail, granular private credit fund flows, real-time collateral velocity, PBoC granularity.
+      These gaps are shared with Howell's index in many cases.
+    </p>
+    <p>Full methodology: <code>docs/liquidity_framework.md</code></p>
+  </div>
+
+</div><!-- /section-liquidity -->
+
+<div id="macro-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeMacroModal()">
+  <div class="macro-modal-box">
+    <div class="macro-modal-head">
+      <div class="macro-modal-title" id="macro-modal-title">—</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="macro-chart-range" id="macro-modal-range">
+          <button data-days="365">1Y</button>
+          <button data-days="730">2Y</button>
+          <button class="active" data-days="1825">5Y</button>
+          <button data-days="3650">10Y</button>
+          <button data-days="0">All</button>
+        </div>
+        <button class="macro-modal-close" onclick="closeMacroModal()">×</button>
+      </div>
+    </div>
+    <canvas id="macroModalCanvas"></canvas>
+  </div>
+</div>
+
+
+<script>
+// ── Static-data shim ─────────────────────────────────────────────────────────
+// This public build has no backend: /api/* calls are served from JSON files
+// under ./data/, regenerated daily by GitHub Actions. `days` filtering happens
+// client-side for simple series; liquidity payloads are pre-built per range.
+(function () {
+  const LIQ_BUCKETS = new Set([365, 730, 1825, 3650])
+  const orig = window.fetch.bind(window)
+  const fake = obj => Promise.resolve({ ok: true, status: 200, json: async () => obj })
+  const fail = () => Promise.resolve({ ok: false, status: 404, json: async () => ({}) })
+  const load = p => orig('data/' + p).then(r => { if (!r.ok) throw new Error(p); return r.json() })
+  const clip = (obs, days) => {
+    if (!days) return obs
+    const c = new Date(); c.setDate(c.getDate() - days)
+    const cs = c.toISOString().slice(0, 10)
+    return obs.filter(o => o.ts >= cs)
+  }
+  window.fetch = function (url, opts) {
+    if (typeof url !== 'string' || !url.startsWith('/api/')) return orig(url, opts)
+    const [path, qs] = url.split('?')
+    const days = parseInt(new URLSearchParams(qs || '').get('days') || '0', 10) || 0
+    if (path === '/api/macro/overview') return load('macro_overview.json').then(fake)
+    if (path === '/api/macro/velocity') return load('macro_velocity.json').then(fake)
+    if (path.startsWith('/api/macro/series/')) {
+      const sid = decodeURIComponent(path.split('/').pop())
+      return load('series/' + sid + '.json')
+        .then(d => { const obs = clip(d.observations || [], days)
+                     return fake({ ...d, observations: obs, count: obs.length }) })
+        .catch(fail)
+    }
+    if (path === '/api/forward-curves/treasury') return load('fwd_treasury.json').then(fake).catch(fail)
+    if (path === '/api/forward-curves/fed-funds') return load('fwd_fedfunds.json').then(fake).catch(fail)
+    if (path === '/api/liquidity/quality-overlays') return load('liq_quality.json').then(fake).catch(fail)
+    if (path === '/api/liquidity/headline') {
+      const b = LIQ_BUCKETS.has(days) ? days : 'all'
+      return load('liq_headline_' + b + '.json').then(fake).catch(fail)
+    }
+    if (path.startsWith('/api/liquidity/sub-index/')) {
+      const name = path.split('/').pop()
+      const b = LIQ_BUCKETS.has(days) ? days : 'all'
+      return load('liq_sub_' + name + '_' + b + '.json').then(fake).catch(fail)
+    }
+    return fail()
+  }
+})()
+</script>
+<script>
+// ── Meta nav (Volatility / Macro) ──────────────────────────────────────────
+let _activeSection = 'macro'
+document.querySelectorAll('.meta-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const newSection = btn.dataset.section
+    if (newSection === _activeSection) return
+    document.querySelectorAll('.meta-nav button').forEach(b => b.classList.remove('active'))
+    document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'))
+    btn.classList.add('active')
+    document.getElementById(`section-${newSection}`).classList.add('active')
+    _activeSection = newSection
+    if (newSection === 'macro' && !_macroLoaded) loadMacroSection()
+    if (newSection === 'liquidity' && !_liqLoaded) loadLiquiditySection()
+  })
+})
+
+// ── Macro watchlist ─────────────────────────────────────────────────────────
+let _macroLoaded = false
+
+// Order categories so left column = Rates/Spreads/Money, right column = FX/Commodities/Inflation
+const _MACRO_CATEGORY_ORDER = [
+  ['US Rates', 'Global & Spreads', 'Money & Credit'],
+  ['FX & Dollar', 'Commodities & Vol', 'Inflation'],
+]
+
+async function loadMacroSection() {
+  const grid = document.getElementById('macro-watchlist')
+  const status = document.getElementById('macro-status')
+  status.textContent = 'Loading…'
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--subtext);padding:40px;">Loading…</div>`
+  try {
+    const r = await fetch('/api/macro/overview')
+    const data = await r.json()
+    _renderMacroWatchlist(data.indicators || [])
+    _macroLoaded = true
+    const latest = (data.indicators || []).reduce((m, x) =>
+      (!m || x.latest_ts > m) ? x.latest_ts : m, null)
+    status.textContent = `${data.indicators?.length || 0} indicators · last update ${latest || '—'}`
+    // Charts (yield curve + tenors + spreads + other sections) fire in parallel
+    loadMacroCharts().catch(err => console.error('macro charts failed', err))
+  } catch (e) {
+    grid.innerHTML = `<div style="grid-column:1/-1;color:var(--red);padding:40px;text-align:center;">Failed to load: ${e.message}</div>`
+    status.textContent = ''
+  }
+}
+
+// ── Macro charts (yield curve + tenor + spreads + balance + money + FX + cmdty)
+const _macroChartCache = {}     // `${sid}:${days}` -> [{ts,value}, ...]
+const _macroChartInstances = {} // canvasId -> Chart instance
+const _macroChartConfigs = {}   // canvasId -> {sid, color}
+const _macroChartRange = {}     // canvasId -> days currently shown
+
+// ── Macro chart watermark plugin ────────────────────────────────────────────
+// Draws a translucent brand watermark in the chart area. Enabled per-chart via
+// `options.plugins.macroWatermark.enabled = true` so we can pilot it on one
+// chart (Fed Funds) before rolling out everywhere.
+const _macroWatermarkImg = new Image()
+_macroWatermarkImg.src = 'static/img/archer_watermark.png'
+let _macroWatermarkReady = false
+_macroWatermarkImg.onload = () => {
+  _macroWatermarkReady = true
+  // Repaint any already-rendered charts so the watermark appears once loaded
+  Object.values(_macroChartInstances).forEach(c => c && c.update && c.update('none'))
+}
+const macroWatermarkPlugin = {
+  id: 'macroWatermark',
+  beforeDatasetsDraw(chart, _args, opts) {
+    if (!opts || !opts.enabled) return
+    if (!_macroWatermarkReady || !_macroWatermarkImg.naturalWidth) return
+    const {ctx, chartArea} = chart
+    if (!chartArea) return
+    const areaW = chartArea.right - chartArea.left
+    const areaH = chartArea.bottom - chartArea.top
+
+    // Scale archer image to ~55% of chart height, preserving aspect
+    const imgH = areaH * 0.55
+    const aspect = _macroWatermarkImg.naturalWidth / _macroWatermarkImg.naturalHeight
+    const imgW = imgH * aspect
+
+    // Caption sits just below the image; combined block is centered vertically
+    const fontPx = Math.max(14, Math.round(imgH * 0.12))
+    const gap = Math.round(imgH * 0.05)
+    const totalH = imgH + gap + fontPx
+    const cx = chartArea.left + areaW / 2
+    const topY = chartArea.top + (areaH - totalH) / 2
+    const imgX = cx - imgW / 2
+
+    // Image — slightly lighter so it shows against the dark surface
+    ctx.save()
+    ctx.globalAlpha = 0.14
+    ctx.drawImage(_macroWatermarkImg, imgX, topY, imgW, imgH)
+    ctx.restore()
+
+    // "BRAVE HUNTER" caption — same gray + same opacity as the image so they
+    // read as a single watermark composition
+    ctx.save()
+    ctx.globalAlpha = 0.14
+    ctx.fillStyle = '#808080'  // mid-gray, matches the archer PNG's pixel color
+    ctx.font = `700 ${fontPx}px system-ui, -apple-system, "Helvetica Neue", sans-serif`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    ctx.fillText('BRAVE HUNTER', cx, topY + imgH + gap)
+    ctx.restore()
+  },
+}
+if (typeof Chart !== 'undefined') Chart.register(macroWatermarkPlugin)
+
+// Per-series colors (chosen to look TBL-ish: vibrant but readable on dark)
+const _MACRO_COLOR = {
+  // Rates
+  DFF: '#ff6b6b', SOFR: '#2fd18c', IORB: '#ffc94e', DGS3MO: '#4f9eff',
+  DGS2: '#4ecdc4', DGS5: '#3b82f6', DGS10: '#ff9a3c', DGS30: '#a48cff',
+  DFII10: '#ff9a3c',
+  // Spreads
+  '2s10s': '#2fd18c', '5s30s': '#ffc94e', sofr_iorb: '#4ecdc4',
+  // Balance
+  WALCL: '#3b82f6', WDTGAL: '#ff9a3c', WRESBAL: '#2fd18c',
+  RRPONTSYD: '#a48cff', RPONTSYD: '#ff6b6b',
+  // Reserve adequacy ratios
+  reserves_gdp: '#2fd18c', ample_reserves: '#a48cff',
+  // Money/Credit/Inflation
+  M2SL: '#4ecdc4', BAMLH0A0HYM2: '#ff6b6b',
+  cpi_yoy: '#ff9a3c', pce_yoy: '#ffc94e',
+  // FX
+  DXY: '#4f9eff', DEXJPUS: '#ff9a3c', DEXUSEU: '#3b82f6',
+  DEXUSUK: '#4ecdc4', DEXCHUS: '#ff6b6b', DEXSZUS: '#2fd18c',
+  // Commodities
+  DCOILBRENTEU: '#ff9a3c', DCOILWTICO: '#4f9eff', DHHNGSP: '#2fd18c',
+  PCOPPUSDM: '#ff6b6b', VIX: '#ffc94e', VVIX: '#a48cff',
+  GOLD: '#d4af37', MOVE: '#4ecdc4',
+  // Inflation forwards
+  T5YIFR: '#ffc94e', T5YIE: '#ff9a3c', T10YIE: '#ffa94e', T30YIEM: '#ffb86c',
+  // Debasement watch
+  walcl_13w: '#3b82f6', GLD_TONNES: '#d4af37', gld_flow_4w: '#ffc94e',
+  IBIT_BTC: '#f7931a', ibit_flow_4w: '#ff9a3c',
+  // Neutral rate
+  RSTAR_HLW: '#4ecdc4', rstar_market: '#2fd18c', policy_gap: '#ff6b6b',
+  // Velocity
+  walcl_accel: '#a48cff', rv10y_20d: '#2fd18c',
+  // Fiscal
+  true_ie_gross: '#ff6b6b', true_ie_net: '#ff9a3c', interest_pct_rev: '#ffc94e',
+  A091RC1Q027SBEA: '#ff6b6b', DEBT_PENNY: '#4f9eff', avg_debt_rate: '#a48cff',
+}
+
+async function _fetchMacroSeries(sid, days) {
+  const key = `${sid}:${days}`
+  if (_macroChartCache[key]) return _macroChartCache[key]
+  const r = await fetch(`/api/macro/series/${encodeURIComponent(sid)}?days=${days}`)
+  if (!r.ok) return []
+  const d = await r.json()
+  _macroChartCache[key] = d.observations || []
+  return _macroChartCache[key]
+}
+
+function macroNavGo(anchorId, btn) {
+  const target = document.getElementById(anchorId)
+  if (target) target.scrollIntoView({behavior: 'smooth', block: 'start'})
+  document.querySelectorAll('.macro-nav-btn').forEach(b => b.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+}
+
+async function loadMacroCharts() {
+  // Yields: US tenor curve + non-Fed-vs-Fed spreads
+  const yields = [
+    {sid:'DGS3MO', name:'US 3-Month T-Bill'},
+    {sid:'DGS2',   name:'US 2-Year Yield'},
+    {sid:'DGS5',   name:'US 5-Year Yield'},
+    {sid:'DGS10',  name:'US 10-Year Yield'},
+    {sid:'DGS30',  name:'US 30-Year Yield'},
+    {sid:'DFII10', name:'10-Year Real Yield'},
+    {sid:'2s10s',  name:'2s10s Spread (10Y − 2Y)'},
+    {sid:'5s30s',  name:'5s30s Spread (30Y − 5Y)'},
+    {sid:'RSTAR_HLW',    name:'R-star (HLW, NY Fed)'},
+    {sid:'rstar_market', name:'R-star (Market 5y5y Real Fwd)'},
+    {sid:'policy_gap',   name:'Policy Gap (Real FF − R-star)'},
+  ]
+  // FED: balance sheet + policy rates + SOFR-IORB spread (a Fed-plumbing signal)
+  const fed = [
+    {sid:'DFF',            name:'Fed Funds'},
+    {sid:'SOFR',           name:'SOFR'},
+    {sid:'IORB',           name:'IORB'},
+    {sid:'sofr_iorb',      name:'SOFR − IORB'},
+    {sid:'WALCL',          name:'Fed Balance Sheet'},
+    {sid:'WDTGAL',         name:'Treasury General Account (TGA)'},
+    {sid:'WRESBAL',        name:'Bank Reserves'},
+    {sid:'RRPONTSYD',      name:'RRP Usage'},
+    {sid:'RPONTSYD',       name:'SRF Usage'},
+    {sid:'reserves_gdp',   name:'Bank Reserves / GDP'},
+    {sid:'ample_reserves', name:'Ample Reserves Indicator'},
+    // Note: reserves_gdp and ample_reserves are intentionally duplicated in the
+    // Liquidity tab → Reserve Adequacy section. They serve two contexts:
+    //   - Here (FED): "is the Fed plumbing adequately funded?"
+    //   - Liquidity: "where are we in the liquidity cycle?"
+  ]
+  const moneysupply = [
+    {sid:'M2SL', name:'M2 Money Supply'},
+  ]
+  const debase = [
+    {sid:'walcl_13w',   name:'Fed BS Growth (13W ann. %)'},
+    {sid:'WALCL',       name:'Fed Balance Sheet'},
+    {sid:'GLD_TONNES',  name:'Gold in GLD Trust (tonnes)'},
+    {sid:'gld_flow_4w', name:'GLD Flow (4W Δ tonnes %)'},
+    {sid:'IBIT_BTC',    name:'BTC in IBIT Trust'},
+    {sid:'ibit_flow_4w',name:'IBIT Flow (4W Δ BTC %)'},
+    // WALCL intentionally duplicated from FED — here it's the debasement
+    // throttle context, there it's plumbing.
+  ]
+  const credit = [
+    {sid:'BAMLH0A0HYM2', name:'HY Credit Spread'},
+    {sid:'cpi_yoy',      name:'CPI (YoY %)'},
+    {sid:'pce_yoy',      name:'Core PCE (YoY %)'},
+  ]
+  const velocity = [
+    {sid:'walcl_accel', name:'Fed BS Acceleration (13W Δ of 13W growth, pp)'},
+  ]
+  const fiscal = [
+    {sid:'true_ie_gross',    name:'True Interest Expense — Gross (% tax receipts)'},
+    {sid:'true_ie_net',      name:'True Interest Expense — Net of Payroll (% tax receipts)'},
+    {sid:'interest_pct_rev', name:'Bond Interest Alone (% tax receipts)'},
+    {sid:'A091RC1Q027SBEA',  name:'Interest Expense ($B ann.)'},
+    {sid:'DEBT_PENNY',       name:'Gross Federal Debt (Debt to the Penny, daily)'},
+  ]
+  const fx = [
+    {sid:'DXY',      name:'US Dollar Index'},
+    {sid:'DEXJPUS',  name:'USDJPY'},
+    {sid:'DEXUSEU',  name:'EURUSD'},
+    {sid:'DEXUSUK',  name:'GBPUSD'},
+    {sid:'DEXCHUS',  name:'USDCNH'},
+    {sid:'DEXSZUS',  name:'USDCHF'},
+  ]
+  const cmdty = [
+    {sid:'GOLD',         name:'Gold (XAU)'},
+    {sid:'DCOILBRENTEU', name:'Brent Oil'},
+    {sid:'DCOILWTICO',   name:'WTI Oil'},
+    {sid:'DHHNGSP',      name:'Natural Gas'},
+    {sid:'PCOPPUSDM',    name:'Copper'},
+  ]
+  const vol = [
+    {sid:'VIX',  name:'VIX'},
+    {sid:'VVIX', name:'VVIX'},
+    {sid:'MOVE', name:'MOVE Index'},
+  ]
+  // Pre-fetch 10y of data for every series so range switches are instant
+  const allSeries = [...yields, ...fed, ...moneysupply, ...debase, ...velocity, ...fiscal, ...credit, ...fx, ...cmdty, ...vol,
+                     // dual-chart inputs (realized-vol-vs-MOVE, avg-debt-cost-vs-10Y)
+                     {sid:'rv10y_20d'}, {sid:'avg_debt_rate'},
+                     // snapshot also needs the underlying tenor series
+                     {sid:'DFF'}, {sid:'DGS3MO'}, {sid:'DGS2'},
+                     {sid:'DGS5'}, {sid:'DGS10'}, {sid:'DGS30'},
+                     // GDP for the GDP-vs-30Y composite chart
+                     {sid:'GDP'},
+                     // Inflation forwards — prefetch for Forward Curves subsection
+                     {sid:'T5YIFR'}, {sid:'T5YIE'}, {sid:'T10YIE'}, {sid:'T30YIEM'}]
+  // de-dup
+  const seen = new Set()
+  const uniq = allSeries.filter(s => seen.has(s.sid) ? false : (seen.add(s.sid), true))
+  // Prefetch the largest window (50y of FRED daily data ≈ 18,250 days). Backend
+  // returns whatever's actually in the DB; cache key always matches the request.
+  await Promise.all(uniq.map(s => _fetchMacroSeries(s.sid, 18250)))
+
+  _renderYieldCurveSnapshot([{sid:'DFF'},{sid:'DGS3MO'},{sid:'DGS2'},
+                              {sid:'DGS5'},{sid:'DGS10'},{sid:'DGS30'}])
+  _renderMacroChartGrid('macro-yields-grid',      yields)
+  _renderMacroChartGrid('macro-fed-grid',         fed)
+  _renderMacroChartGrid('macro-moneysupply-grid', moneysupply)
+  _renderMacroChartGrid('macro-debase-grid',      debase)
+  _renderMacroChartGrid('macro-velocity-grid',    velocity)
+  _renderMacroChartGrid('macro-fiscal-grid',      fiscal)
+  _renderMacroChartGrid('macro-credit-grid',      credit)
+  _renderVelocityBoard()
+  _renderVolVsMoveChart()
+  _renderDebtCostChart()
+  _renderMacroChartGrid('macro-fx-grid',          fx)
+  _renderMacroChartGrid('macro-cmdty-grid',       cmdty)
+  _renderMacroChartGrid('macro-vol-grid',         vol)
+
+  // ── Repression Signposts live values (series already prefetched above) ────
+  const _rsLast = sid => {
+    const rows = _macroChartCache[`${sid}:18250`]
+    return rows && rows.length ? rows[rows.length - 1].value : null
+  }
+  const _rsSet = (id, v, unit) => {
+    const el = document.getElementById(id)
+    if (el && v !== null) el.textContent = unit === 'bps' ? `${v.toFixed(0)} bps` : `${v.toFixed(2)}%`
+  }
+  _rsSet('rs-real10', _rsLast('DFII10'))
+  _rsSet('rs-be10',   _rsLast('T10YIE'))
+  _rsSet('rs-5y5y',   _rsLast('T5YIFR'))
+  _rsSet('rs-2s10s',  _rsLast('2s10s'), 'bps')
+
+  // ── Forward Curves subsection ─────────────────────────────────────────────
+  _fwdInflRange = 1825
+  _renderFwdInflationChart('mch-fwd-inflation', _fwdInflRange)
+
+  // Wire inflation range buttons
+  const inflRangeBox = document.getElementById('fwd-infl-range')
+  if (inflRangeBox) {
+    inflRangeBox.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation()
+        inflRangeBox.querySelectorAll('button').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        _fwdInflRange = parseInt(btn.dataset.days, 10)
+        _renderFwdInflationChart('mch-fwd-inflation', _fwdInflRange)
+      })
+    })
+  }
+
+  // Breakeven curve chart (static tenor axis — no range buttons)
+  _renderBreakevenCurve('mch-fwd-breakeven')
+
+  // Forward Treasury curve (fetches from API)
+  _renderFwdTreasuryCurve('mch-fwd-treasury')
+
+  // Fed Funds futures curve (fetches from API)
+  _renderFedFundsChart('mch-fwd-fedfunds')
+
+  // Wire expand-on-click for all forward curve cards
+  const fwdCards = [
+    { sid: '__fwd_inflation__' },
+    { sid: '__fwd_breakeven__' },
+    { sid: '__fwd_treasury__' },
+    { sid: '__fwd_fedfunds__' },
+  ]
+  fwdCards.forEach(({ sid }) => {
+    const card = document.querySelector(`[data-sid="${sid}"]`)
+    if (card) {
+      card.addEventListener('click', () => {
+        openMacroModal(sid, card.dataset.name)
+      })
+    }
+  })
+
+  // GDP vs 30Y composite — default 10Y window, then wire range buttons + expand-on-click
+  _gdpY30Range = 3650
+  _renderGdpVs30y('mch-gdp-vs-30y', _gdpY30Range)
+  const gdpRangeBox = document.getElementById('gdp-y30-range')
+  if (gdpRangeBox) {
+    gdpRangeBox.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation()
+        gdpRangeBox.querySelectorAll('button').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        _gdpY30Range = parseInt(btn.dataset.days, 10)
+        _renderGdpVs30y('mch-gdp-vs-30y', _gdpY30Range)
+      })
+    })
+  }
+  const gdpCard = document.querySelector('[data-sid="__gdp_vs_30y__"]')
+  if (gdpCard) {
+    gdpCard.addEventListener('click', () => {
+      openMacroModal('__gdp_vs_30y__', gdpCard.dataset.name)
+    })
+  }
+}
+
+let _gdpY30Range = 3650
+let _fwdInflRange = 1825
+
+// ── Forward Curves: Chart A1 — 5y5y Inflation Time-Series ─────────────────────
+
+function _renderFwdInflationChart(canvasId, days) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  const allObs = _macroChartCache['T5YIFR:18250'] || _macroChartCache['T5YIFR:3650'] || []
+  if (!allObs.length) return
+
+  let obs
+  if (!days || days === 0) {
+    obs = allObs
+  } else {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - days)
+    const cs = cutoff.toISOString().slice(0, 10)
+    obs = allObs.filter(o => o.ts >= cs)
+  }
+  if (!obs.length) return
+
+  const latest = obs[obs.length - 1]
+  const valEl = document.getElementById('fwd-infl-val')
+  if (valEl && latest) valEl.textContent = latest.value.toFixed(2) + '%'
+
+  const color = '#ffc94e'
+  const xLabels = obs.map((o, i) => {
+    if (i === 0) return o.ts.slice(0, 4)
+    return o.ts.slice(0, 4) !== obs[i - 1].ts.slice(0, 4) ? o.ts.slice(0, 4) : ''
+  })
+
+  const datasets = [
+    {
+      label: '5y5y Forward Inflation',
+      data: obs.map(o => o.value),
+      borderColor: color,
+      backgroundColor: _hexToRgba(color, 0.10),
+      borderWidth: 1.6,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.15,
+      fill: true,
+    },
+    // Fed's 2% inflation target — dashed reference line
+    {
+      _refLine: true,
+      label: 'Fed Target (2.0%)',
+      data: obs.map(() => 2.0),
+      borderColor: 'rgba(47,209,140,0.5)',
+      borderDash: [6, 5],
+      borderWidth: 1.2,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+    },
+  ]
+
+  _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { labels: xLabels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12,
+          filter: item => !item.dataset?._refLine } },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          filter: ctx => !ctx.dataset._refLine,
+          callbacks: {
+            title: items => obs[items[0].dataIndex]?.ts || '',
+            label: c => `5y5y Fwd: ${c.parsed.y.toFixed(2)}%`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#888', font: { size: 11 }, autoSkip: false,
+                   callback: (v, i) => xLabels[i] || '' },
+          grid: { color: 'rgba(255,255,255,0.04)', borderDash: [4, 4] },
+        },
+        y: {
+          position: 'right',
+          ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 5,
+                   callback: v => v.toFixed(1) + '%' },
+          grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] },
+        },
+      },
+    },
+  })
+}
+
+// ── Forward Curves: Chart A2 — Breakeven Tenor Curve ──────────────────────────
+
+function _renderBreakevenCurve(canvasId) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  const be5Obs  = _macroChartCache['T5YIE:18250']  || _macroChartCache['T5YIE:3650']  || []
+  const be10Obs = _macroChartCache['T10YIE:18250'] || _macroChartCache['T10YIE:3650'] || []
+  const be30Obs = _macroChartCache['T30YIEM:18250']|| _macroChartCache['T30YIEM:3650']|| []
+
+  const latestVal = obs => obs.length ? obs[obs.length - 1].value : null
+  const agoVal = (obs, days) => {
+    if (!obs.length) return null
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - days)
+    const cs = cutoff.toISOString().slice(0, 10)
+    let best = null
+    for (const o of obs) { if (o.ts <= cs) best = o; else break }
+    return best ? best.value : null
+  }
+
+  const currentVals = [latestVal(be5Obs), latestVal(be10Obs), latestVal(be30Obs)]
+  const agoVals     = [agoVal(be5Obs, 365), agoVal(be10Obs, 365), agoVal(be30Obs, 365)]
+  const tenorLabels = ['5Y', '10Y', '30Y']
+
+  if (currentVals.every(v => v === null)) return
+
+  const colorCur = '#ffc94e'
+  const colorAgo = '#ff9a3c'
+
+  _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: tenorLabels,
+      datasets: [
+        {
+          label: 'Current',
+          data: currentVals,
+          borderColor: colorCur,
+          backgroundColor: _hexToRgba(colorCur, 0.10),
+          borderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          pointBackgroundColor: colorCur,
+          tension: 0.1,
+          fill: false,
+        },
+        {
+          label: '1Y Ago',
+          data: agoVals,
+          borderColor: colorAgo,
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          borderDash: [6, 4],
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: colorAgo,
+          tension: 0.1,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12 } },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          callbacks: {
+            label: c => c.parsed.y != null ? `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%` : '',
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: '#888', font: { size: 11 } },
+             grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { position: 'right',
+             ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 5,
+                      callback: v => v.toFixed(1) + '%' },
+             grid: { color: 'rgba(255,255,255,0.05)' } },
+      },
+    },
+  })
+}
+
+// ── Forward Curves: Chart B — Forward Treasury Yield Curves ───────────────────
+
+let _fwdTreasuryData = null   // cached API response
+
+let _fwdFedFundsData = null
+
+async function _renderFedFundsChart(canvasId) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  try {
+    if (!_fwdFedFundsData) {
+      const r = await fetch('/api/forward-curves/fed-funds')
+      if (!r.ok) return
+      _fwdFedFundsData = await r.json()
+    }
+    const d = _fwdFedFundsData
+    const curve = (d && d.curve) || []
+    if (!curve.length) {
+      // No data — leave canvas blank, chart card footer already explains sources
+      return
+    }
+
+    const labels = curve.map(p => p.delivery_month.slice(0, 7))  // YYYY-MM
+    const rates = curve.map(p => p.implied_rate)
+    const color = '#ff9a3c'
+
+    // Value chip in the header shows front-month implied rate
+    const chip = document.getElementById('mcv-fwd-fedfunds')
+    if (chip) chip.textContent = rates[0] != null ? rates[0].toFixed(2) + '%' : '—'
+
+    // FOMC meetings within the curve's visible window → vertical dashed markers
+    const firstMonth = curve[0].delivery_month
+    const lastMonth = curve[curve.length - 1].delivery_month
+    const meetingLabels = (d.fomc_meetings || []).filter(m => m >= firstMonth && m <= lastMonth)
+
+    // Custom plugin to draw the FOMC meeting vertical lines
+    const fomcLinesPlugin = {
+      id: 'fomcLines',
+      afterDraw(chart) {
+        const { ctx, chartArea: { top, bottom }, scales: { x: xScale } } = chart
+        ctx.save()
+        ctx.strokeStyle = 'rgba(200, 200, 200, 0.28)'
+        ctx.setLineDash([3, 4])
+        ctx.lineWidth = 1
+        ctx.font = '9px sans-serif'
+        ctx.fillStyle = 'rgba(200, 200, 200, 0.55)'
+        for (const meeting of meetingLabels) {
+          // Find the closest label index by month
+          const meetingMonth = meeting.slice(0, 7)
+          const idx = labels.indexOf(meetingMonth)
+          if (idx < 0) continue
+          const x = xScale.getPixelForValue(idx)
+          ctx.beginPath()
+          ctx.moveTo(x, top)
+          ctx.lineTo(x, bottom)
+          ctx.stroke()
+          ctx.fillText('FOMC', x + 2, top + 10)
+        }
+        ctx.restore()
+      },
+    }
+
+    _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Implied Fed Funds Rate',
+          data: rates,
+          borderColor: color,
+          backgroundColor: _hexToRgba(color, 0.10),
+          borderWidth: 1.8,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: color,
+          tension: 0.15,
+          fill: true,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          macroWatermark: { enabled: true },
+          tooltip: {
+            backgroundColor: 'rgba(15,17,22,0.95)',
+            borderColor: '#444', borderWidth: 1, padding: 10,
+            titleColor: '#fff', bodyColor: '#dce1f0',
+            callbacks: {
+              title: items => {
+                const i = items[0].dataIndex
+                const c = curve[i]
+                return `${c.delivery_month.slice(0,7)}  (${c.contract})`
+              },
+              label: c => c.parsed.y != null
+                ? `Implied rate: ${c.parsed.y.toFixed(3)}%  |  Settlement: ${curve[c.dataIndex].settlement}`
+                : '',
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: '#888', font: { size: 10 }, maxTicksLimit: 12, autoSkip: true },
+            grid: { color: 'rgba(255,255,255,0.04)' },
+          },
+          y: {
+            position: 'right',
+            ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 6,
+                     callback: v => v.toFixed(2) + '%' },
+            grid: { color: 'rgba(255,255,255,0.05)' },
+          },
+        },
+      },
+      plugins: [fomcLinesPlugin],
+    })
+  } catch (e) {
+    console.warn('_renderFedFundsChart error:', e)
+  }
+}
+
+async function _renderFwdTreasuryCurve(canvasId) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  try {
+    if (!_fwdTreasuryData) {
+      const r = await fetch('/api/forward-curves/treasury')
+      if (!r.ok) return
+      _fwdTreasuryData = await r.json()
+    }
+    const d = _fwdTreasuryData
+    if (!d || !d.tenors || !d.spot) return
+
+    const labels = d.tenors.map(t => t + 'Y')
+    const colorSpot = '#ffffff'
+    const colorFwd1 = '#ff9a3c'
+    const colorFwd5 = '#ff6b6b'
+
+    _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Spot',
+            data: d.spot,
+            borderColor: colorSpot,
+            backgroundColor: 'transparent',
+            borderWidth: 2.5,
+            pointRadius: 5,
+            pointBackgroundColor: colorSpot,
+            tension: 0.15,
+          },
+          {
+            label: '1Y Forward',
+            data: d.fwd_1y,
+            borderColor: colorFwd1,
+            backgroundColor: 'transparent',
+            borderWidth: 1.8,
+            borderDash: [6, 4],
+            pointRadius: 4,
+            pointBackgroundColor: colorFwd1,
+            tension: 0.15,
+          },
+          {
+            label: '5Y Forward',
+            data: d.fwd_5y,
+            borderColor: colorFwd5,
+            backgroundColor: 'transparent',
+            borderWidth: 1.5,
+            borderDash: [3, 3],
+            pointRadius: 4,
+            pointBackgroundColor: colorFwd5,
+            tension: 0.15,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: true, labels: { color: '#dce1f0', font: { size: 10 }, boxWidth: 12 } },
+          macroWatermark: { enabled: true },
+          tooltip: {
+            backgroundColor: 'rgba(15,17,22,0.95)',
+            borderColor: '#444', borderWidth: 1, padding: 10,
+            titleColor: '#fff', bodyColor: '#dce1f0',
+            callbacks: {
+              label: c => c.parsed.y != null
+                ? `${c.dataset.label}: ${c.parsed.y.toFixed(2)}%`
+                : '',
+            },
+          },
+        },
+        scales: {
+          x: { ticks: { color: '#888', font: { size: 11 } },
+               grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { position: 'right',
+               ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 5,
+                        callback: v => v.toFixed(2) + '%' },
+               grid: { color: 'rgba(255,255,255,0.05)' } },
+        },
+      },
+    })
+  } catch (e) {
+    console.warn('_renderFwdTreasuryCurve error:', e)
+  }
+}
+
+function _renderGdpVs30y(canvasId, daysArg) {
+  const days = (daysArg == null) ? _gdpY30Range : daysArg
+  const gdpRaw = _macroChartCache['GDP:18250'] || _macroChartCache['GDP:3650'] || []
+  const y30Raw = _macroChartCache['DGS30:18250'] || _macroChartCache['DGS30:3650'] || []
+  if (!gdpRaw.length || !y30Raw.length) return
+
+  // Convert quarterly GDP levels → YoY % growth.
+  // GDP is reliably quarterly, so the 4-quarter prior point is the YoY anchor.
+  const gdpYoyAll = []
+  for (let i = 4; i < gdpRaw.length; i++) {
+    const prev = gdpRaw[i - 4].value
+    const cur = gdpRaw[i].value
+    if (prev > 0) {
+      gdpYoyAll.push({ ts: gdpRaw[i].ts, value: (cur - prev) / prev * 100 })
+    }
+  }
+  if (!gdpYoyAll.length) return
+
+  // Apply time window
+  let gdpYoy, y30
+  if (days === 0) {
+    gdpYoy = gdpYoyAll; y30 = y30Raw
+  } else {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - days)
+    const cs = cutoff.toISOString().slice(0, 10)
+    gdpYoy = gdpYoyAll.filter(o => o.ts >= cs)
+    y30 = y30Raw.filter(o => o.ts >= cs)
+  }
+  if (!y30.length) return
+
+  // Forward-fill quarterly GDP YoY onto the daily 30Y timeline so both align.
+  const gdpAligned = []
+  let gi = 0
+  let last = null
+  for (const o of y30) {
+    while (gi < gdpYoy.length && gdpYoy[gi].ts <= o.ts) {
+      last = gdpYoy[gi].value
+      gi++
+    }
+    gdpAligned.push(last)
+  }
+
+  const xLabels = y30.map((o, i) => {
+    if (i === 0) return o.ts.slice(0, 4)
+    return o.ts.slice(0, 4) !== y30[i - 1].ts.slice(0, 4) ? o.ts.slice(0, 4) : ''
+  })
+
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  const gdpColor = '#4f9eff'    // blue: nominal growth
+  const y30Color = '#ff9a3c'    // orange: cost of money
+
+  _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: xLabels,
+      datasets: [
+        {
+          label: 'Nominal GDP YoY %',
+          data: gdpAligned,
+          borderColor: gdpColor,
+          backgroundColor: _hexToRgba(gdpColor, 0.08),
+          borderWidth: 1.6,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0,
+          spanGaps: true,
+          fill: false,
+        },
+        {
+          label: '30Y Treasury Yield %',
+          data: y30.map(o => o.value),
+          borderColor: y30Color,
+          backgroundColor: _hexToRgba(y30Color, 0.10),
+          borderWidth: 1.6,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.15,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12 } },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          callbacks: {
+            title: items => y30[items[0].dataIndex]?.ts || '',
+            label: c => {
+              const v = c.parsed.y
+              if (v == null) return ''
+              const lbl = c.datasetIndex === 0 ? 'GDP YoY' : '30Y'
+              return `${lbl}: ${v.toFixed(2)}%`
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#888', font: { size: 11 }, autoSkip: false,
+            callback: (v, i) => xLabels[i] || '',
+          },
+          grid: { color: 'rgba(255,255,255,0.04)', borderDash: [4, 4] },
+        },
+        y: {
+          position: 'right',
+          ticks: {
+            color: '#888', font: { size: 11 }, maxTicksLimit: 6,
+            callback: v => v.toFixed(1) + '%',
+          },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+        },
+      },
+    },
+  })
+}
+
+function _renderYieldCurveSnapshot(tenors, canvasId) {
+  canvasId = canvasId || 'macro-yc-snapshot'
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const key = canvasId === 'macro-yc-snapshot' ? 'yc-snapshot' : 'yc-snapshot-modal'
+  if (_macroChartInstances[key]) _macroChartInstances[key].destroy()
+
+  const tenorMap = {'FF':'DFF','3M':'DGS3MO','2Y':'DGS2','5Y':'DGS5','10Y':'DGS10','30Y':'DGS30'}
+  const labels = ['FF', '3M', '2Y', '5Y', '10Y', '30Y']
+
+  function valueAt(sid, daysBack) {
+    const obs = _macroChartCache[`${sid}:18250`] || _macroChartCache[`${sid}:3650`] || _macroChartCache[`${sid}:1825`] || []
+    if (!obs.length) return null
+    const target = new Date()
+    target.setDate(target.getDate() - daysBack)
+    const ts = target.toISOString().slice(0,10)
+    let best = null
+    for (const o of obs) {
+      if (o.ts <= ts) best = o
+      else break
+    }
+    return best ? best.value : (obs[0] ? obs[0].value : null)
+  }
+  const curveAt = days => labels.map(lbl => valueAt(tenorMap[lbl], days))
+
+  // Latest = solid white; older curves = orange-red dashed (matches TBL)
+  const snapshots = [
+    {label: 'Latest', days: 0,   color: '#ffffff', width: 2.5, dash: []},
+    {label: '1M Ago', days: 30,  color: '#ff7a59', width: 1.8, dash: [6,4]},
+    {label: '3M Ago', days: 90,  color: '#e85a4a', width: 1.5, dash: [3,3]},
+    {label: '1Y Ago', days: 365, color: '#c43d2f', width: 1.5, dash: [6,4]},
+  ]
+
+  _macroChartInstances[key] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: snapshots.map(s => ({
+        label: s.label,
+        data: curveAt(s.days),
+        borderColor: s.color,
+        backgroundColor: 'transparent',
+        borderWidth: s.width,
+        borderDash: s.dash,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: s.color,
+        pointBorderColor: '#000',
+        pointBorderWidth: 1.5,
+        tension: 0.15,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { color: '#dce1f0', font: { size: 12 }, usePointStyle: true, boxWidth: 10 },
+        },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444',
+          borderWidth: 1,
+          padding: 10,
+          titleColor: '#fff',
+          titleFont: { weight: 'bold' },
+          bodyColor: '#dce1f0',
+          callbacks: {
+            title: items => 'Tenor: ' + (items[0]?.label || ''),
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) + '%' : '—'}`,
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { color: '#aaa', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4,4] } },
+        y: {
+          position: 'right',
+          ticks: { color: '#aaa', font: { size: 11 }, callback: v => v.toFixed(1) + '%' },
+          grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4,4] },
+        },
+      },
+    },
+  })
+}
+
+function _renderMacroChartGrid(gridId, items) {
+  const grid = document.getElementById(gridId)
+  if (!grid) return
+  grid.innerHTML = items.map(item => {
+    const color = _MACRO_COLOR[item.sid] || '#4f9eff'
+    return `
+    <div class="macro-mini-chart" data-sid="${item.sid}" data-name="${item.name.replace(/"/g,'&quot;')}" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">${item.name}</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="macro-chart-range" data-sid="${item.sid}">
+            <button data-days="365">1Y</button>
+            <button data-days="730">2Y</button>
+            <button class="active" data-days="1825">5Y</button>
+            <button data-days="3650">10Y</button>
+            <button data-days="0">All</button>
+          </div>
+          <span class="macro-mini-chart-value" id="mcv-${item.sid}" style="background:${color};">—</span>
+        </div>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-${item.sid}"></canvas></div>
+    </div>
+  `}).join('')
+
+  // Default 5Y view
+  for (const item of items) {
+    _macroChartRange[item.sid] = 1825
+    _renderTenorChartFor(item.sid)
+  }
+
+  // Wire up per-card range buttons (stopPropagation so they don't trigger card-click)
+  grid.querySelectorAll('.macro-chart-range').forEach(box => {
+    const sid = box.dataset.sid
+    box.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation()
+        box.querySelectorAll('button').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+        _macroChartRange[sid] = parseInt(btn.dataset.days, 10)
+        _renderTenorChartFor(sid)
+      })
+    })
+  })
+
+  // Card-click → open modal
+  grid.querySelectorAll('.macro-mini-chart').forEach(card => {
+    card.addEventListener('click', () => {
+      openMacroModal(card.dataset.sid, card.dataset.name)
+    })
+  })
+}
+
+// ── Macro chart expand modal ─────────────────────────────────────────────────
+let _macroModalSid = null
+let _macroModalRange = 1825
+
+function openMacroModal(sid, name) {
+  _macroModalSid = sid
+  document.getElementById('macro-modal-title').textContent = name
+  // Sync the modal range to the card's current range so context is preserved.
+  // The GDP-vs-30Y composite uses its own range var, not _macroChartRange.
+  const cardRange = (sid === '__gdp_vs_30y__')
+    ? _gdpY30Range
+    : (_macroChartRange[sid] || 1825)
+  _macroModalRange = cardRange
+  document.querySelectorAll('#macro-modal-range button').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.days, 10) === cardRange)
+  })
+  document.getElementById('macro-modal').style.display = 'flex'
+  // Defer chart render until the modal is laid out so canvas dimensions are real
+  requestAnimationFrame(() => _renderMacroModalChart())
+}
+
+function closeMacroModal() {
+  document.getElementById('macro-modal').style.display = 'none'
+  document.getElementById('macro-modal-range').style.display = ''  // restore for next open
+  if (_macroChartInstances['macroModalCanvas']) {
+    _macroChartInstances['macroModalCanvas'].destroy()
+    delete _macroChartInstances['macroModalCanvas']
+  }
+  if (_macroChartInstances['yc-snapshot-modal']) {
+    _macroChartInstances['yc-snapshot-modal'].destroy()
+    delete _macroChartInstances['yc-snapshot-modal']
+  }
+  _macroModalSid = null
+}
+
+function _renderMacroModalChart() {
+  const sid = _macroModalSid
+  if (!sid) return
+  if (sid === '__gdp_vs_30y__') {
+    _renderGdpVs30y('macroModalCanvas', _macroModalRange)
+    return
+  }
+  if (sid === '__snapshot__') {
+    _renderYieldCurveSnapshot(null, 'macroModalCanvas')
+    return
+  }
+  // ── Forward Curves sentinel SIDs ────────────────────────────────────────
+  if (sid === '__fwd_inflation__') {
+    _renderFwdInflationChart('macroModalCanvas', _macroModalRange || _fwdInflRange)
+    return
+  }
+  if (sid === '__fwd_breakeven__') {
+    _renderBreakevenCurve('macroModalCanvas')
+    return
+  }
+  if (sid === '__fwd_treasury__') {
+    _fwdTreasuryData = null   // force re-fetch for latest data in modal
+    _renderFwdTreasuryCurve('macroModalCanvas')
+    return
+  }
+  if (sid === '__fwd_fedfunds__') {
+    _fwdFedFundsData = null  // force re-fetch for latest data in modal
+    _renderFedFundsChart('macroModalCanvas')
+    return
+  }
+  // ── Liquidity sentinel SIDs ─────────────────────────────────────────────
+  if (sid === '__liq_composite__') {
+    fetch(`/api/liquidity/headline?days=${_macroModalRange || _liqHeadlineRange || 3650}`)
+      .then(r => r.json()).then(data => _renderLiqHeadlineChart('macroModalCanvas', data, _macroModalRange || 0))
+      .catch(e => console.warn('liq modal', e))
+    return
+  }
+  if (sid === '__liq_yoy__') {
+    fetch(`/api/liquidity/headline?days=${_macroModalRange || 3650}`)
+      .then(r => r.json()).then(data => _renderLiqSimpleChart('macroModalCanvas', data.yoy || [], _LIQ_COLOR.yoy, sid, '%'))
+      .catch(e => console.warn('liq yoy modal', e))
+    return
+  }
+  if (sid === '__liq_zscore__') {
+    fetch(`/api/liquidity/headline?days=${_macroModalRange || 3650}`)
+      .then(r => r.json()).then(data => _renderLiqSimpleChart('macroModalCanvas', data.zscore || [], _LIQ_COLOR.zscore, sid, 'score'))
+      .catch(e => console.warn('liq zscore modal', e))
+    return
+  }
+  if (sid === '__liq_cb__') {
+    fetch(`/api/liquidity/sub-index/cb?days=${_macroModalRange || 3650}`)
+      .then(r => r.json()).then(d => _renderLiqSimpleChart('macroModalCanvas', d.series || [], _LIQ_COLOR.cb, sid, '$B'))
+      .catch(e => console.warn('liq cb modal', e))
+    return
+  }
+  if (sid === '__liq_private__') {
+    fetch(`/api/liquidity/sub-index/private?days=${_macroModalRange || 3650}`)
+      .then(r => r.json()).then(d => _renderLiqSimpleChart('macroModalCanvas', d.series || [], _LIQ_COLOR.private, sid, '$B'))
+      .catch(e => console.warn('liq private modal', e))
+    return
+  }
+  if (sid === '__liq_xborder__') {
+    fetch(`/api/liquidity/sub-index/xborder?days=${_macroModalRange || 3650}`)
+      .then(r => r.json()).then(d => _renderLiqSimpleChart('macroModalCanvas', d.series || [], _LIQ_COLOR.xborder, sid, '$B'))
+      .catch(e => console.warn('liq xborder modal', e))
+    return
+  }
+  if (sid.startsWith('__liq_qual_')) {
+    const key = sid.replace('__liq_qual_', '').replace(/__/g, '')
+    fetch('/api/liquidity/quality-overlays?days=1825')
+      .then(r => r.json())
+      .then(d => { const s = (d.series || {})[key]; if (s) _renderLiqSimpleChart('macroModalCanvas', s.data || [], _LIQ_COLOR[key] || '#4f9eff', sid, s.units) })
+      .catch(e => console.warn('liq quality modal', e))
+    return
+  }
+  // ── Standard macro modal ────────────────────────────────────────────────
+  const fullObs = _macroChartCache[`${sid}:18250`] || _macroChartCache[`${sid}:3650`] || []
+  if (!fullObs.length) return
+  // days === 0 is the "All" sentinel: show every cached point with no cutoff
+  let obs
+  if (_macroModalRange === 0) {
+    obs = fullObs
+  } else {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - _macroModalRange)
+    const cutoffStr = cutoff.toISOString().slice(0, 10)
+    obs = fullObs.filter(o => o.ts >= cutoffStr)
+  }
+  _renderMacroLineChart('macroModalCanvas', obs, sid)
+}
+
+// Wire modal range buttons + ESC to close
+document.querySelectorAll('#macro-modal-range button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#macro-modal-range button').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    _macroModalRange = parseInt(btn.dataset.days, 10)
+    _renderMacroModalChart()
+  })
+})
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('macro-modal').style.display !== 'none') {
+    closeMacroModal()
+  }
+})
+
+// Yield-curve snapshot click → open in modal (no range buttons; snapshot axis is tenor not time)
+document.addEventListener('click', (e) => {
+  const wrap = e.target.closest('.macro-snapshot-wrap')
+  if (!wrap) return
+  document.getElementById('macro-modal-title').textContent = 'US Yield Curve — Snapshots'
+  document.getElementById('macro-modal-range').style.display = 'none'  // hide time range, irrelevant here
+  document.getElementById('macro-modal').style.display = 'flex'
+  _macroModalSid = '__snapshot__'  // sentinel
+  requestAnimationFrame(() => {
+    _renderYieldCurveSnapshot(null, 'macroModalCanvas')
+  })
+})
+
+function _renderTenorChartFor(sid) {
+  const days = _macroChartRange[sid] ?? 1825   // 0 is the "All" sentinel
+  const fullObs = _macroChartCache[`${sid}:18250`] || _macroChartCache[`${sid}:3650`] || _macroChartCache[`${sid}:1825`] || []
+  const cv = document.getElementById(`mch-${sid}`)
+  if (!fullObs.length) {
+    // Say why the card is empty instead of leaving a blank canvas
+    if (cv && !cv.parentElement.querySelector('.macro-empty-note')) {
+      cv.style.display = 'none'
+      const note = document.createElement('div')
+      note.className = 'macro-empty-note'
+      note.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;color:var(--subtext);font-size:11px;opacity:.75;text-align:center;padding:0 20px;'
+      note.textContent = _MACRO_EMPTY_NOTE[sid] || 'No data yet'
+      cv.parentElement.appendChild(note)
+    }
+    return
+  }
+  if (cv && cv.style.display === 'none') {
+    cv.parentElement.querySelector('.macro-empty-note')?.remove()
+    cv.style.display = ''
+  }
+  let obs
+  if (days === 0) {
+    obs = fullObs
+  } else {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - days)
+    const cutoffStr = cutoff.toISOString().slice(0,10)
+    obs = fullObs.filter(o => o.ts >= cutoffStr)
+  }
+  const latest = obs[obs.length - 1]
+  const valEl = document.getElementById(`mcv-${sid}`)
+  if (valEl && latest) valEl.textContent = _miniChartLabelValue(latest.value, sid)
+  _renderMacroLineChart(`mch-${sid}`, obs, sid)
+}
+
+function _miniChartLabelValue(v, sid) {
+  if (v == null) return '—'
+  // Rates and spreads use bp/% formatting
+  if (['DFF','SOFR','IORB','DGS3MO','DGS2','DGS5','DGS10','DGS30','DFII10','BAMLH0A0HYM2',
+       'reserves_gdp','ample_reserves','cpi_yoy','pce_yoy','core_cpi_yoy',
+       'walcl_13w','gld_flow_4w','ibit_flow_4w',
+       'RSTAR_HLW','rstar_market','policy_gap',
+       'T5YIFR','T5YIE','T10YIE','T30YIEM'].includes(sid))
+    return v.toFixed(2) + '%'
+  if (['2s10s','5s30s','sofr_iorb'].includes(sid))
+    return (v >= 0 ? '+' : '') + v.toFixed(0) + 'bp'
+  if (sid === 'walcl_accel') return (v >= 0 ? '+' : '') + v.toFixed(1) + 'pp'
+  if (['true_ie_gross','true_ie_net','interest_pct_rev','avg_debt_rate'].includes(sid))
+    return v.toFixed(1) + '%'
+  if (sid === 'A091RC1Q027SBEA') return '$' + v.toFixed(0) + 'B'
+  if (sid === 'DEBT_PENNY') return '$' + (v/1000).toFixed(2) + 'T'
+  // FX 4dp
+  if (['DEXJPUS','DEXUSEU','DEXUSUK','DEXCHUS','DEXSZUS'].includes(sid))
+    return v.toFixed(4)
+  // VIX/VVIX/DXY/MOVE 1-2dp
+  if (['VIX','VVIX','DXY','MOVE'].includes(sid)) return v.toFixed(2)
+  // Money: huge values, scale
+  if (['WALCL','WDTGAL','WRESBAL'].includes(sid)) {
+    if (v >= 1_000_000) return '$' + (v/1_000_000).toFixed(2) + 'T'
+    if (v >= 1_000)     return '$' + (v/1_000).toFixed(0) + 'B'
+    return '$' + v.toFixed(0) + 'M'
+  }
+  if (sid === 'M2SL') return '$' + (v/1000).toFixed(2) + 'T'
+  if (sid === 'RRPONTSYD') return '$' + v.toFixed(1) + 'B'
+  if (sid === 'RPONTSYD') return v >= 1 ? '$' + v.toFixed(1) + 'B' : '$' + (v*1000).toFixed(0) + 'M'
+  // Commodities
+  if (['DCOILBRENTEU','DCOILWTICO','DHHNGSP'].includes(sid)) return '$' + v.toFixed(2)
+  if (sid === 'PCOPPUSDM') return '$' + v.toFixed(0)
+  if (sid === 'GOLD') return '$' + v.toFixed(2)
+  // Inflation indices
+  if (['CPIAUCNS','CPILFENS','PCEPILFE'].includes(sid)) return v.toFixed(2)
+  // ETF holdings in trust
+  if (sid === 'GLD_TONNES') return v.toFixed(0) + 't'
+  if (sid === 'IBIT_BTC') return Math.round(v).toLocaleString() + ' BTC'
+  return v.toFixed(2)
+}
+
+// Shown inside a chart card when its series has no observations yet
+const _MACRO_EMPTY_NOTE = {
+  ibit_flow_4w: 'Collecting daily since 2026-08-28 — populates once ~4 weeks of IBIT holdings accumulate (late Sep 2026)',
+  gld_flow_4w:  'No data yet',
+}
+
+// ── Velocity board ────────────────────────────────────────────────────────────
+
+async function _renderVelocityBoard() {
+  const tbl = document.getElementById('velocity-board')
+  if (!tbl) return
+  let data
+  try {
+    const r = await fetch('/api/macro/velocity')
+    data = (await r.json()).instruments || []
+  } catch { data = [] }
+  if (!data.length) {
+    tbl.innerHTML = '<tbody><tr><td style="color:var(--subtext);">Velocity data unavailable</td></tr></tbody>'
+    return
+  }
+  const zCell = z => {
+    if (z == null) return '<td>—</td>'
+    const az = Math.abs(z)
+    const col = az >= 2 ? '#ff6b6b' : az >= 1 ? '#ffc94e' : 'var(--subtext)'
+    return `<td style="color:${col};font-weight:${az >= 1 ? 700 : 400};">${z >= 0 ? '+' : ''}${z.toFixed(1)}σ</td>`
+  }
+  const chg = (v, u) => {
+    if (v == null) return '<td>—</td>'
+    const s = u === 'bp' ? `${v >= 0 ? '+' : ''}${v.toFixed(0)}bp` : `${v >= 0 ? '+' : ''}${v.toFixed(1)}%`
+    return `<td style="color:var(--text,#e8e8e8);">${s}</td>`
+  }
+  tbl.innerHTML = `
+    <thead><tr><th>Instrument</th><th>1W Δ</th><th>1W z</th><th>1M Δ</th><th>1M z</th></tr></thead>
+    <tbody>${data.map(e => `
+      <tr><td style="color:var(--text,#e8e8e8);">${e.name}</td>
+      ${chg(e.chg_1w, e.unit)}${zCell(e.z_1w)}${chg(e.chg_1m, e.unit)}${zCell(e.z_1m)}</tr>`).join('')}
+    </tbody>`
+}
+
+// ── Avg debt cost vs 10Y (fiscal section dual chart) ──────────────────────────
+
+async function _renderDebtCostChart() {
+  const canvas = document.getElementById('mch-debt-cost')
+  if (!canvas || typeof Chart === 'undefined') return
+  const avg = await _fetchMacroSeries('avg_debt_rate', 18250)
+  const y10 = await _fetchMacroSeries('DGS10', 18250)
+  if (!avg.length || !y10.length) return
+  // Quarterly axis from avg rate; 10Y sampled as of each quarter date
+  const y10Map = {}; y10.forEach(o => { y10Map[o.ts] = o.value })
+  const y10Keys = y10.map(o => o.ts)
+  const rows = avg.map(o => {
+    let yv = y10Map[o.ts]
+    if (yv == null) {  // quarter start may be a holiday — take the closest prior obs
+      for (let i = y10Keys.length - 1; i >= 0; i--) {
+        if (y10Keys[i] <= o.ts) { yv = y10Map[y10Keys[i]]; break }
+      }
+    }
+    return { ts: o.ts, avg: o.value, y10: yv }
+  }).filter(r => r.y10 != null)
+  const chip = document.getElementById('rollover-gap-chip')
+  if (chip && rows.length) {
+    const last = rows[rows.length - 1]
+    const gap = last.y10 - last.avg
+    chip.textContent = `10Y − avg: ${gap >= 0 ? '+' : ''}${gap.toFixed(2)}pp`
+    chip.style.color = gap >= 0 ? '#ff6b6b' : '#2fd18c'
+  }
+  const xLabels = rows.map((r, i) => {
+    if (i === 0) return r.ts.slice(0, 4)
+    return r.ts.slice(0, 4) !== rows[i - 1].ts.slice(0, 4) ? r.ts.slice(0, 4) : ''
+  })
+  if (_macroChartInstances['mch-debt-cost']) _macroChartInstances['mch-debt-cost'].destroy()
+  _macroChartInstances['mch-debt-cost'] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: xLabels,
+      datasets: [
+        { label: 'Avg rate on debt stock', data: rows.map(r => r.avg),
+          borderColor: '#a48cff', borderWidth: 1.6, pointRadius: 0,
+          pointHoverRadius: 3, tension: 0.15, fill: false },
+        { label: '10Y Treasury', data: rows.map(r => r.y10),
+          borderColor: '#ff9a3c', borderWidth: 1.4, pointRadius: 0,
+          pointHoverRadius: 3, tension: 0.15, fill: false },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: 'rgba(255,255,255,.65)', boxWidth: 14, font: { size: 10 } } },
+        tooltip: { callbacks: { title: items => rows[items[0].dataIndex]?.ts || '' } },
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 }, maxRotation: 0,
+                      autoSkip: false, callback: (v, i) => xLabels[i] || null },
+             grid: { color: 'rgba(255,255,255,.05)' } },
+        y: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 } },
+             grid: { color: 'rgba(255,255,255,.06)' }, position: 'right' },
+      },
+    },
+  })
+}
+
+// ── 10Y realized vol vs MOVE (velocity section dual chart) ────────────────────
+
+async function _renderVolVsMoveChart() {
+  const canvas = document.getElementById('mch-vol-vs-move')
+  if (!canvas || typeof Chart === 'undefined') return
+  const rv = await _fetchMacroSeries('rv10y_20d', 18250)
+  const mv = await _fetchMacroSeries('MOVE', 18250)
+  if (!rv.length || !mv.length) return
+  // 5Y window, aligned on realized-vol dates with MOVE forward-filled
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 1825)
+  const cutStr = cutoff.toISOString().slice(0, 10)
+  const rvW = rv.filter(o => o.ts >= cutStr)
+  const mvMap = {}; mv.forEach(o => { mvMap[o.ts] = o.value })
+  let lastMv = null
+  const rows = rvW.map(o => {
+    if (mvMap[o.ts] != null) lastMv = mvMap[o.ts]
+    return { ts: o.ts, rv: o.value, mv: lastMv }
+  }).filter(r => r.mv != null)
+  const chip = document.getElementById('vrp-gap-chip')
+  if (chip && rows.length) {
+    const gap = rows[rows.length - 1].mv - rows[rows.length - 1].rv
+    chip.textContent = `VRP ${gap >= 0 ? '+' : ''}${gap.toFixed(1)}`
+    chip.style.color = gap >= 0 ? '#2fd18c' : '#ff6b6b'
+  }
+  const xLabels = rows.map((r, i) => {
+    if (i === 0) return r.ts.slice(0, 4)
+    return r.ts.slice(0, 4) !== rows[i - 1].ts.slice(0, 4) ? r.ts.slice(0, 4) : ''
+  })
+  if (_macroChartInstances['mch-vol-vs-move']) _macroChartInstances['mch-vol-vs-move'].destroy()
+  _macroChartInstances['mch-vol-vs-move'] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: xLabels,
+      datasets: [
+        { label: 'Realized 10Y vol (20d)', data: rows.map(r => r.rv),
+          borderColor: '#2fd18c', borderWidth: 1.4, pointRadius: 0,
+          pointHoverRadius: 3, tension: 0.15, fill: false },
+        { label: 'MOVE (implied)', data: rows.map(r => r.mv),
+          borderColor: '#ffc94e', borderWidth: 1.4, pointRadius: 0,
+          pointHoverRadius: 3, tension: 0.15, fill: false },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: 'rgba(255,255,255,.65)', boxWidth: 14, font: { size: 10 } } },
+        tooltip: { callbacks: { title: items => rows[items[0].dataIndex]?.ts || '' } },
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 }, maxRotation: 0,
+                      autoSkip: false, callback: (v, i) => xLabels[i] || null },
+             grid: { color: 'rgba(255,255,255,.05)' } },
+        y: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 } },
+             grid: { color: 'rgba(255,255,255,.06)' }, position: 'right' },
+      },
+    },
+  })
+}
+
+function _renderMacroLineChart(canvasId, obs, sid) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+  const ctx = canvas.getContext('2d')
+  const color = _MACRO_COLOR[sid] || '#4f9eff'
+
+  // Show only year-boundary x-axis labels (e.g., 2021, 2022, ...).
+  const xLabels = obs.map((o,i) => {
+    if (i === 0) return o.ts.slice(0,4)
+    const prev = obs[i-1].ts.slice(0,4)
+    const cur  = o.ts.slice(0,4)
+    return cur !== prev ? cur : ''
+  })
+
+  // Sharp/literal rendering for the choppy daily-noise charts (ratios where
+  // every wiggle is meaningful info, not artifact). Keeps the smooth bezier
+  // for everything else.
+  const SHARP_LINE = new Set(['ample_reserves', 'reserves_gdp',
+                              '2s10s', '5s30s', 'sofr_iorb'])
+  const isSharp = SHARP_LINE.has(sid)
+
+  // Build datasets — main line + optional reference line(s) per indicator
+  const datasets = [{
+    data: obs.map(o => o.value),
+    borderColor: color,
+    backgroundColor: isSharp ? _hexToRgba(color, 0.06) : _hexToRgba(color, 0.10),
+    borderWidth: isSharp ? 1.0 : 1.6,
+    // Visible markers when a series is still accumulating (e.g. IBIT_BTC) so a
+    // handful of observations reads as points, not a spurious trend line
+    pointRadius: obs.length < 15 ? 3 : 0,
+    pointBackgroundColor: color,
+    pointHoverRadius: 4,
+    pointHoverBackgroundColor: color,
+    tension: isSharp ? 0 : 0.15,   // no bezier smoothing → daily noise visible
+    fill: isSharp ? false : true,  // no area fill → line stands alone
+  }]
+  // Dashed reference lines marking each series' regime boundary
+  const REF_LINES = {
+    policy_gap:    [0,   'Neutral (0)'],
+    walcl_accel:   [0,   'Neutral (0)'],
+    true_ie_gross: [100, '100% of tax receipts'],
+    true_ie_net:   [100, '100% of tax receipts'],
+  }
+  if (REF_LINES[sid]) {
+    const [refVal, refLabel] = REF_LINES[sid]
+    datasets.push({
+      _refLine: true,
+      label: refLabel,
+      data: obs.map(() => refVal),
+      borderColor: 'rgba(255,255,255,0.30)',
+      borderDash: [6, 5],
+      borderWidth: 1.0,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+    })
+  }
+  // Ample Reserves Indicator: dashed 12% line marks the Fed's "ample" threshold
+  if (sid === 'ample_reserves') {
+    datasets.push({
+      _refLine: true,
+      label: 'Ample threshold (12%)',
+      data: obs.map(() => 12),
+      borderColor: 'rgba(47,209,140,0.45)',
+      borderDash: [6, 5],
+      borderWidth: 1.2,
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+    })
+  }
+
+  // Formula labels for computed series — shown in tooltip in lieu of raw value
+  const FORMULA_LABEL = {
+    ample_reserves: '(RRP+Res)/Banks',
+    reserves_gdp:   'Reserves/GDP',
+    '2s10s':        '10Y − 2Y',
+    '5s30s':        '30Y − 5Y',
+    sofr_iorb:      'SOFR − IORB',
+  }
+
+  _macroChartInstances[canvasId] = new Chart(ctx, {
+    type: 'line',
+    data: { labels: xLabels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          filter: ctx => !ctx.dataset._refLine,  // hide ref lines from tooltip
+          callbacks: {
+            title: items => obs[items[0].dataIndex]?.ts || '',
+            label: c => {
+              const formula = FORMULA_LABEL[sid]
+              const val = _miniChartLabelValue(c.parsed.y, sid)
+              return formula ? `${formula} : ${val}` : val
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#888', font: { size: 11 }, autoSkip: false,
+            callback: (v, i) => xLabels[i] || '',
+          },
+          grid: { color: 'rgba(255,255,255,0.04)', borderDash: [4,4] },
+        },
+        y: {
+          position: 'right',
+          ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 5,
+                   callback: v => _miniChartLabelValue(v, sid) },
+          grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4,4] },
+        },
+      },
+    },
+  })
+}
+
+function _hexToRgba(hex, alpha) {
+  const c = hex.replace('#','')
+  const n = parseInt(c.length === 3
+    ? c.split('').map(x=>x+x).join('')
+    : c, 16)
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
+function _renderMacroWatchlist(indicators) {
+  const grid = document.getElementById('macro-watchlist')
+  // Group by category
+  const byCat = {}
+  for (const ind of indicators) {
+    const c = ind.category || 'Other'
+    if (!byCat[c]) byCat[c] = []
+    byCat[c].push(ind)
+  }
+  // Precompute prior values so the change formatter can produce % moves
+  for (const ind of indicators) {
+    ind._prior_1d  = ind.change_1d  != null ? ind.latest_value - ind.change_1d  : null
+    ind._prior_30d = ind.change_30d != null ? ind.latest_value - ind.change_30d : null
+    ind._prior_ytd = ind.change_ytd != null ? ind.latest_value - ind.change_ytd : null
+  }
+
+  // Sort each category: keep yield curve in maturity order, otherwise alpha
+  const RATE_ORDER = ['SOFR','IORB','Fed Funds','3M T-Bill','2Y UST','5Y UST','10Y UST','30Y UST']
+  for (const c of Object.keys(byCat)) {
+    byCat[c].sort((a,b) => {
+      const ai = RATE_ORDER.indexOf(a.display_name), bi = RATE_ORDER.indexOf(b.display_name)
+      if (ai >= 0 || bi >= 0) return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi)
+      return a.display_name.localeCompare(b.display_name)
+    })
+  }
+
+  // Build 2-column layout
+  let html = ''
+  for (const colCategories of _MACRO_CATEGORY_ORDER) {
+    html += '<div class="macro-watchlist-col">'
+    for (const cat of colCategories) {
+      if (!byCat[cat]) continue
+      html += `<div class="mw-section-header">${cat}</div>`
+      html += '<table class="mw-table"><thead><tr>'
+      html += '<th>Ticker</th><th>Price</th><th>1D</th><th>30D</th><th>YTD</th>'
+      html += '</tr></thead><tbody>'
+      for (const ind of byCat[cat]) {
+        html += '<tr>'
+        html += `<td>${ind.display_name}</td>`
+        html += `<td>${_fmtMacroPrice(ind.latest_value, ind.units)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_1d,  ind._prior_1d,  ind.units)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_30d, ind._prior_30d, ind.units)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_ytd, ind._prior_ytd, ind.units)}</td>`
+        html += '</tr>'
+      }
+      html += '</tbody></table>'
+    }
+    html += '</div>'
+  }
+  grid.innerHTML = html
+}
+
+function _fmtMacroPrice(v, units) {
+  if (v == null || isNaN(v)) return '—'
+  if (units === '%')     return v.toFixed(2) + '%'
+  if (units === 'bps')   return (v >= 0 ? '+' : '') + v.toFixed(0) + 'bp'
+  if (units === 'FX')    return v.toFixed(4)
+  if (units === 'Index') return v.toFixed(1)
+  if (units === 'USD')   return '$' + v.toFixed(2)
+  if (units === '$B') {
+    if (Math.abs(v) >= 1000) return '$' + (v/1000).toFixed(2) + 'T'
+    return '$' + v.toFixed(0) + 'B'
+  }
+  if (units === '$M') {
+    // FRED reports many balance-sheet series in millions
+    if (Math.abs(v) >= 1_000_000) return '$' + (v/1_000_000).toFixed(2) + 'T'
+    if (Math.abs(v) >= 1_000)     return '$' + (v/1_000).toFixed(0) + 'B'
+    return '$' + v.toFixed(0) + 'M'
+  }
+  return v.toFixed(2)
+}
+
+function _fmtMacroChange(d, prior, units) {
+  if (d == null || isNaN(d)) return '<span class="mw-flat">—</span>'
+  const cls = d > 0 ? 'mw-pos' : (d < 0 ? 'mw-neg' : 'mw-flat')
+  const sign = d > 0 ? '+' : ''
+  // Rate-like values: show change in basis points
+  if (units === '%') {
+    return `<span class="${cls}">${sign}${(d * 100).toFixed(0)}bp</span>`
+  }
+  if (units === 'bps') {
+    return `<span class="${cls}">${sign}${d.toFixed(0)}bp</span>`
+  }
+  // Everything else: percentage move from prior
+  if (prior != null && prior !== 0) {
+    const pct = (d / prior) * 100
+    return `<span class="${cls}">${(pct > 0 ? '+' : '')}${pct.toFixed(1)}%</span>`
+  }
+  // No prior → just show raw delta
+  return `<span class="${cls}">${sign}${d.toFixed(2)}</span>`
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Liquidity tab — Phase 4
+// ══════════════════════════════════════════════════════════════════════════════
+
+let _liqLoaded = false
+let _liqHeadlineRange = 1825  // default 5Y
+
+// Regime colors (from kickoff spec §4.2)
+const _LIQ_REGIME_COLOR = {
+  'Expansion':   '#2fd18c',
+  'Late-Cycle':  '#f5a623',
+  'Contraction': '#f04444',
+  'Inflection':  '#4f9eff',
+  'Unknown':     '#666',
+}
+
+// Sub-index color palette
+const _LIQ_COLOR = {
+  composite:    '#4f9eff',
+  smoothed:     '#a48cff',
+  yoy:          '#2fd18c',
+  zscore:       '#ffc94e',
+  cb:           '#3b82f6',
+  private:      '#2fd18c',
+  xborder:      '#ff9a3c',
+  term_premium: '#ff6b6b',
+  dxy:          '#4f9eff',
+  move:         '#4ecdc4',
+  hy_oas:       '#ff6b6b',
+  offshore_spread: '#a48cff',
+}
+
+// Chart instance registry (shared with macro — use distinct canvas IDs)
+// We reuse _macroChartInstances for all Chart.js instances on the page.
+
+function liqNavGo(anchorId, btn) {
+  const target = document.getElementById(anchorId)
+  if (target) target.scrollIntoView({behavior: 'smooth', block: 'start'})
+  // Clear active from all liq nav buttons (note: querySelectorAll on .macro-nav-btn
+  // covers both macro and liq — only update the parent nav's buttons).
+  const nav = btn && btn.closest('.macro-nav')
+  if (nav) {
+    nav.querySelectorAll('.macro-nav-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+  }
+}
+
+// Liquidity section loading is triggered by the meta-nav handler above (see 'liquidity' case).
+
+async function loadLiquiditySection() {
+  const statusEl = document.getElementById('liq-status')
+  if (statusEl) statusEl.textContent = 'Loading…'
+  try {
+    // Fetch headline data (5Y default)
+    const r = await fetch(`/api/liquidity/headline?days=${_liqHeadlineRange}`)
+    if (!r.ok) throw new Error(`HTTP ${r.status}`)
+    const data = await r.json()
+
+    _liqLoaded = true
+    _renderLiqRegimeStrip(data)
+    _renderLiqHeadlineChart('liq-headline-chart', data, _liqHeadlineRange)
+    _renderLiqCycleGrid(data)
+
+    // Wire headline range buttons
+    const rangeBox = document.getElementById('liq-headline-range')
+    if (rangeBox) {
+      rangeBox.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', async (ev) => {
+          ev.stopPropagation()
+          rangeBox.querySelectorAll('button').forEach(x => x.classList.remove('active'))
+          b.classList.add('active')
+          _liqHeadlineRange = parseInt(b.dataset.days, 10)
+          await _reloadLiqHeadline()
+        })
+      })
+    }
+
+    // Click headline card → open modal
+    const hCard = document.querySelector('[data-sid="__liq_composite__"]')
+    if (hCard) {
+      hCard.addEventListener('click', () => {
+        openMacroModal('__liq_composite__', hCard.dataset.name)
+      })
+    }
+
+    // Load sub-indices in parallel
+    await Promise.all([
+      _loadLiqSubIndexGrid(),
+      _loadLiqQualityGrid(),
+      _loadLiqReserveGrid(),
+    ])
+
+    if (statusEl) {
+      const latest = data.smoothed && data.smoothed.length
+        ? data.smoothed[data.smoothed.length - 1].ts
+        : '—'
+      statusEl.textContent = `Regime: ${data.regime} · latest ${latest}`
+    }
+  } catch (e) {
+    if (statusEl) statusEl.textContent = `Error: ${e.message}`
+    console.error('loadLiquiditySection failed', e)
+  }
+}
+
+async function _reloadLiqHeadline() {
+  try {
+    const r = await fetch(`/api/liquidity/headline?days=${_liqHeadlineRange}`)
+    if (!r.ok) return
+    const data = await r.json()
+    _renderLiqRegimeStrip(data)
+    _renderLiqHeadlineChart('liq-headline-chart', data, _liqHeadlineRange)
+    _renderLiqCycleGrid(data)
+  } catch (e) {
+    console.error('_reloadLiqHeadline failed', e)
+  }
+}
+
+// ── Regime strip ─────────────────────────────────────────────────────────────
+function _renderLiqRegimeStrip(data) {
+  const strip = document.getElementById('liq-regime-strip')
+  const current = document.getElementById('liq-regime-current')
+  if (!strip) return
+
+  // Compute naive regime-strip from yoy series (fast: no round-trip for history endpoint)
+  // Group consecutive same-regime segments, color-coded.
+  const yoy = data.yoy || []
+  if (!yoy.length) {
+    strip.innerHTML = '<div style="color:var(--subtext);padding:6px;">No YoY data</div>'
+    return
+  }
+
+  // Label each point
+  function _regimeFromYoy(yoyVal) {
+    if (yoyVal == null) return 'Unknown'
+    if (yoyVal >= 5)  return 'Expansion'
+    if (yoyVal < -5)  return 'Contraction'
+    if (yoyVal >= 0)  return 'Late-Cycle'
+    return 'Inflection'
+  }
+
+  // Build segments
+  const segs = []
+  let curRegime = null, curStart = 0
+  for (let i = 0; i < yoy.length; i++) {
+    const r = _regimeFromYoy(yoy[i].value)
+    if (r !== curRegime) {
+      if (curRegime !== null) segs.push({regime: curRegime, count: i - curStart})
+      curRegime = r; curStart = i
+    }
+  }
+  if (curRegime !== null) segs.push({regime: curRegime, count: yoy.length - curStart})
+
+  const total = segs.reduce((s, seg) => s + seg.count, 0)
+  strip.innerHTML = segs.map(seg => {
+    const pct = (seg.count / total * 100).toFixed(1)
+    const col = _LIQ_REGIME_COLOR[seg.regime] || '#666'
+    return `<div title="${seg.regime} (${pct}%)" style="flex:${seg.count};height:28px;background:${col};opacity:0.75;"></div>`
+  }).join('')
+
+  // Current label
+  if (current) {
+    const col = _LIQ_REGIME_COLOR[data.regime] || '#888'
+    const yoyLabel = data.current_yoy != null
+      ? ` (YoY: ${data.current_yoy >= 0 ? '+' : ''}${data.current_yoy.toFixed(1)}%)`
+      : ''
+    current.innerHTML = `Current: <strong style="color:${col}">${data.regime.toUpperCase()}</strong>${yoyLabel}`
+  }
+}
+
+// ── Headline dual-axis chart: Composite z-score (L) vs BTC/USD (R) ──────────
+function _renderLiqHeadlineChart(canvasId, data, daysArg) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  const days = daysArg || _liqHeadlineRange
+  const smoothed = data.smoothed || []
+  const btc      = data.btc      || []
+  if (!smoothed.length) return
+
+  // Apply day cutoff (data already filtered by API, but keep for "All" = 0)
+  function _cutoff(arr) {
+    if (days === 0 || !arr.length) return arr
+    const cs = new Date()
+    cs.setDate(cs.getDate() - days)
+    const s = cs.toISOString().slice(0, 10)
+    return arr.filter(o => o.ts >= s)
+  }
+  const compArr = _cutoff(smoothed)
+  const btcArr  = _cutoff(btc)
+
+  // Align BTC to composite dates (forward-fill daily)
+  const btcDict = {}
+  for (const o of btcArr) btcDict[o.ts] = o.value
+
+  const labels = compArr.map((o, i) => {
+    if (i === 0) return o.ts.slice(0, 4)
+    return o.ts.slice(0, 4) !== compArr[i - 1].ts.slice(0, 4) ? o.ts.slice(0, 4) : ''
+  })
+
+  // Forward-fill BTC onto composite dates
+  let lastBtc = null
+  const btcAligned = compArr.map(o => {
+    if (btcDict[o.ts] != null) lastBtc = btcDict[o.ts]
+    return lastBtc
+  })
+
+  const compColor = '#4f9eff'
+  const btcColor  = '#f7931a'  // Bitcoin orange
+
+  _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Composite (z-score)',
+          data: compArr.map(o => o.value),
+          borderColor: compColor,
+          backgroundColor: _hexToRgba(compColor, 0.08),
+          borderWidth: 1.8,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.15,
+          fill: true,
+          yAxisID: 'yLeft',
+        },
+        {
+          label: 'BTC/USD',
+          data: btcAligned,
+          borderColor: btcColor,
+          backgroundColor: 'transparent',
+          borderWidth: 1.4,
+          pointRadius: 0,
+          pointHoverRadius: 4,
+          tension: 0.1,
+          fill: false,
+          yAxisID: 'yRight',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12 } },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          callbacks: {
+            title: items => compArr[items[0].dataIndex]?.ts || '',
+            label: c => {
+              if (c.datasetIndex === 0) return `Composite: ${c.parsed.y != null ? c.parsed.y.toFixed(3) : '—'}`
+              return `BTC: $${c.parsed.y != null ? c.parsed.y.toLocaleString('en-US', {maximumFractionDigits: 0}) : '—'}`
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#888', font: { size: 11 }, autoSkip: false, callback: (v, i) => labels[i] || '' },
+          grid: { color: 'rgba(255,255,255,0.04)', borderDash: [4, 4] },
+        },
+        yLeft: {
+          position: 'left',
+          ticks: { color: compColor, font: { size: 11 }, maxTicksLimit: 6, callback: v => v.toFixed(2) },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          title: { display: true, text: 'Composite z-score', color: compColor, font: { size: 10 } },
+        },
+        yRight: {
+          position: 'right',
+          ticks: {
+            color: btcColor, font: { size: 11 }, maxTicksLimit: 6,
+            callback: v => v >= 1000 ? '$' + (v / 1000).toFixed(0) + 'k' : '$' + v.toFixed(0),
+          },
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: 'BTC/USD', color: btcColor, font: { size: 10 } },
+        },
+      },
+    },
+  })
+}
+
+// ── Cycle grid: YoY % and Z-score 0-100 ─────────────────────────────────────
+function _renderLiqCycleGrid(data) {
+  const grid = document.getElementById('liq-cycle-grid')
+  if (!grid) return
+
+  const cycleItems = [
+    { sid: '__liq_yoy__',    name: '12-Month YoY %',    series: data.yoy,    color: _LIQ_COLOR.yoy,    units: '%' },
+    { sid: '__liq_zscore__', name: 'Z-Score 0-100 (50=mean)', series: data.zscore, color: _LIQ_COLOR.zscore, units: 'score' },
+  ]
+
+  grid.innerHTML = cycleItems.map(item => `
+    <div class="macro-mini-chart" data-sid="${item.sid}" data-name="${item.name}" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">${item.name}</span>
+        <span class="macro-mini-chart-value" style="background:${item.color};">
+          ${item.series && item.series.length ? (item.units === '%' ? (item.series[item.series.length-1].value >= 0 ? '+' : '') + item.series[item.series.length-1].value.toFixed(1) + '%' : item.series[item.series.length-1].value.toFixed(1)) : '—'}
+        </span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="liq-cycle-${item.sid.replace(/[^a-z0-9]/g,'_')}"></canvas></div>
+    </div>
+  `).join('')
+
+  for (const item of cycleItems) {
+    const cid = `liq-cycle-${item.sid.replace(/[^a-z0-9]/g,'_')}`
+    _renderLiqSimpleChart(cid, item.series || [], item.color, item.sid, item.units)
+  }
+
+  // Wire click → open modal
+  grid.querySelectorAll('.macro-mini-chart').forEach(card => {
+    card.addEventListener('click', () => {
+      openMacroModal(card.dataset.sid, card.dataset.name)
+    })
+  })
+}
+
+// ── Sub-index grid ────────────────────────────────────────────────────────────
+async function _loadLiqSubIndexGrid() {
+  const grid = document.getElementById('liq-subindex-grid')
+  if (!grid) return
+
+  const subItems = [
+    { name: 'cb',      label: 'Central Bank (~30%)',    color: _LIQ_COLOR.cb,      desc: 'Fed + ECB + BoJ' },
+    { name: 'private', label: 'Private Sector (~50%)',  color: _LIQ_COLOR.private,  desc: 'M2 + credit + shadow + Z.1' },
+    { name: 'xborder', label: 'Cross-Border (~20%)',    color: _LIQ_COLOR.xborder,  desc: 'BIS LBS + TIC' },
+  ]
+
+  // Build placeholder cards
+  grid.innerHTML = subItems.map(item => `
+    <div class="macro-mini-chart" data-sid="__liq_${item.name}__" data-name="${item.label}" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">${item.label}</span>
+        <span class="macro-mini-chart-value" id="liq-si-val-${item.name}" style="background:${item.color};">—</span>
+      </div>
+      <div style="font-size:11px;color:var(--subtext);padding:0 12px 4px;">${item.desc}</div>
+      <div class="macro-mini-chart-canvas"><canvas id="liq-si-chart-${item.name}"></canvas></div>
+    </div>
+  `).join('')
+
+  // Fetch sub-indices in parallel and render
+  await Promise.all(subItems.map(async item => {
+    try {
+      const r = await fetch(`/api/liquidity/sub-index/${item.name}?days=${_liqHeadlineRange}`)
+      if (!r.ok) return
+      const d = await r.json()
+      const val = d.latest_value_b
+      const valEl = document.getElementById(`liq-si-val-${item.name}`)
+      if (valEl) valEl.textContent = val != null ? '$' + val.toFixed(0) + 'B' : '—'
+      _renderLiqSimpleChart(`liq-si-chart-${item.name}`, d.series || [], item.color, `__liq_${item.name}__`, '$B')
+    } catch (e) {
+      console.warn(`sub-index ${item.name} failed`, e)
+    }
+  }))
+
+  // Wire click → open modal
+  grid.querySelectorAll('.macro-mini-chart').forEach(card => {
+    card.addEventListener('click', () => {
+      openMacroModal(card.dataset.sid, card.dataset.name)
+    })
+  })
+}
+
+// ── Quality overlays grid ─────────────────────────────────────────────────────
+async function _loadLiqQualityGrid() {
+  const chipsEl = document.getElementById('liq-quality-chips')
+  const grid    = document.getElementById('liq-quality-grid')
+  if (!grid) return
+
+  try {
+    const r = await fetch('/api/liquidity/quality-overlays?days=1825')
+    if (!r.ok) return
+    const d = await r.json()
+    const series = d.series || {}
+
+    // Render chips
+    if (chipsEl) {
+      chipsEl.innerHTML = Object.entries(series).map(([key, s]) => {
+        const v = s.latest
+        const col = _LIQ_COLOR[key] || '#4f9eff'
+        let fmtVal = v == null ? '—' : s.units === '%' ? v.toFixed(2) + '%' : s.units === 'bps' ? v.toFixed(1) + 'bps' : v.toFixed(1)
+        return `<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+                     border-radius:6px;padding:8px 14px;cursor:default;">
+          <div style="font-size:10px;color:var(--subtext);font-weight:600;letter-spacing:.06em;">${s.label}</div>
+          <div style="font-size:16px;font-weight:700;color:${col};margin-top:2px;">${fmtVal}</div>
+        </div>`
+      }).join('')
+    }
+
+    // Render mini charts in grid
+    const items = Object.entries(series).map(([key, s]) => ({
+      sid:    `__liq_qual_${key}__`,
+      name:   s.label,
+      series: s.data || [],
+      color:  _LIQ_COLOR[key] || '#4f9eff',
+      units:  s.units,
+    }))
+
+    grid.innerHTML = items.map(item => `
+      <div class="macro-mini-chart" data-sid="${item.sid}" data-name="${item.name}" title="Click to enlarge">
+        <div class="macro-mini-chart-header">
+          <span class="macro-mini-chart-title">${item.name}</span>
+          <span class="macro-mini-chart-value" style="background:${item.color};">
+            ${item.series.length ? (item.units === '%' ? item.series[item.series.length-1].value.toFixed(2) + '%' : item.units === 'bps' ? item.series[item.series.length-1].value.toFixed(1) + 'bps' : item.series[item.series.length-1].value.toFixed(1)) : '—'}
+          </span>
+        </div>
+        <div class="macro-mini-chart-canvas"><canvas id="liq-qual-chart-${key}"></canvas></div>
+      </div>
+    `).join('')
+
+    for (const [key, s] of Object.entries(series)) {
+      _renderLiqSimpleChart(`liq-qual-chart-${key}`, s.data || [], _LIQ_COLOR[key] || '#4f9eff', `__liq_qual_${key}__`, s.units)
+    }
+
+    // Wire click → modal
+    grid.querySelectorAll('.macro-mini-chart').forEach(card => {
+      card.addEventListener('click', () => openMacroModal(card.dataset.sid, card.dataset.name))
+    })
+  } catch (e) {
+    console.warn('quality overlays failed', e)
+  }
+}
+
+// ── Reserve adequacy (moved from Macro FED section) ──────────────────────────
+async function _loadLiqReserveGrid() {
+  const grid = document.getElementById('liq-reserves-grid')
+  if (!grid) return
+
+  const reserveItems = [
+    { sid: 'reserves_gdp',   name: 'Bank Reserves / GDP',      color: _MACRO_COLOR.reserves_gdp   || '#2fd18c' },
+    { sid: 'ample_reserves', name: 'Ample Reserves Indicator',  color: _MACRO_COLOR.ample_reserves || '#a48cff' },
+  ]
+
+  // Prefetch data
+  await Promise.all(reserveItems.map(item => _fetchMacroSeries(item.sid, 18250)))
+
+  _renderMacroChartGrid('liq-reserves-grid', reserveItems)
+}
+
+// ── Generic simple line chart (for sub-index, cycle, quality) ─────────────────
+function _renderLiqSimpleChart(canvasId, obs, color, sid, units) {
+  const canvas = document.getElementById(canvasId)
+  if (!canvas || !obs.length) return
+  if (_macroChartInstances[canvasId]) _macroChartInstances[canvasId].destroy()
+
+  const isSharp = (units === 'bps' || units === '%')
+  const xLabels = obs.map((o, i) => {
+    if (i === 0) return o.ts ? o.ts.slice(0, 4) : ''
+    const prev = obs[i - 1].ts ? obs[i - 1].ts.slice(0, 4) : ''
+    const cur  = o.ts ? o.ts.slice(0, 4) : ''
+    return cur !== prev ? cur : ''
+  })
+
+  const datasets = [{
+    data: obs.map(o => o.value),
+    borderColor: color,
+    backgroundColor: _hexToRgba(color, isSharp ? 0.06 : 0.10),
+    borderWidth: isSharp ? 1.0 : 1.6,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+    tension: isSharp ? 0 : 0.15,
+    fill: !isSharp,
+  }]
+
+  // Zero-line for YoY charts
+  if (sid === '__liq_yoy__' || units === '%') {
+    datasets.push({
+      _refLine: true,
+      label: '0%',
+      data: obs.map(() => 0),
+      borderColor: 'rgba(255,255,255,0.2)',
+      borderDash: [4, 4],
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+    })
+  }
+  // Z-score 50 reference line
+  if (sid === '__liq_zscore__') {
+    datasets.push({
+      _refLine: true,
+      label: 'Mean (50)',
+      data: obs.map(() => 50),
+      borderColor: 'rgba(255,255,255,0.2)',
+      borderDash: [4, 4],
+      borderWidth: 1,
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+    })
+  }
+
+  function _fmtLiqVal(v, u) {
+    if (v == null) return '—'
+    if (u === '%') return v.toFixed(2) + '%'
+    if (u === 'bps') return v.toFixed(1) + 'bps'
+    if (u === '$B') {
+      if (Math.abs(v) >= 1000) return '$' + (v / 1000).toFixed(1) + 'T'
+      return '$' + v.toFixed(0) + 'B'
+    }
+    return v.toFixed(2)
+  }
+
+  _macroChartInstances[canvasId] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: { labels: xLabels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        macroWatermark: { enabled: true },
+        tooltip: {
+          backgroundColor: 'rgba(15,17,22,0.95)',
+          borderColor: '#444', borderWidth: 1, padding: 10,
+          titleColor: '#fff', bodyColor: '#dce1f0',
+          filter: ctx => !ctx.dataset._refLine,
+          callbacks: {
+            title: items => obs[items[0].dataIndex]?.ts || '',
+            label: c => _fmtLiqVal(c.parsed.y, units),
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: '#888', font: { size: 11 }, autoSkip: false, callback: (v, i) => xLabels[i] || '' },
+          grid: { color: 'rgba(255,255,255,0.04)', borderDash: [4, 4] },
+        },
+        y: {
+          position: 'right',
+          ticks: { color: '#888', font: { size: 11 }, maxTicksLimit: 5, callback: v => _fmtLiqVal(v, units) },
+          grid: { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] },
+        },
+      },
+    },
+  })
+}
+
+// Liquidity sentinel handling is integrated directly into _renderMacroModalChart() above.
+
+
+// ── Public-build init ────────────────────────────────────────────────────────
+loadMacroSection()
+fetch('/api/macro/overview').then(r => r.json()).then(d => {
+  const latest = (d.indicators || []).reduce((m, x) => (!m || x.latest_ts > m) ? x.latest_ts : m, null)
+  const st = document.getElementById('status-text')
+  if (st) st.textContent = latest ? `Data as of ${latest}` : 'Static build'
+  const dot = document.getElementById('dot')
+  if (dot) dot.style.background = '#2fd18c'
+}).catch(() => {})
+
+</script>
+</body>
+</html>

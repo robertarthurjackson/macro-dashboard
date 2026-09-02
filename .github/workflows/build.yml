@@ -1,0 +1,56 @@
+name: build-and-deploy
+
+on:
+  schedule:
+    - cron: "30 11 * * *"   # daily ~07:30 ET, after FRED's morning update
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      - name: Build static data
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: python build.py
+
+      - name: Commit updated IBIT seed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seed/
+          git diff --cached --quiet || git commit -m "chore: append IBIT holdings observation"
+          git push || true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
