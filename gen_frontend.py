@@ -38,6 +38,9 @@ macro_modal = block(3560, 3578, 'id="macro-modal"', "macroModalCanvas")
 main_js = block(10265, 12480, "Meta nav", "Liquidity sentinel handling")
 
 # ── Patches ───────────────────────────────────────────────────────────────────
+# Public header: "Brave Hunter" without the "Trading" suffix (logo unchanged)
+header = header.replace("Brave Hunter <span>Trading</span>", "Brave Hunter")
+head = head.replace("<title>Brave Hunter Trading</title>", "<title>Brave Hunter</title>")
 macro_section = macro_section.replace('id="section-macro" class="section-panel"',
                                       'id="section-macro" class="section-panel active"')
 main_js = main_js.replace("let _activeSection = 'volatility'", "let _activeSection = 'macro'")
