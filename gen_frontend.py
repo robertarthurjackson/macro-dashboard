@@ -8,8 +8,10 @@ a fetch shim that serves /api/* from static JSON under site/data/, and rewrites
 absolute /static/ paths to relative ones (github.io project pages are served
 from a subpath).
 
-Re-run after improving the macro/liquidity sections in the private dashboard:
-    python3 gen_frontend.py /path/to/vol-dashboard-ibkr/static/index.html
+Blocks are located by unique markers, not line numbers, so edits to the private
+frontend don't break extraction. Re-run after improving the macro/liquidity
+sections:
+    python3 gen_frontend.py [/path/to/vol-dashboard-ibkr/static/index.html]
 """
 import sys
 from pathlib import Path
@@ -21,21 +23,28 @@ OUT = Path(__file__).parent / "site" / "index.html"
 lines = SRC.read_text().splitlines(keepends=True)
 
 
-def block(a: int, b: int, start_marker: str, end_marker: str) -> str:
-    """Lines a..b inclusive (1-indexed), asserting the expected markers so a
-    drifted source file fails loudly instead of silently mis-slicing."""
-    text = "".join(lines[a - 1:b])
-    assert start_marker in lines[a - 1], f"line {a} expected {start_marker!r}, got: {lines[a-1][:80]!r}"
-    assert end_marker in text, f"block {a}-{b} missing {end_marker!r}"
-    return text
+def _find(marker: str, start: int = 0) -> int:
+    """0-based index of the first line at/after `start` containing marker."""
+    for i in range(start, len(lines)):
+        if marker in lines[i]:
+            return i
+    raise SystemExit(f"marker not found: {marker!r}")
 
 
-head = block(1, 2035, "<!DOCTYPE html>" if "<!DOCTYPE" in lines[0] else "<", "</style>")
-header = block(2036, 2047, "</head>", "</header>")
-macro_section = block(3042, 3269, 'id="section-macro"', "/section-macro")
-liq_section = block(3272, 3374, 'id="section-liquidity"', "/section-liquidity")
-macro_modal = block(3560, 3578, 'id="macro-modal"', "macroModalCanvas")
-main_js = block(10265, 12497, "Meta nav", "Liquidity sentinel handling")
+def block(start_marker: str, end_marker: str, from_line1: bool = False,
+          end_exclusive: bool = False) -> str:
+    a = 0 if from_line1 else _find(start_marker)
+    b = _find(end_marker, a + 1)
+    return "".join(lines[a:b] if end_exclusive else lines[a:b + 1])
+
+
+head = block("<!DOCTYPE", "</style>", from_line1=True)
+header = block("</head>", "</header>")
+macro_section = block('id="section-macro"', "<!-- /section-macro -->")
+liq_section = block('id="section-liquidity"', "<!-- /section-liquidity -->")
+macro_modal = block("<!-- Macro chart expand modal -->", 'id="bb-modal"',
+                    end_exclusive=True)
+main_js = block("// ── Meta nav", "Liquidity sentinel handling")
 
 # ── Patches ───────────────────────────────────────────────────────────────────
 # Public header: "Brave Hunter" without the "Trading" suffix (logo unchanged)

@@ -2045,7 +2045,6 @@
   <div id="status"><div id="dot"></div><span id="status-text">Connecting…</span></div>
 </header>
 
-
 <nav class="meta-nav">
   <button class="active" data-section="macro">Macro</button>
   <button data-section="liquidity">Liquidity</button>
@@ -2251,6 +2250,20 @@
   <div class="macro-section" id="macro-anchor-fed">
     <div class="macro-section-title">FED</div>
     <div class="macro-chart-grid" id="macro-fed-grid"></div>
+    <div class="macro-mini-chart" data-sid="__srf_split__"
+         data-name="SRF Usage — Statement-Date Turns vs Ex-Turn (Stress)"
+         style="margin-top:12px;" title="Click to enlarge">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">SRF Usage — Turns vs Stress</span>
+        <span id="srf-stress-chip" style="font-size:12px;color:#2fd18c;font-weight:600;">—</span>
+      </div>
+      <div class="macro-mini-chart-canvas"><canvas id="mch-srf-split"></canvas></div>
+      <div style="font-size:10px;color:var(--subtext);padding:4px 8px 6px;opacity:0.7;">
+        Amber = usage within ±2 business days of a month-end (statement-date turns; expected, watch the spikes grow).
+        Red = all other days (normal is zero — any lift is the funding-stress signal; Sep 2019 / Mar 2020 pattern).
+        Chip = largest ex-turn print in the trailing 90 days.
+      </div>
+    </div>
   </div>
 
   <div class="macro-section" id="macro-anchor-money">
@@ -2383,6 +2396,7 @@
 
 </div><!-- /section-liquidity -->
 
+<!-- Macro chart expand modal -->
 <div id="macro-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeMacroModal()">
   <div class="macro-modal-box">
     <div class="macro-modal-head">
@@ -2694,8 +2708,8 @@ async function loadMacroCharts() {
   ]
   // Pre-fetch 10y of data for every series so range switches are instant
   const allSeries = [...yields, ...fed, ...moneysupply, ...debase, ...velocity, ...fiscal, ...credit, ...fx, ...cmdty, ...vol,
-                     // dual-chart inputs (realized-vol-vs-MOVE, avg-debt-cost-vs-10Y)
-                     {sid:'rv10y_20d'}, {sid:'avg_debt_rate'},
+                     // dual-chart inputs (realized-vol-vs-MOVE, avg-debt-cost-vs-10Y, SRF split)
+                     {sid:'rv10y_20d'}, {sid:'avg_debt_rate'}, {sid:'srf_turn'}, {sid:'srf_stress'},
                      // snapshot also needs the underlying tenor series
                      {sid:'DFF'}, {sid:'DGS3MO'}, {sid:'DGS2'},
                      {sid:'DGS5'}, {sid:'DGS10'}, {sid:'DGS30'},
@@ -2722,6 +2736,7 @@ async function loadMacroCharts() {
   _renderVelocityBoard()
   _renderVolVsMoveChart()
   _renderDebtCostChart()
+  _renderSrfSplitChart()
   _renderMacroChartGrid('macro-fx-grid',          fx)
   _renderMacroChartGrid('macro-cmdty-grid',       cmdty)
   _renderMacroChartGrid('macro-vol-grid',         vol)
@@ -3831,6 +3846,65 @@ async function _renderDebtCostChart() {
   })
 }
 
+// ── SRF usage split: statement-date turns vs ex-turn stress (FED section) ─────
+
+async function _renderSrfSplitChart() {
+  const canvas = document.getElementById('mch-srf-split')
+  if (!canvas || typeof Chart === 'undefined') return
+  const turn = await _fetchMacroSeries('srf_turn', 18250)
+  const stress = await _fetchMacroSeries('srf_stress', 18250)
+  if (!turn.length || !stress.length) return
+  // 5Y window on the shared date axis
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 1825)
+  const cutStr = cutoff.toISOString().slice(0, 10)
+  const t = turn.filter(o => o.ts >= cutStr)
+  const sMap = {}; stress.forEach(o => { sMap[o.ts] = o.value })
+  const rows = t.map(o => ({ ts: o.ts, turn: o.value, stress: sMap[o.ts] ?? 0 }))
+  const chip = document.getElementById('srf-stress-chip')
+  if (chip && rows.length) {
+    const d90 = new Date(); d90.setDate(d90.getDate() - 90)
+    const d90s = d90.toISOString().slice(0, 10)
+    const mx = Math.max(0, ...rows.filter(r => r.ts >= d90s).map(r => r.stress))
+    chip.textContent = `ex-turn max 90d: $${mx >= 1 ? mx.toFixed(1) + 'B' : (mx * 1000).toFixed(0) + 'M'}`
+    chip.style.color = mx >= 1 ? '#ff6b6b' : '#2fd18c'
+  }
+  const xLabels = rows.map((r, i) => {
+    if (i === 0) return r.ts.slice(0, 4)
+    return r.ts.slice(0, 4) !== rows[i - 1].ts.slice(0, 4) ? r.ts.slice(0, 4) : ''
+  })
+  if (_macroChartInstances['mch-srf-split']) _macroChartInstances['mch-srf-split'].destroy()
+  _macroChartInstances['mch-srf-split'] = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: xLabels,
+      datasets: [
+        { label: 'Turn usage (statement dates)', data: rows.map(r => r.turn),
+          borderColor: '#ffc94e', backgroundColor: _hexToRgba('#ffc94e', 0.25),
+          borderWidth: 1.0, pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: true },
+        { label: 'Ex-turn usage (stress)', data: rows.map(r => r.stress),
+          borderColor: '#ff6b6b', backgroundColor: _hexToRgba('#ff6b6b', 0.35),
+          borderWidth: 1.2, pointRadius: 0, pointHoverRadius: 3, tension: 0, fill: true },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, labels: { color: 'rgba(255,255,255,.65)', boxWidth: 14, font: { size: 10 } } },
+        tooltip: { callbacks: { title: items => rows[items[0].dataIndex]?.ts || '' } },
+      },
+      scales: {
+        x: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 }, maxRotation: 0,
+                      autoSkip: false, callback: (v, i) => xLabels[i] || null },
+             grid: { color: 'rgba(255,255,255,.05)' } },
+        y: { ticks: { color: 'rgba(255,255,255,.45)', font: { size: 10 },
+                      callback: v => '$' + v + 'B' },
+             grid: { color: 'rgba(255,255,255,.06)' }, position: 'right', beginAtZero: true },
+      },
+    },
+  })
+}
+
 // ── 10Y realized vol vs MOVE (velocity section dual chart) ────────────────────
 
 async function _renderVolVsMoveChart() {
@@ -4102,7 +4176,7 @@ function _fmtMacroPrice(v, units) {
 
 // Facility-usage series live near zero, so percent changes are base-effect
 // noise (SRF "+1000%" = $1M→$11M). Show absolute $ changes for these instead.
-const _MW_ABS_CHANGE = new Set(['RPONTSYD', 'RRPONTSYD', 'WDTGAL'])
+const _MW_ABS_CHANGE = new Set(['RPONTSYD', 'RRPONTSYD', 'WDTGAL', 'srf_stress'])
 
 function _fmtMacroAbsDollar(d, units) {
   // d arrives in the series' native units ($B for RRP/SRF, $M for TGA)
