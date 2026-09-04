@@ -530,7 +530,52 @@ def get_computed_series(name: str, days: Optional[int] = None) -> list[dict]:
         return _walcl_accel(days)
     if name in ("true_ie_gross", "true_ie_net", "interest_pct_rev", "avg_debt_rate"):
         return _fiscal_series(name, days)
+    if name in ("srf_turn", "srf_stress"):
+        return _srf_split(name, days)
     raise ValueError(f"Unknown computed series: {name}")
+
+
+def _srf_split(name: str, days: Optional[int]) -> list[dict]:
+    """Decompose SRF usage (RPONTSYD) by calendar rule.
+
+    - srf_turn:   usage within ±2 business days of a month-end — dealers
+      shrinking balance sheets for statement dates. Expected; its growth
+      across turns is a slow thinning-cushion signal.
+    - srf_stress: usage on all other days. Normal is zero; any material
+      lift here is the genuine funding-stress signal. Mid-month tax dates
+      deliberately land here (Sep 2019 broke on the 16th-17th).
+
+    Both series keep the full date axis (zeros where the other side holds
+    the value) so they overlay cleanly on one chart.
+    """
+    from datetime import date as _date
+    rows = db.get_macro_series("RPONTSYD", days)
+
+    def _last_bday_of_month(y: int, m: int) -> _date:
+        d = _date(y, 12, 31) if m == 12 else _date(y, m + 1, 1) - timedelta(days=1)
+        while d.weekday() >= 5:
+            d -= timedelta(days=1)
+        return d
+
+    def _bday_dist(a: _date, b: _date) -> int:
+        if a > b:
+            a, b = b, a
+        n, d = 0, a
+        while d < b:
+            d += timedelta(days=1)
+            if d.weekday() < 5:
+                n += 1
+        return n
+
+    out: list[dict] = []
+    for r in rows:
+        d = _date.fromisoformat(r["ts"])
+        prev_y, prev_m = (d.year, d.month - 1) if d.month > 1 else (d.year - 1, 12)
+        is_turn = (_bday_dist(d, _last_bday_of_month(d.year, d.month)) <= 2
+                   or _bday_dist(d, _last_bday_of_month(prev_y, prev_m)) <= 2)
+        keep = is_turn if name == "srf_turn" else not is_turn
+        out.append({"ts": r["ts"], "value": r["value"] if keep else 0.0})
+    return out
 
 
 # Gromen "true interest expense" components (interest + entitlement benefits)

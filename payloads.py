@@ -36,6 +36,7 @@ COMPUTED_SERIES = [
     "walcl_13w", "gld_flow_4w", "ibit_flow_4w",
     "rstar_market", "policy_gap", "rv10y_20d", "walcl_accel",
     "true_ie_gross", "true_ie_net", "interest_pct_rev", "avg_debt_rate",
+    "srf_turn", "srf_stress",
 ]
 
 COMPUTED_META = [
@@ -47,6 +48,7 @@ COMPUTED_META = [
     ("cpi_yoy",        "CPI (YoY)",               "Inflation",         "%"),
     ("core_cpi_yoy",   "Core CPI (YoY)",          "Inflation",         "%"),
     ("pce_yoy",        "Core PCE (YoY)",          "Inflation",         "%"),
+    ("srf_stress",     "SRF Usage (ex-turn)",     "Money & Credit",    "$B"),
     ("rstar_market",   "R-star (market 5y5y real)","US Rates",         "%"),
     ("policy_gap",     "Policy Gap (real FF − r*)","US Rates",         "%"),
     ("true_ie_gross",  "True Interest Exp (Gromen, % receipts)", "Fiscal", "%"),
