@@ -35,7 +35,7 @@ header = block(2036, 2047, "</head>", "</header>")
 macro_section = block(3042, 3269, 'id="section-macro"', "/section-macro")
 liq_section = block(3272, 3374, 'id="section-liquidity"', "/section-liquidity")
 macro_modal = block(3560, 3578, 'id="macro-modal"', "macroModalCanvas")
-main_js = block(10265, 12480, "Meta nav", "Liquidity sentinel handling")
+main_js = block(10265, 12497, "Meta nav", "Liquidity sentinel handling")
 
 # ── Patches ───────────────────────────────────────────────────────────────────
 # Public header: "Brave Hunter" without the "Trading" suffix (logo unchanged)

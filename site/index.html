@@ -4068,9 +4068,9 @@ function _renderMacroWatchlist(indicators) {
         html += '<tr>'
         html += `<td>${ind.display_name}</td>`
         html += `<td>${_fmtMacroPrice(ind.latest_value, ind.units)}</td>`
-        html += `<td>${_fmtMacroChange(ind.change_1d,  ind._prior_1d,  ind.units)}</td>`
-        html += `<td>${_fmtMacroChange(ind.change_30d, ind._prior_30d, ind.units)}</td>`
-        html += `<td>${_fmtMacroChange(ind.change_ytd, ind._prior_ytd, ind.units)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_1d,  ind._prior_1d,  ind.units, ind.series_id)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_30d, ind._prior_30d, ind.units, ind.series_id)}</td>`
+        html += `<td>${_fmtMacroChange(ind.change_ytd, ind._prior_ytd, ind.units, ind.series_id)}</td>`
         html += '</tr>'
       }
       html += '</tbody></table>'
@@ -4100,10 +4100,27 @@ function _fmtMacroPrice(v, units) {
   return v.toFixed(2)
 }
 
-function _fmtMacroChange(d, prior, units) {
+// Facility-usage series live near zero, so percent changes are base-effect
+// noise (SRF "+1000%" = $1M→$11M). Show absolute $ changes for these instead.
+const _MW_ABS_CHANGE = new Set(['RPONTSYD', 'RRPONTSYD', 'WDTGAL'])
+
+function _fmtMacroAbsDollar(d, units) {
+  // d arrives in the series' native units ($B for RRP/SRF, $M for TGA)
+  const b = units === '$M' ? d / 1000 : d
+  const sign = b > 0 ? '+' : b < 0 ? '−' : ''
+  const a = Math.abs(b)
+  if (a >= 1000) return `${sign}$${(a / 1000).toFixed(2)}T`
+  if (a >= 1)    return `${sign}$${a.toFixed(1)}B`
+  return `${sign}$${(a * 1000).toFixed(0)}M`
+}
+
+function _fmtMacroChange(d, prior, units, sid) {
   if (d == null || isNaN(d)) return '<span class="mw-flat">—</span>'
   const cls = d > 0 ? 'mw-pos' : (d < 0 ? 'mw-neg' : 'mw-flat')
   const sign = d > 0 ? '+' : ''
+  if (_MW_ABS_CHANGE.has(sid)) {
+    return `<span class="${cls}">${_fmtMacroAbsDollar(d, units)}</span>`
+  }
   // Rate-like values: show change in basis points
   if (units === '%') {
     return `<span class="${cls}">${sign}${(d * 100).toFixed(0)}bp</span>`
