@@ -3512,6 +3512,10 @@ function _renderMacroChartGrid(gridId, items) {
       openMacroModal(card.dataset.sid, card.dataset.name)
     })
   })
+
+  // Activate the watchlist rows this grid just gave a chart to. Done per-grid
+  // so a later failure in loadMacroCharts can't leave the whole list dead.
+  _applyMacroWatchlistLinks()
 }
 
 // ── Macro chart expand modal ─────────────────────────────────────────────────
@@ -4191,13 +4195,18 @@ function _renderMacroWatchlist(indicators) {
 // copy is the one a "Fed Balance Sheet" row means), and the SRF ex-turn series
 // only appears inside the combined SRF split chart.
 const _MW_CHART_ALIAS = {
-  WALCL:      '#macro-fed-grid [data-sid="WALCL"]',
-  srf_stress: '#section-macro [data-sid="__srf_split__"]',
+  WALCL:      '#macro-fed-grid .macro-mini-chart[data-sid="WALCL"]',
+  srf_stress: '#section-macro .macro-mini-chart[data-sid="__srf_split__"]',
 }
 
+// The `.macro-mini-chart` class is load-bearing: the watchlist cells and the
+// per-card range button groups also carry data-sid, and the watchlist sits
+// inside #section-macro ahead of the charts, so a bare [data-sid] lookup
+// resolves every row to itself.
 function _macroChartCardFor(sid) {
   if (!sid) return null
-  return document.querySelector(_MW_CHART_ALIAS[sid] || `#section-macro [data-sid="${sid}"]`)
+  return document.querySelector(
+    _MW_CHART_ALIAS[sid] || `#section-macro .macro-mini-chart[data-sid="${sid}"]`)
 }
 
 // Marks every watchlist ticker that has a chart on the page as clickable.
