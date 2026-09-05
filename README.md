@@ -1,6 +1,6 @@
 # Macro Dashboard
 
-**Live dashboard → https://robertarthurjackson.github.io/macro-dashboard/**
+**Live dashboard → https://robroth.ca/macro-dashboard/**
 
 A static, self-updating macro & global-liquidity dashboard, published on GitHub
 Pages. All data comes from free public sources — FRED, yfinance, SPDR, iShares,
