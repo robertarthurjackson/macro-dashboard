@@ -696,6 +696,22 @@
       text-overflow: ellipsis;
     }
     .mw-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+    /* Ticker cells that have a matching chart further down the page */
+    .mw-table tbody td.mw-link { cursor: pointer; color: var(--text); }
+    .mw-table tbody td.mw-link:hover {
+      color: var(--orange, #ff9a3c);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    @keyframes mwChartFlash {
+      0%   { box-shadow: 0 0 0 2px var(--orange, #ff9a3c); }
+      70%  { box-shadow: 0 0 0 2px var(--orange, #ff9a3c); }
+      100% { box-shadow: 0 0 0 2px rgba(255,154,60,0); }
+    }
+    .macro-mini-chart.macro-chart-flash {
+      animation: mwChartFlash 1.8s ease-out;
+      border-color: var(--orange, #ff9a3c);
+    }
     .mw-pos { color: var(--green); }
     .mw-neg { color: var(--red); }
     .mw-flat { color: var(--muted); }
@@ -2819,6 +2835,9 @@ async function loadMacroCharts() {
       openMacroModal('__gdp_vs_30y__', gdpCard.dataset.name)
     })
   }
+
+  // Every chart card now exists — make the matching watchlist tickers clickable
+  _applyMacroWatchlistLinks()
 }
 
 let _gdpY30Range = 3650
@@ -4140,7 +4159,7 @@ function _renderMacroWatchlist(indicators) {
       html += '</tr></thead><tbody>'
       for (const ind of byCat[cat]) {
         html += '<tr>'
-        html += `<td>${ind.display_name}</td>`
+        html += `<td data-sid="${ind.series_id}">${ind.display_name}</td>`
         html += `<td>${_fmtMacroPrice(ind.latest_value, ind.units)}</td>`
         html += `<td>${_fmtMacroChange(ind.change_1d,  ind._prior_1d,  ind.units, ind.series_id)}</td>`
         html += `<td>${_fmtMacroChange(ind.change_30d, ind._prior_30d, ind.units, ind.series_id)}</td>`
@@ -4152,6 +4171,61 @@ function _renderMacroWatchlist(indicators) {
     html += '</div>'
   }
   grid.innerHTML = html
+
+  // One delegated click handler for the whole watchlist; rows become clickable
+  // only once _applyMacroWatchlistLinks() confirms a chart card exists.
+  if (!grid.dataset.linkWired) {
+    grid.dataset.linkWired = '1'
+    grid.addEventListener('click', ev => {
+      const td = ev.target.closest('td.mw-link')
+      if (td) _macroGoToChart(td.dataset.sid)
+    })
+  }
+  _applyMacroWatchlistLinks()
+}
+
+// ── Watchlist → chart deep links ────────────────────────────────────────────
+// Most watchlist rows share their series_id with a mini-chart card's data-sid,
+// so the default lookup is by sid inside the Macro section. These are the rows
+// where that isn't true: WALCL is charted in both Debasement and FED (the FED
+// copy is the one a "Fed Balance Sheet" row means), and the SRF ex-turn series
+// only appears inside the combined SRF split chart.
+const _MW_CHART_ALIAS = {
+  WALCL:      '#macro-fed-grid [data-sid="WALCL"]',
+  srf_stress: '#section-macro [data-sid="__srf_split__"]',
+}
+
+function _macroChartCardFor(sid) {
+  if (!sid) return null
+  return document.querySelector(_MW_CHART_ALIAS[sid] || `#section-macro [data-sid="${sid}"]`)
+}
+
+// Marks every watchlist ticker that has a chart on the page as clickable.
+// Charts render after the watchlist, so this is called again once they exist.
+function _applyMacroWatchlistLinks() {
+  const grid = document.getElementById('macro-watchlist')
+  if (!grid) return
+  grid.querySelectorAll('td[data-sid]').forEach(td => {
+    if (!_macroChartCardFor(td.dataset.sid)) return
+    td.classList.add('mw-link')
+    td.title = 'Jump to chart'
+  })
+}
+
+function _macroGoToChart(sid) {
+  const card = _macroChartCardFor(sid)
+  if (!card) return
+  // Keep the section nav in sync with where we're scrolling to
+  const sec = card.closest('.macro-section')
+  if (sec && sec.id) {
+    document.querySelectorAll('.macro-nav-btn').forEach(b =>
+      b.classList.toggle('active', (b.getAttribute('onclick') || '').includes(`'${sec.id}'`)))
+  }
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  card.classList.remove('macro-chart-flash')
+  void card.offsetWidth   // restart the highlight animation on repeat clicks
+  card.classList.add('macro-chart-flash')
+  setTimeout(() => card.classList.remove('macro-chart-flash'), 1900)
 }
 
 function _fmtMacroPrice(v, units) {
