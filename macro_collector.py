@@ -266,6 +266,7 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     # Global & Spreads
     ("IRLTLT01JPM156N", "Japan 10Y",        "Global & Spreads","%",   "monthly"),
     ("IRLTLT01DEM156N", "Germany 10Y",      "Global & Spreads","%",   "monthly"),
+    ("IRLTLT01FRM156N", "France 10Y",       "Global & Spreads","%",   "monthly"),
     ("IRLTLT01GBM156N", "UK 10Y",           "Global & Spreads","%",   "monthly"),
     ("DFII10",   "Real Yield 10Y",          "Global & Spreads","%",   "daily"),
 
@@ -504,6 +505,8 @@ def get_computed_series(name: str, days: Optional[int] = None) -> list[dict]:
         return _spread("DGS30", "DGS5", days)
     if name == "sofr_iorb":
         return _spread("SOFR", "IORB", days)
+    if name == "fr_de_10y":
+        return _spread("IRLTLT01FRM156N", "IRLTLT01DEM156N", days)
     if name == "reserves_gdp":
         return _reserves_over_denom("GDP", days)
     if name == "ample_reserves":

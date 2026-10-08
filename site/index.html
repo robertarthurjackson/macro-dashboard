@@ -2595,6 +2595,7 @@ const _MACRO_COLOR = {
   DFII10: '#ff9a3c',
   // Spreads
   '2s10s': '#2fd18c', '5s30s': '#ffc94e', sofr_iorb: '#4ecdc4',
+  fr_de_10y: '#ff6b9d', IRLTLT01FRM156N: '#4f9eff', IRLTLT01DEM156N: '#ffc94e',
   // Balance
   WALCL: '#3b82f6', WDTGAL: '#ff9a3c', WRESBAL: '#2fd18c',
   RRPONTSYD: '#a48cff', RPONTSYD: '#ff6b6b',
@@ -2652,6 +2653,9 @@ async function loadMacroCharts() {
     {sid:'DFII10', name:'10-Year Real Yield'},
     {sid:'2s10s',  name:'2s10s Spread (10Y − 2Y)'},
     {sid:'5s30s',  name:'5s30s Spread (30Y − 5Y)'},
+    {sid:'fr_de_10y', name:'France−Germany 10Y Spread (OAT − Bund, bp)'},
+    {sid:'IRLTLT01FRM156N', name:'France 10-Year Yield (OAT, monthly)'},
+    {sid:'IRLTLT01DEM156N', name:'Germany 10-Year Yield (Bund, monthly)'},
     {sid:'RSTAR_HLW',    name:'R-star (HLW, NY Fed)'},
     {sid:'rstar_market', name:'R-star (Market 5y5y Real Fwd)'},
     {sid:'policy_gap',   name:'Policy Gap (Real FF − R-star)'},
@@ -3728,13 +3732,13 @@ function _renderTenorChartFor(sid) {
 function _miniChartLabelValue(v, sid) {
   if (v == null) return '—'
   // Rates and spreads use bp/% formatting
-  if (['DFF','SOFR','IORB','DGS3MO','DGS2','DGS5','DGS10','DGS30','DFII10','BAMLH0A0HYM2',
+  if (['DFF','SOFR','IORB','DGS3MO','DGS2','DGS5','DGS10','DGS30','DFII10','BAMLH0A0HYM2','IRLTLT01FRM156N','IRLTLT01DEM156N',
        'reserves_gdp','ample_reserves','cpi_yoy','pce_yoy','core_cpi_yoy',
        'walcl_13w','gld_flow_4w','ibit_flow_4w',
        'RSTAR_HLW','rstar_market','policy_gap',
        'T5YIFR','T5YIE','T10YIE','T30YIEM'].includes(sid))
     return v.toFixed(2) + '%'
-  if (['2s10s','5s30s','sofr_iorb'].includes(sid))
+  if (['2s10s','5s30s','sofr_iorb','fr_de_10y'].includes(sid))
     return (v >= 0 ? '+' : '') + v.toFixed(0) + 'bp'
   if (sid === 'walcl_accel') return (v >= 0 ? '+' : '') + v.toFixed(1) + 'pp'
   if (['true_ie_gross','true_ie_net','interest_pct_rev','avg_debt_rate'].includes(sid))
@@ -4007,7 +4011,7 @@ function _renderMacroLineChart(canvasId, obs, sid) {
   // every wiggle is meaningful info, not artifact). Keeps the smooth bezier
   // for everything else.
   const SHARP_LINE = new Set(['ample_reserves', 'reserves_gdp',
-                              '2s10s', '5s30s', 'sofr_iorb'])
+                              '2s10s', '5s30s', 'sofr_iorb', 'fr_de_10y'])
   const isSharp = SHARP_LINE.has(sid)
 
   // Build datasets — main line + optional reference line(s) per indicator
@@ -4069,6 +4073,7 @@ function _renderMacroLineChart(canvasId, obs, sid) {
     reserves_gdp:   'Reserves/GDP',
     '2s10s':        '10Y − 2Y',
     '5s30s':        '30Y − 5Y',
+    fr_de_10y:      'OAT − Bund',
     sofr_iorb:      'SOFR − IORB',
   }
 

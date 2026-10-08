@@ -31,7 +31,7 @@ def _macro_obs(sid, days):
 # ── macro ─────────────────────────────────────────────────────────────────────
 
 COMPUTED_SERIES = [
-    "2s10s", "5s30s", "sofr_iorb", "reserves_gdp", "ample_reserves",
+    "2s10s", "5s30s", "sofr_iorb", "fr_de_10y", "reserves_gdp", "ample_reserves",
     "cpi_yoy", "pce_yoy", "core_cpi_yoy",
     "walcl_13w", "gld_flow_4w", "ibit_flow_4w",
     "rstar_market", "policy_gap", "rv10y_20d", "walcl_accel",
@@ -43,6 +43,7 @@ COMPUTED_META = [
     ("2s10s",          "2s10s Spread",            "Global & Spreads",  "bps"),
     ("5s30s",          "5s30s Spread",            "Global & Spreads",  "bps"),
     ("sofr_iorb",      "SOFR − IORB",             "Global & Spreads",  "bps"),
+    ("fr_de_10y",      "France−Germany 10Y (OAT−Bund)", "Global & Spreads", "bps"),
     ("reserves_gdp",   "Bank Reserves / GDP",     "Fed Balance Sheet", "%"),
     ("ample_reserves", "Ample Reserves Indicator","Fed Balance Sheet", "%"),
     ("cpi_yoy",        "CPI (YoY)",               "Inflation",         "%"),
