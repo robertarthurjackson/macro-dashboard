@@ -110,7 +110,46 @@ def main() -> None:
     except Exception as exc:
         logger.warning("liq_quality failed: %s", exc)
 
+    build_stress()
     logger.info("Build complete.")
+
+
+def build_stress() -> None:
+    """Stress & Auctions tab → site/data/stress/*.json. Order matters: calendar
+    reads auctions.json, regime reads indicators.json + calendar.json."""
+    from stress_common import dump
+
+    def _indicators():
+        import stress_indicators
+        stress_indicators.build_indicators()
+
+    def _auctions():
+        import stress_auctions
+        dump("auctions.json", stress_auctions.build_auctions())
+
+    def _holdings():
+        import stress_holdings
+        dump(stress_holdings.OUT, stress_holdings.build_holdings())
+
+    def _fiscal():
+        import stress_fiscal
+        dump("fiscal.json", stress_fiscal.build_fiscal())
+
+    def _calendar():
+        import stress_calendar
+        dump("calendar.json", stress_calendar.build_calendar())
+
+    def _regime():
+        import stress_regime
+        stress_regime.build_regime()
+
+    for name, fn in (("indicators", _indicators), ("auctions", _auctions),
+                     ("holdings", _holdings), ("fiscal", _fiscal),
+                     ("calendar", _calendar), ("regime", _regime)):
+        try:
+            fn()
+        except Exception as exc:
+            logger.warning("stress %s failed: %s", name, exc)
 
 
 if __name__ == "__main__":

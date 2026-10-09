@@ -2048,6 +2048,100 @@
       font-size: 11px; color: var(--muted); margin-top: 12px; line-height: 1.6;
     }
     .bt-assumptions li { margin-bottom: 2px; }
+
+    /* ── Stress & Auctions tab ───────────────────────── */
+    .st-wrap { max-width: 1600px; margin: 0 auto; }
+    .st-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .st-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; }
+    .st-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .st-table thead th { text-align: right; padding: 8px 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--subtext); border-bottom: 1px solid var(--border); white-space: nowrap;
+      position: sticky; top: 0; background: var(--surface); }
+    .st-table thead th.l, .st-table td.l { text-align: left; }
+    .st-table tbody td { padding: 6px 10px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+      border-bottom: 1px solid rgba(255,255,255,.04); }
+    .st-table tbody tr:hover td { background: rgba(255,255,255,.025); }
+    .st-table tbody tr.st-click { cursor: pointer; }
+    .st-table td.st-lbl { text-align: left; color: var(--text); font-weight: 600; white-space: normal; min-width: 180px; }
+    .st-table tr.st-grp td { background: rgba(74,143,247,.06); color: var(--orange, #ff9a3c); font-weight: 700; font-size: 11px;
+      letter-spacing: .4px; text-transform: uppercase; text-align: left; padding: 7px 10px; }
+    .st-table tr.st-detail > td { background: rgba(0,0,0,.18); padding: 8px 10px 12px 26px; text-align: left; white-space: normal; }
+    .st-table tr.st-dim td { opacity: .55; }
+    .st-na { color: var(--muted); font-size: 11px; }
+    .st-sub { color: var(--subtext); font-size: 11px; }
+    .st-mut { color: var(--muted); font-size: 10.5px; }
+    .st-badge { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;
+      letter-spacing: .2px; white-space: nowrap; }
+    .st-b-ok { background: rgba(47,209,140,.12); color: var(--green); }
+    .st-b-stub { background: rgba(159,122,234,.14); color: var(--purple); }
+    .st-b-err { background: rgba(240,82,82,.12); color: var(--red); }
+    .st-b-stale { background: rgba(245,166,35,.12); color: var(--amber); }
+    .st-b-muted { background: rgba(255,255,255,.05); color: var(--subtext); }
+    .st-b-blue { background: rgba(74,143,247,.12); color: var(--blue); }
+    .st-cc { display: inline-block; min-width: 26px; text-align: center; padding: 1px 5px; border-radius: 3px; font-size: 10px;
+      font-weight: 700; background: rgba(255,255,255,.07); color: var(--text); letter-spacing: .3px; }
+    .st-banner { display: flex; flex-wrap: wrap; gap: 18px 28px; align-items: center; padding: 16px 18px;
+      border-left: 4px solid var(--muted); }
+    .st-banner .st-big { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .st-banner .st-k { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--subtext); margin-bottom: 3px; }
+    .st-banner .st-summary { flex: 1 1 320px; color: var(--subtext); font-size: 12px; line-height: 1.5; }
+    .st-bar { position: relative; height: 8px; width: 110px; background: var(--border); border-radius: 4px; overflow: hidden;
+      display: inline-block; vertical-align: middle; margin-left: 8px; }
+    .st-bar > i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+    .st-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .st-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .st-grid2 > *, .st-grid3 > * { min-width: 0; }
+    @media (max-width: 1000px) { .st-grid2, .st-grid3 { grid-template-columns: 1fr; } }
+    .st-h { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--subtext); margin: 0 0 8px; }
+    .st-feed { list-style: none; margin: 0; padding: 0; font-size: 12px; }
+    .st-feed li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04); line-height: 1.45; }
+    .st-feed li:last-child { border-bottom: none; }
+    .st-sev { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+    .st-sev-high { background: var(--red); } .st-sev-med { background: var(--amber); } .st-sev-low { background: var(--muted); }
+    .st-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+    .st-filter button { background: none; border: 1px solid var(--border); color: var(--subtext); padding: 4px 11px; border-radius: 5px;
+      cursor: pointer; font-size: 11px; font-weight: 600; }
+    .st-filter button.active { border-color: var(--blue); color: var(--blue); background: rgba(74,143,247,.08); }
+    .st-srcline { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; font-size: 11px; color: var(--subtext); }
+    .st-buyers { display: inline-flex; width: 90px; height: 7px; border-radius: 3px; overflow: hidden; background: var(--border);
+      vertical-align: middle; margin-right: 6px; }
+    .st-split { display: flex; height: 22px; border-radius: 5px; overflow: hidden; background: var(--border); margin: 6px 0 10px; }
+    .st-split > div { height: 100%; }
+    .st-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11px; color: var(--subtext); }
+    .st-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+    .st-kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font-size: 12px; }
+    .st-kv > span:nth-child(odd) { color: var(--subtext); }
+    .st-kv > span:nth-child(even) { text-align: right; font-variant-numeric: tabular-nums; }
+    .st-timeline { position: relative; height: 34px; margin: 6px 0 14px; border-bottom: 1px solid var(--border); }
+    .st-timeline .st-dot { position: absolute; bottom: 4px; width: 10px; height: 10px; border-radius: 50%; transform: translateX(-50%);
+      border: 1px solid rgba(0,0,0,.4); cursor: default; }
+    .st-timeline .st-tick { position: absolute; bottom: -16px; font-size: 9.5px; color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
+    .st-cal-item { display: flex; gap: 10px; align-items: baseline; padding: 6px 8px; border-left: 3px solid var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,.04); font-size: 12px; }
+    .st-cal-item.sev-high { border-left-color: var(--red); } .st-cal-item.sev-med { border-left-color: var(--amber); }
+    .st-cal-item .st-cal-d { min-width: 92px; color: var(--text); font-variant-numeric: tabular-nums; font-weight: 600; }
+    .st-cal-item .st-cal-n { min-width: 40px; color: var(--muted); font-size: 10.5px; }
+    .st-chart { position: relative; height: 320px; }
+    .st-note { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .st-foot { max-width: 1200px; margin: 32px auto 0; padding: 20px 24px 32px; border-top: 1px solid rgba(255,255,255,0.08);
+      color: var(--subtext); font-size: 11.5px; line-height: 1.7; }
+    .st-foot details { margin-top: 8px; } .st-foot summary { cursor: pointer; color: var(--text); font-weight: 600; }
+    .st-foot dt { color: var(--text); font-weight: 600; margin-top: 6px; } .st-foot dd { margin-left: 0; }
+    sup.st-m { color: var(--amber); font-size: 9px; margin-left: 2px; }
+    @media (max-width: 700px) {
+      .meta-nav button { padding: 12px 12px; font-size: 12px; }
+      .st-banner .st-big { font-size: 21px; }
+      .st-chart { height: 260px; }
+      .st-table { font-size: 11px; }
+      .st-table tbody td, .st-table thead th { padding: 5px 7px; }
+      .st-table td.st-lbl { min-width: 140px; }
+      #section-stress .macro-mini-chart-header { flex-wrap: wrap; }
+      #section-stress .macro-section { padding-left: 12px; padding-right: 12px; }
+      .st-cal-item { gap: 6px; }
+      .st-cal-item .st-cal-d { min-width: 70px; font-size: 11px; }
+      .st-cal-item .st-cal-n { min-width: 34px; }
+    }
   </style>
 </head>
 <body>
@@ -2064,6 +2158,7 @@
 <nav class="meta-nav">
   <button class="active" data-section="macro">Macro</button>
   <button data-section="liquidity">Liquidity</button>
+  <button data-section="stress">Stress &amp; Auctions</button>
 </nav>
 <div id="section-macro" class="section-panel active">
   <div class="macro-watchlist-wrap">
@@ -2412,6 +2507,126 @@
 
 </div><!-- /section-liquidity -->
 
+<div id="section-stress" class="section-panel">
+  <div class="macro-watchlist-wrap">
+    <div class="macro-status-row">
+      <div class="macro-watchlist-title">
+        <img src="static/img/archer_watermark.png" alt=""
+             style="height:22px;vertical-align:-5px;margin-right:6px;
+                    filter:brightness(0) invert(1);opacity:0.95;"/>Stress &amp; Auctions
+      </div>
+      <span id="st-status">—</span>
+    </div>
+  </div>
+
+  <div class="macro-nav">
+    <button class="macro-nav-btn active" onclick="liqNavGo('st-anchor-regime', this)">Regimes</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('st-anchor-ind',    this)">Indicators</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('st-anchor-auc',    this)">Auctions</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('st-anchor-hold',   this)">Investor Base</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('st-anchor-fiscal', this)">Fiscal</button>
+    <button class="macro-nav-btn"        onclick="liqNavGo('st-anchor-cal',    this)">Calendar</button>
+  </div>
+
+  <!-- 1. Regime monitor -->
+  <div id="st-anchor-regime" class="macro-section">
+    <div class="macro-section-title">Regime Monitor</div>
+    <div id="st-banner" class="st-card st-banner"><span class="st-sub">Loading…</span></div>
+    <div class="st-scroll" style="margin-top:12px;"><table class="st-table" id="st-regime-table"></table></div>
+    <div class="st-note">Click a regime row to see its member indicators and their contribution to the score.</div>
+    <div class="macro-mini-chart" style="margin-top:14px;cursor:default;">
+      <div class="macro-mini-chart-header">
+        <span class="macro-mini-chart-title">Regime-score history (weekly, 0-100)</span>
+        <span class="st-mut" id="st-hist-note"></span>
+      </div>
+      <div class="st-chart"><canvas id="st-regime-hist"></canvas></div>
+    </div>
+    <div class="st-grid2" style="margin-top:14px;">
+      <div class="st-card"><div class="st-h">What moved</div><div id="st-moved"></div></div>
+      <div class="st-card"><div class="st-h">Upcoming stress events</div><div id="st-upcoming"></div></div>
+    </div>
+  </div>
+
+  <!-- 2. Indicator panel -->
+  <div id="st-anchor-ind" class="macro-section">
+    <div class="macro-section-title">Stress Indicators</div>
+    <div class="st-filter" id="st-ind-filter">
+      <button class="active" data-f="all">All</button>
+      <button data-f="zone">In stress zone</button>
+      <button data-f="ok">Live only</button>
+      <button data-f="stub">Stubs / errors</button>
+    </div>
+    <div id="st-ind-summary" class="st-sub" style="margin-bottom:8px;"></div>
+    <div class="st-scroll"><table class="st-table" id="st-ind-table"></table></div>
+    <div class="st-note">z = 3y z-score; pctile = stress-direction percentile over 10y (higher = more stress); stress zone = pctile ≥ 90 or directional z ≥ 2. Click a row for its chart.</div>
+  </div>
+
+  <!-- 3. Auction monitor -->
+  <div id="st-anchor-auc" class="macro-section">
+    <div class="macro-section-title">Global Auction Monitor</div>
+    <div class="st-filter" id="st-auc-filter"></div>
+    <div id="st-auc-ez"></div>
+    <div class="st-h" style="margin-top:6px;">Upcoming (next ~2 weeks)</div>
+    <div class="st-scroll"><table class="st-table" id="st-auc-upcoming"></table></div>
+    <div class="st-h" style="margin-top:16px;">Recent results</div>
+    <div class="st-scroll"><table class="st-table" id="st-auc-recent"></table></div>
+    <div class="st-note" id="st-auc-method"></div>
+    <div class="st-srcline" id="st-auc-sources"></div>
+  </div>
+
+  <!-- 4. Investor base -->
+  <div id="st-anchor-hold" class="macro-section">
+    <div class="macro-section-title">Investor Base</div>
+    <div class="st-filter" id="st-hold-filter"></div>
+    <div class="st-grid2">
+      <div class="macro-mini-chart" style="cursor:default;">
+        <div class="macro-mini-chart-header">
+          <span class="macro-mini-chart-title" id="st-hold-title">Foreign vs domestic share</span>
+          <span class="st-mut" id="st-hold-asof"></span>
+        </div>
+        <div class="st-chart"><canvas id="st-hold-chart"></canvas></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="st-card" id="st-hold-split"></div>
+        <div class="st-card" id="st-hold-cb"></div>
+      </div>
+    </div>
+    <div class="st-h" style="margin-top:14px;">Cross-country snapshot</div>
+    <div class="st-scroll"><table class="st-table" id="st-hold-cmp"></table></div>
+    <div class="st-note" id="st-hold-notes"></div>
+  </div>
+
+  <!-- 5. Fiscal / market context -->
+  <div id="st-anchor-fiscal" class="macro-section">
+    <div class="macro-section-title">Fiscal &amp; Market Context</div>
+    <div class="st-scroll"><table class="st-table" id="st-fiscal-table"></table></div>
+    <div class="st-note">Hover a cell for source and as-of date. <sup class="st-m">m</sup> manual table · <sup class="st-m">e</sup> IMF/OECD estimate · <sup class="st-m">~</sup> approximate · <span class="st-badge st-b-stale">stale</span> older than expected.</div>
+  </div>
+
+  <!-- 6. Stress calendar -->
+  <div id="st-anchor-cal" class="macro-section">
+    <div class="macro-section-title">Stress Calendar (next ~90 days)</div>
+    <div class="st-card">
+      <div class="st-timeline" id="st-cal-timeline"></div>
+      <div id="st-cal-list" style="margin-top:22px;"></div>
+    </div>
+  </div>
+
+  <div class="st-foot" id="st-foot"></div>
+</div><!-- /section-stress -->
+
+<!-- Stress tab chart modal -->
+<div id="st-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)_stCloseModal()">
+  <div class="macro-modal-box">
+    <div class="macro-modal-head">
+      <div class="macro-modal-title" id="st-modal-title">—</div>
+      <button class="macro-modal-close" onclick="_stCloseModal()">×</button>
+    </div>
+    <div style="position:relative;height:min(55vh,520px);"><canvas id="st-modal-canvas"></canvas></div>
+    <div id="st-modal-meta" class="st-note" style="max-height:22vh;overflow:auto;"></div>
+  </div>
+</div>
+
 <!-- Macro chart expand modal -->
 <div id="macro-modal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeMacroModal()">
   <div class="macro-modal-box">
@@ -2465,6 +2680,7 @@
     }
     if (path === '/api/forward-curves/treasury') return load('fwd_treasury.json').then(fake).catch(fail)
     if (path === '/api/forward-curves/fed-funds') return load('fwd_fedfunds.json').then(fake).catch(fail)
+    if (path.startsWith('/api/stress/')) return load('stress/' + path.split('/').pop() + '.json').then(fake).catch(fail)
     if (path === '/api/liquidity/quality-overlays') return load('liq_quality.json').then(fake).catch(fail)
     if (path === '/api/liquidity/headline') {
       const b = LIQ_BUCKETS.has(days) ? days : 'all'
@@ -2493,6 +2709,7 @@ document.querySelectorAll('.meta-nav button').forEach(btn => {
     _activeSection = newSection
     if (newSection === 'macro' && !_macroLoaded) loadMacroSection()
     if (newSection === 'liquidity' && !_liqLoaded) loadLiquiditySection()
+    if (newSection === 'stress' && !_stLoaded) loadStressSection()
   })
 })
 
@@ -4844,6 +5061,749 @@ function _renderLiqSimpleChart(canvasId, obs, color, sid, units) {
 }
 
 // Liquidity sentinel handling is integrated directly into _renderMacroModalChart() above.
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Stress & Auctions tab
+// Data: site/data/stress/{regime,indicators,auctions,holdings,fiscal,calendar}.json
+// (served via the /api/stress/<name> shim). Every renderer is defensive: missing
+// files / fields / nulls degrade to muted "n/a" badges and never throw upward.
+// ══════════════════════════════════════════════════════════════════════════════
+
+let _stLoaded = false
+const _ST = { d: {}, aucAll: false, aucCountry: 'ALL', holdCountry: null, indFilter: 'all', openRegimes: new Set() }
+const _ST_FILES = ['regime', 'indicators', 'auctions', 'holdings', 'fiscal', 'calendar']
+const _ST_NA = '<span class="st-na">n/a</span>'
+const _ST_COUNTRIES = ['US', 'CA', 'DE', 'FR', 'IT', 'JP', 'UK']
+const _ST_EZ = ['DE', 'FR', 'IT']
+const _ST_LEVEL_COLOR = { calm: '#2fd18c', elevated: '#f5a623', high: '#ff9a3c', extreme: '#f05252',
+                          weak: '#f05252', moderate: '#f5a623', strong: '#2fd18c' }
+const _ST_REGIME_COLOR = {
+  liquidity_tightening: '#4f9eff', funding_crisis: '#ff6b6b', market_functioning: '#4ecdc4',
+  sovereign_fiscal: '#ff9a3c', credit_stress: '#a48cff', policy_intervention: '#ffc94e',
+  overall: '#dce1f0', normal: '#2fd18c',
+}
+const _ST_SECTOR_COLOR = { foreign: '#4f9eff', central_bank: '#ff9a3c', banks: '#a48cff',
+                           other_financial: '#4ecdc4', households_other: '#ffc94e', domestic: '#2fd18c' }
+
+const _stEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+  c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const _stN = v => typeof v === 'number' && isFinite(v)
+const _stArr = v => Array.isArray(v) ? v : []
+const _stObj = v => (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}
+function _stF(v, d = 2, suffix = '') { return _stN(v) ? v.toFixed(d) + suffix : _ST_NA }
+function _stSigned(v, d = 1, suffix = '') {
+  if (!_stN(v)) return _ST_NA
+  return (v > 0 ? '+' : '') + v.toFixed(d) + suffix
+}
+function _stAuto(v) {
+  if (!_stN(v)) return _ST_NA
+  const a = Math.abs(v)
+  if (a >= 10000) return v.toLocaleString('en-US', { maximumFractionDigits: 0 })
+  if (a >= 100) return v.toFixed(1)
+  if (a >= 1) return v.toFixed(2)
+  if (a === 0) return '0'
+  return v.toFixed(3)
+}
+function _stTitle(o) {
+  // tooltip text from {source, as_of, note}
+  o = _stObj(o)
+  const parts = []
+  if (o.source) parts.push('Source: ' + o.source)
+  if (o.as_of) parts.push('As of: ' + o.as_of)
+  if (o.reference) parts.push(o.reference)
+  if (o.note) parts.push(o.note)
+  return _stEsc(parts.join('\n'))
+}
+function _stStatusBadge(status, note) {
+  const t = note ? ` title="${_stEsc(note)}"` : ''
+  switch (status) {
+    case 'ok': return `<span class="st-badge st-b-ok"${t}>ok</span>`
+    case 'stub': return `<span class="st-badge st-b-stub"${t}>stub — paid data</span>`
+    case 'stale': return `<span class="st-badge st-b-stale"${t}>stale</span>`
+    case 'error': return `<span class="st-badge st-b-err"${t}>source blocked</span>`
+    case undefined: case null: case '': return `<span class="st-badge st-b-muted"${t}>n/a</span>`
+    default: return `<span class="st-badge st-b-muted"${t}>${_stEsc(status)}</span>`
+  }
+}
+function _stLevelPill(level) {
+  if (!level) return _ST_NA
+  const c = _ST_LEVEL_COLOR[level] || '#8a93ad'
+  return `<span class="st-badge" style="background:${c}22;color:${c}">${_stEsc(level)}</span>`
+}
+function _stScoreColor(score, inverse) {
+  if (!_stN(score)) return '#4a5168'
+  const s = inverse ? 100 - score : score
+  return s >= 75 ? '#f05252' : s >= 65 ? '#ff9a3c' : s >= 55 ? '#f5a623' : '#2fd18c'
+}
+function _stArrow(trend, chg, inverse) {
+  // inverse=true: "up" is good (Normal regime)
+  if (!trend && !_stN(chg)) return _ST_NA
+  const t = trend || (chg > 0.5 ? 'up' : chg < -0.5 ? 'down' : 'flat')
+  const sym = t === 'up' ? '↑' : t === 'down' ? '↓' : '→'
+  let col = 'var(--subtext)'
+  if (t === 'up') col = inverse ? 'var(--green)' : 'var(--red)'
+  if (t === 'down') col = inverse ? 'var(--red)' : 'var(--green)'
+  return `<span style="color:${col};font-weight:700">${sym}</span> <span class="st-sub">${_stSigned(chg, 1)}</span>`
+}
+function _stDays(dateStr) {
+  if (!dateStr) return null
+  const d = new Date(dateStr.slice(0, 10) + 'T00:00:00Z')
+  const t = new Date(); const today = Date.UTC(t.getFullYear(), t.getMonth(), t.getDate())
+  return Math.round((d.getTime() - today) / 86400000)
+}
+function _stCC(c) { return `<span class="st-cc">${_stEsc(c || '—')}</span>` }
+function _stSafe(name, fn) {
+  try { fn() } catch (e) { console.error('[stress] ' + name + ' render failed', e)
+    const el = document.getElementById(name)
+    if (el) el.innerHTML = `<span class="st-badge st-b-err">render error</span> <span class="st-mut">${_stEsc(e.message)}</span>` }
+}
+function _stMissing(file) {
+  return `<span class="st-badge st-b-muted">n/a</span> <span class="st-mut">${_stEsc(file)}.json not available yet</span>`
+}
+function _stDestroy(id) {
+  if (_macroChartInstances[id]) { try { _macroChartInstances[id].destroy() } catch (e) {} delete _macroChartInstances[id] }
+}
+const _ST_TOOLTIP = { backgroundColor: 'rgba(15,17,22,0.95)', borderColor: '#444', borderWidth: 1, padding: 10,
+                      titleColor: '#fff', bodyColor: '#dce1f0' }
+const _ST_GRID = { color: 'rgba(255,255,255,0.05)', borderDash: [4, 4] }
+const _ST_TICK = { color: '#888', font: { size: 11 } }
+
+// ── Loader ──────────────────────────────────────────────────────────────────
+async function loadStressSection() {
+  const st = document.getElementById('st-status')
+  if (st) st.textContent = 'Loading…'
+  _stLoaded = true
+  const results = await Promise.all(_ST_FILES.map(async f => {
+    try {
+      const r = await fetch('/api/stress/' + f)
+      if (!r.ok) return [f, null]
+      return [f, await r.json()]
+    } catch (e) { return [f, null] }
+  }))
+  results.forEach(([f, d]) => { _ST.d[f] = d })
+  _stSafe('st-banner', _stRenderBanner)
+  _stSafe('st-regime-table', _stRenderRegimeTable)
+  _stSafe('st-hist-note', _stRenderRegimeHistory)
+  _stSafe('st-moved', _stRenderMoved)
+  _stSafe('st-upcoming', _stRenderUpcoming)
+  _stSafe('st-ind-table', _stRenderIndicators)
+  _stSafe('st-auc-recent', _stRenderAuctions)
+  _stSafe('st-hold-split', _stRenderHoldings)
+  _stSafe('st-fiscal-table', _stRenderFiscal)
+  _stSafe('st-cal-list', _stRenderCalendar)
+  _stSafe('st-foot', _stRenderFooter)
+  const ok = results.filter(r => r[1]).length
+  const gen = results.map(r => r[1] && r[1].generated_at).filter(Boolean).sort().pop()
+  if (st) st.textContent = `${ok}/${_ST_FILES.length} feeds loaded` + (gen ? ` · generated ${gen.slice(0, 16).replace('T', ' ')} UTC` : '')
+}
+
+// ── 1. Regime monitor ───────────────────────────────────────────────────────
+function _stRenderBanner() {
+  const el = document.getElementById('st-banner')
+  const R = _ST.d.regime
+  if (!R) { el.innerHTML = _stMissing('regime'); return }
+  const h = _stObj(R.headline), mk = _stObj(R.markov)
+  const lvl = h.overall_level || h.level
+  const col = _ST_LEVEL_COLOR[h.level] || '#4a5168'
+  el.style.borderLeftColor = col
+  const prob = _stN(h.markov_prob_high) ? h.markov_prob_high : mk.prob_high_now
+  const probTxt = _stN(prob) ? (prob * 100).toFixed(prob < 0.1 ? 1 : 0) + '%' : _ST_NA
+  const probTitle = _stEsc(`2-state Markov switching on ${mk.series || 'n/a'}; as of ${mk.as_of || 'n/a'}` +
+    (mk.status && mk.status !== 'ok' ? ` (status ${mk.status}: ${mk.note || ''})` : ''))
+  el.innerHTML = `
+    <div><div class="st-k">Dominant regime</div>
+      <div class="st-big" style="color:${col}">${_stEsc(h.label || h.regime || 'n/a')}</div>
+      <div style="margin-top:4px">${_stLevelPill(h.level)} <span class="st-sub">score ${_stF(h.score, 1)}</span></div></div>
+    <div><div class="st-k">Overall stress</div>
+      <div class="st-big" style="color:${_stScoreColor(h.overall_stress)}">${_stF(h.overall_stress, 1)}</div>
+      <div style="margin-top:4px">${_stLevelPill(lvl)} <span class="st-sub">normal ${_stF(h.normal_score, 1)}</span></div></div>
+    <div title="${probTitle}"><div class="st-k">Markov P(high stress)</div>
+      <div class="st-big" style="color:${_stN(prob) && prob > 0.5 ? 'var(--red)' : 'var(--text)'}">${probTxt}</div>
+      <div class="st-mut" style="margin-top:4px">${_stEsc(mk.series ? mk.series.split(' ')[0] : '')} · ${_stEsc(mk.as_of || '')}</div></div>
+    <div class="st-summary">${_stEsc(h.summary || '')}
+      ${R.next_major_event ? `<div style="margin-top:6px"><span class="st-sev st-sev-${_stEsc(R.next_major_event.severity)}"></span>Next major event: <b style="color:var(--text)">${_stEsc(R.next_major_event.label)}</b> ${_stCC(R.next_major_event.country)} ${_stEsc(R.next_major_event.date)}${_stN(R.next_major_event.days_ahead) ? ` (in ${R.next_major_event.days_ahead}d)` : ''}</div>` : ''}
+      <div class="st-mut" style="margin-top:4px">as of ${_stEsc((h.as_of || R.generated_at || '').slice(0, 16).replace('T', ' '))}</div></div>`
+}
+
+function _stRenderRegimeTable() {
+  const el = document.getElementById('st-regime-table')
+  const R = _ST.d.regime
+  if (!R) { el.innerHTML = `<tbody><tr><td class="l">${_stMissing('regime')}</td></tr></tbody>`; return }
+  const regs = _stArr(R.regimes)
+  const head = `<thead><tr><th class="l">Regime</th><th class="l">Score</th><th class="l">Level</th>
+    <th class="l">Breadth</th><th>Trend 1w</th><th>Trend 1m</th></tr></thead>`
+  const rows = regs.map(r => {
+    const inv = r.id === 'normal'
+    const col = _stScoreColor(r.score, inv)
+    const open = _ST.openRegimes.has(r.id)
+    let html = `<tr class="st-click" data-rid="${_stEsc(r.id)}">
+      <td class="st-lbl"><span style="display:inline-block;width:12px;color:var(--muted)">${open ? '▾' : '▸'}</span>
+        <span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${_ST_REGIME_COLOR[r.id] || '#888'};margin-right:6px"></span>${_stEsc(r.label || r.id)}</td>
+      <td class="l" title="10y-basis score; 3y basis ${_stEsc(_stN(r.score_3y) ? r.score_3y.toFixed(1) : 'n/a')}">
+        <b style="color:${col}">${_stF(r.score, 1)}</b><span class="st-bar"><i style="width:${_stN(r.score) ? Math.max(0, Math.min(100, r.score)) : 0}%;background:${col}"></i></span></td>
+      <td class="l">${_stLevelPill(r.level)}</td>
+      <td class="l"><span class="st-sub">${_stEsc(r.breadth_text || (_stN(r.n_stress_zone) ? `${r.n_stress_zone}/${r.n_ok} in stress zone` : 'n/a'))}</span></td>
+      <td>${_stArrow(r.trend_1w, r.chg_1w, inv)}</td>
+      <td>${_stArrow(r.trend_1m, r.chg_1m, inv)}</td></tr>`
+    if (open) html += `<tr class="st-detail"><td colspan="6">${_stRegimeMembers(r)}</td></tr>`
+    return html
+  }).join('')
+  el.innerHTML = head + `<tbody>${rows || `<tr><td class="l">${_ST_NA}</td></tr>`}</tbody>`
+  el.querySelectorAll('tr[data-rid]').forEach(tr => tr.addEventListener('click', () => {
+    const id = tr.dataset.rid
+    if (_ST.openRegimes.has(id)) _ST.openRegimes.delete(id); else _ST.openRegimes.add(id)
+    _stRenderRegimeTable()
+  }))
+}
+
+function _stRegimeMembers(r) {
+  const mem = _stArr(r.members).slice().sort((a, b) => (b.contribution ?? b.pct ?? -1) - (a.contribution ?? a.pct ?? -1))
+  if (!mem.length) return _ST_NA
+  const isNormal = r.id === 'normal'
+  const rows = mem.map(m => `<tr class="${m.status && m.status !== 'ok' ? 'st-dim' : ''}">
+    <td class="st-lbl" style="font-weight:500">${_stEsc(m.label || m.id)}${m.note ? ` <span class="st-mut">${_stEsc(m.note)}</span>` : ''}</td>
+    <td>${_stN(m.pct) ? `<span style="color:${_stScoreColor(m.pct)}">${m.pct.toFixed(1)}</span>` : _ST_NA}</td>
+    <td>${_stF(m.weight, 1)}</td>
+    <td>${_stN(m.contribution) ? m.contribution.toFixed(2) : _ST_NA}</td>
+    <td>${m.stress_zone ? '<span class="st-badge st-b-err">zone</span>' : m.stress_zone === false ? '<span class="st-mut">—</span>' : _ST_NA}</td>
+    <td>${m.status ? _stStatusBadge(m.status) : ''}</td></tr>`).join('')
+  return `<table class="st-table" style="font-size:11.5px"><thead><tr><th class="l">${isNormal ? 'Component regime' : 'Member indicator'}</th>
+    <th>Pctile</th><th>Weight</th><th>Contribution</th><th>Zone</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>
+    ${r.note ? `<div class="st-note">${_stEsc(r.note)}</div>` : ''}${r.history_basis ? `<div class="st-note">History basis: ${_stEsc(r.history_basis)}</div>` : ''}`
+}
+
+function _stRenderRegimeHistory() {
+  const note = document.getElementById('st-hist-note')
+  const R = _ST.d.regime, H = R && _stObj(R.history)
+  _stDestroy('st-regime-hist')
+  const canvas = document.getElementById('st-regime-hist')
+  if (!H || !_stArr(H.dates).length) { note.innerHTML = _stMissing('regime'); return }
+  const dates = H.dates
+  const ids = _stArr(R.regimes).map(r => r.id).filter(id => id !== 'normal')
+  const labelOf = Object.fromEntries(_stArr(R.regimes).map(r => [r.id, r.label]))
+  const datasets = ids.filter(id => Array.isArray(H[id])).map(id => ({
+    label: labelOf[id] || id, data: H[id], borderColor: _ST_REGIME_COLOR[id] || '#888',
+    backgroundColor: _ST_REGIME_COLOR[id] || '#888', borderWidth: 1.5, pointRadius: 0, tension: .2, yAxisID: 'y',
+  }))
+  if (Array.isArray(H.overall)) datasets.push({ label: 'Overall', data: H.overall, borderColor: '#dce1f0', backgroundColor: '#dce1f0',
+    borderWidth: 2.5, pointRadius: 0, tension: .2, yAxisID: 'y' })
+  if (Array.isArray(H.normal)) datasets.push({ label: 'Normal', data: H.normal, borderColor: '#2fd18c', backgroundColor: '#2fd18c',
+    borderWidth: 1.5, borderDash: [5, 4], pointRadius: 0, tension: .2, hidden: true, yAxisID: 'y' })
+  // Markov P(high) aligned by date (hidden by default)
+  const mk = _stObj(R.markov)
+  if (_stArr(mk.history).length) {
+    const m = new Map(mk.history.map(p => [p[0], p[1]]))
+    // markov dates are a few days off the Friday grid → nearest previous
+    const mkDates = mk.history.map(p => p[0])
+    const aligned = dates.map(d => { if (m.has(d)) return m.get(d) * 100
+      let v = null; for (let i = 0; i < mkDates.length && mkDates[i] <= d; i++) v = mk.history[i][1]; return v == null ? null : v * 100 })
+    datasets.push({ label: 'Markov P(high) %', data: aligned, borderColor: '#f05252', backgroundColor: 'rgba(240,82,82,.12)',
+      borderWidth: 1, pointRadius: 0, fill: true, hidden: true, stepped: true, yAxisID: 'y' })
+  }
+  const last = dates[dates.length - 1]
+  note.textContent = `3y-basis history; last point ${last} may differ from the 10y-basis headline score`
+  _macroChartInstances['st-regime-hist'] = new Chart(canvas.getContext('2d'), {
+    type: 'line', data: { labels: dates, datasets },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { macroWatermark: { enabled: true },
+        legend: { display: true, position: 'bottom', labels: { color: '#8a93ad', boxWidth: 10, font: { size: 10 } } },
+        tooltip: { ..._ST_TOOLTIP, itemSort: (a, b) => (b.parsed.y ?? 0) - (a.parsed.y ?? 0),
+          callbacks: { title: it => it[0].label + (it[0].dataIndex === dates.length - 1 ? ' (3y basis)' : ''),
+                       label: c => `${c.dataset.label}: ${_stN(c.parsed.y) ? c.parsed.y.toFixed(1) : 'n/a'}` } } },
+      scales: { x: { ticks: { ..._ST_TICK, maxTicksLimit: 8, maxRotation: 0 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { position: 'right', min: 0, max: 100, ticks: { ..._ST_TICK, stepSize: 25 }, grid: _ST_GRID } } },
+    plugins: [{ id: 'stBands', beforeDatasetsDraw(chart) {
+      const { ctx, chartArea: a, scales: { y } } = chart; if (!a) return
+      ;[[55, 65, 'rgba(245,166,35,.05)'], [65, 75, 'rgba(255,154,60,.06)'], [75, 100, 'rgba(240,82,82,.07)']].forEach(([lo, hi, c]) => {
+        ctx.save(); ctx.fillStyle = c; ctx.fillRect(a.left, y.getPixelForValue(hi), a.right - a.left, y.getPixelForValue(lo) - y.getPixelForValue(hi)); ctx.restore() })
+    } }],
+  })
+}
+
+function _stRenderMoved() {
+  const el = document.getElementById('st-moved')
+  const R = _ST.d.regime
+  if (!R) { el.innerHTML = _stMissing('regime'); return }
+  const wm = _stObj(R.what_moved), ew = _stObj(R.early_warning)
+  const moves = _stArr(wm.moves), events = _stArr(wm.events)
+  let html = ''
+  if (events.length) {
+    const typeLbl = { first_use: 'first use', stress_zone_entry: 'zone entry', stress_zone_exit: 'zone exit',
+                      sign_flip: 'correlation break', early_warning: 'early warning' }
+    html += `<ul class="st-feed">${events.map(e => `<li><span class="st-sev st-sev-${_stEsc(e.severity || 'low')}"></span>
+      <span class="st-badge ${e.type === 'stress_zone_exit' ? 'st-b-ok' : e.type === 'first_use' ? 'st-b-err' : 'st-b-stale'}">${_stEsc(typeLbl[e.type] || e.type || 'event')}</span>
+      ${_stEsc(e.text || e.label || '')}${e.caveat ? `<div class="st-mut" style="margin-left:14px">${_stEsc(e.caveat)}</div>` : ''}</li>`).join('')}</ul>`
+  }
+  const sig = _stArr(ew.signals), watch = _stArr(ew.watch)
+  if (sig.length || watch.length) {
+    html += `<div class="st-h" style="margin-top:12px">Early warning (critical slowing down)</div><ul class="st-feed">`
+    html += sig.map(w => `<li><span class="st-badge st-b-err">signal</span> ${_stEsc(w.label || w.id)} <span class="st-mut">variance ${_stEsc(w.var_trend || '')}, autocorr ${_stEsc(w.ac1_trend || '')} · ${_stEsc(w.as_of || '')}</span></li>`).join('')
+    html += watch.map(w => `<li><span class="st-badge st-b-muted">watch</span> ${_stEsc(w.label || w.id)} <span class="st-mut">var ×${_stF(w.var_ratio, 2)} (${_stEsc(w.var_trend || '?')}), autocorr ${_stEsc(w.ac1_trend || '?')} · ${_stEsc(w.as_of || '')}</span></li>`).join('')
+    html += `</ul>`
+  } else if (sig.length === 0 && ew && Object.keys(ew).length) {
+    html += `<div class="st-mut" style="margin-top:8px">No early-warning signals.</div>`
+  }
+  if (moves.length) {
+    html += `<div class="st-h" style="margin-top:12px">Top moves (by |z| of weekly change)</div>
+      <div style="overflow-x:auto"><table class="st-table"><thead><tr><th class="l">Indicator</th><th>Latest</th><th>Change</th><th>z</th><th>As of</th></tr></thead><tbody>
+      ${moves.map(m => `<tr><td class="st-lbl" style="font-weight:500;min-width:150px">${_stEsc(m.label || m.id)}</td>
+        <td>${_stAuto(m.latest)} <span class="st-mut">${_stEsc(m.units || '')}</span></td>
+        <td style="color:${m.effect === 'bad' ? 'var(--red)' : m.effect === 'good' ? 'var(--green)' : 'var(--text)'}">${_stN(m.change) ? (m.change > 0 ? '+' : '') + _stAuto(m.change) : _ST_NA} <span class="st-mut">${_stEsc(m.horizon || '')}</span></td>
+        <td>${_stF(m.z_move, 1)}</td><td class="st-mut">${_stEsc(m.as_of || '')}</td></tr>`).join('')}</tbody></table></div>`
+  }
+  el.innerHTML = html || '<span class="st-mut">Nothing notable this week.</span>'
+}
+
+function _stRenderUpcoming() {
+  const el = document.getElementById('st-upcoming')
+  const R = _ST.d.regime, C = _ST.d.calendar
+  const seen = new Set(), items = []
+  const add = e => { if (!e || !e.date) return; const k = e.date + '|' + e.label; if (seen.has(k)) return; seen.add(k); items.push(e) }
+  _stArr(R && R.upcoming_stress_events).forEach(add)
+  _stArr(C && C.events).forEach(e => { const d = _stDays(e.date), de = _stDays(e.end_date || e.date)
+    if (de != null && de >= 0 && d != null && d <= 30) add(e) })
+  if (!R && !C) { el.innerHTML = _stMissing('calendar'); return }
+  items.sort((a, b) => a.date.localeCompare(b.date))
+  if (!items.length) { el.innerHTML = '<span class="st-mut">No stress events in the next 30 days.</span>'; return }
+  el.innerHTML = `<div class="st-mut" style="margin-bottom:6px">Next 30 days · full 90-day view in the Stress Calendar below</div>` +
+    items.map(e => _stCalItem(e)).join('')
+}
+
+function _stCalItem(e) {
+  const d = _stDays(e.date)
+  const range = e.end_date && e.end_date !== e.date ? `${e.date.slice(5)}→${e.end_date.slice(5)}` : e.date
+  return `<div class="st-cal-item sev-${_stEsc(e.severity || 'low')}${e.past ? ' st-dim' : ''}" title="${_stEsc(e.source ? 'Source: ' + e.source : '')}">
+    <span class="st-cal-d">${_stEsc(range)}</span>
+    <span class="st-cal-n">${d == null ? '' : d === 0 ? 'today' : d > 0 ? 'in ' + d + 'd' : Math.abs(d) + 'd ago'}</span>
+    <span>${_stCC(e.country)}</span>
+    <span style="flex:1">${_stEsc(e.label || '')} <span class="st-badge st-b-muted">${_stEsc((e.type || '').replace(/_/g, ' '))}</span>${e.tentative ? ' <span class="st-mut">tentative</span>' : ''}</span>
+  </div>`
+}
+
+// ── 2. Indicator panel ──────────────────────────────────────────────────────
+function _stSpark(hist, color) {
+  const pts = _stArr(hist).filter(p => Array.isArray(p) && _stN(p[1]))
+  if (pts.length < 2) return '<span class="st-mut">—</span>'
+  const W = 84, H = 22, vals = pts.map(p => p[1])
+  let lo = Math.min(...vals), hi = Math.max(...vals); if (hi === lo) { hi += 1; lo -= 1 }
+  const path = vals.map((v, i) => `${(i / (vals.length - 1) * W).toFixed(1)},${(H - 2 - (v - lo) / (hi - lo) * (H - 4)).toFixed(1)}`).join(' ')
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="vertical-align:middle"><polyline fill="none" stroke="${color}" stroke-width="1.3" points="${path}"/></svg>`
+}
+
+function _stRenderIndicators() {
+  const el = document.getElementById('st-ind-table')
+  const I = _ST.d.indicators
+  const sumEl = document.getElementById('st-ind-summary')
+  if (!I) { el.innerHTML = `<tbody><tr><td class="l">${_stMissing('indicators')}</td></tr></tbody>`; return }
+  const inds = _stArr(I.indicators)
+  const byId = Object.fromEntries(inds.map(x => [x.id, x]))
+  const groups = _stObj(I.groups)
+  const order = Object.keys(groups)
+  inds.forEach(x => { if (x.group && !order.includes(x.group)) order.push(x.group) })
+  const s = _stObj(I.summary)
+  if (sumEl) sumEl.innerHTML = `${_stN(s.total) ? s.total : inds.length} indicators · <span style="color:var(--green)">${s.ok ?? '?'} live</span> · <span style="color:var(--purple)">${s.stub ?? 0} stub</span> · <span style="color:var(--red)">${s.error ?? 0} error</span> · <span style="color:var(--red)">${_stArr(s.in_stress_zone).length} in stress zone</span>` +
+    (_stArr(s.first_use).length ? ` · first use: ${s.first_use.map(id => _stEsc((byId[id] || {}).label || id)).join(', ')}` : '') +
+    ` <span class="st-mut">· generated ${_stEsc((I.generated_at || '').slice(0, 16).replace('T', ' '))}</span>`
+  const f = _ST.indFilter
+  const pass = x => f === 'all' ? true : f === 'zone' ? !!(x.stats && x.stats.stress_zone)
+    : f === 'ok' ? x.status === 'ok' : x.status !== 'ok'
+  const head = `<thead><tr><th class="l">Indicator</th><th>Latest</th><th>As of</th><th>z (3y)</th><th>Pctile</th>
+    <th>Δ 1w</th><th>Δ 1m</th><th>Zone</th><th>Status</th><th>3y trend</th></tr></thead>`
+  let body = ''
+  order.forEach(g => {
+    const list = inds.filter(x => x.group === g && pass(x))
+    if (!list.length) return
+    body += `<tr class="st-grp"><td colspan="10">${_stEsc(groups[g] || g)} <span class="st-mut" style="text-transform:none;letter-spacing:0">(${list.length})</span></td></tr>`
+    list.forEach(x => {
+      const st = x.stats || {}
+      const ok = x.status === 'ok'
+      const zone = !!st.stress_zone
+      const flags = _stObj(x.flags)
+      let flagHtml = ''
+      if (flags.first_use) flagHtml += ' <span class="st-badge st-b-err">first use</span>'
+      else if (flags.active) flagHtml += ' <span class="st-badge st-b-stale">active</span>'
+      if (flags.sign_flip) flagHtml += ' <span class="st-badge st-b-stale">sign flip</span>'
+      if (flags.turn_driven) flagHtml += ' <span class="st-badge st-b-muted" title="Usage clustered around month/quarter end">turn</span>'
+      const proxy = x.proxy ? byId[x.proxy] : null
+      const proxyHtml = x.status === 'stub' ? `<div class="st-mut" style="font-weight:400">${proxy ? `proxy: ${_stEsc(proxy.label)}${proxy.stats && _stN(proxy.stats.dir_pct) ? ` (pctile ${proxy.stats.dir_pct.toFixed(0)})` : ''}` : 'no free proxy'}</div>` : ''
+      const pctCol = _stN(st.dir_pct) ? _stScoreColor(st.dir_pct) : 'var(--muted)'
+      const chg = (v) => _stN(v) ? `<span style="color:${(v * (x.direction || 1)) > 0 ? 'var(--red)' : (v * (x.direction || 1)) < 0 ? 'var(--green)' : 'var(--subtext)'}">${v > 0 ? '+' : ''}${_stAuto(v)}</span>` : _ST_NA
+      body += `<tr class="${ok ? 'st-click' : 'st-dim'}" data-iid="${_stEsc(x.id)}" title="${_stEsc([x.source, x.frequency, x.note].filter(Boolean).join(' · '))}">
+        <td class="st-lbl">${_stEsc(x.label || x.id)}${flagHtml}${proxyHtml}</td>
+        <td>${ok ? `${_stAuto(x.latest)} <span class="st-mut">${_stEsc(x.units || '')}</span>` : _ST_NA}</td>
+        <td class="st-sub">${_stEsc(x.as_of || '') || _ST_NA}${x.stale ? ' <span class="st-badge st-b-stale">stale</span>' : ''}</td>
+        <td>${_stN(st.z_3y) ? `<span style="color:${_stN(st.dir_z) && st.dir_z >= 2 ? 'var(--red)' : 'var(--text)'}">${st.z_3y.toFixed(2)}</span>` : _ST_NA}</td>
+        <td>${_stN(st.dir_pct) ? `<b style="color:${pctCol}">${st.dir_pct.toFixed(0)}</b>` : _ST_NA}</td>
+        <td>${chg(st.chg_1w)}</td><td>${chg(st.chg_1m)}</td>
+        <td>${zone ? '<span class="st-badge st-b-err">STRESS</span>' : ok ? '<span class="st-mut">—</span>' : _ST_NA}</td>
+        <td>${_stStatusBadge(x.status, x.note)}</td>
+        <td>${ok ? _stSpark(x.history, zone ? '#f05252' : '#4f9eff') : ''}</td></tr>`
+    })
+  })
+  el.innerHTML = head + `<tbody>${body || `<tr><td class="l" colspan="10"><span class="st-mut">No indicators match this filter.</span></td></tr>`}</tbody>`
+  el.querySelectorAll('tr[data-iid].st-click').forEach(tr => tr.addEventListener('click', () => _stOpenIndicator(byId[tr.dataset.iid])))
+  const fb = document.getElementById('st-ind-filter')
+  if (fb && !fb.dataset.wired) {
+    fb.dataset.wired = '1'
+    fb.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      fb.querySelectorAll('button').forEach(x => x.classList.remove('active')); b.classList.add('active')
+      _ST.indFilter = b.dataset.f; _stSafe('st-ind-table', _stRenderIndicators)
+    }))
+  }
+}
+
+// ── Modal chart (shared by indicators + auction history) ─────────────────────
+function _stOpenModal(title, chartCfg, metaHtml) {
+  document.getElementById('st-modal-title').textContent = title
+  document.getElementById('st-modal-meta').innerHTML = metaHtml || ''
+  document.getElementById('st-modal').style.display = 'flex'
+  requestAnimationFrame(() => {
+    _stDestroy('st-modal-canvas')
+    const c = document.getElementById('st-modal-canvas')
+    try { _macroChartInstances['st-modal-canvas'] = new Chart(c.getContext('2d'), chartCfg) }
+    catch (e) { console.error('[stress] modal chart failed', e) }
+  })
+}
+function _stCloseModal() {
+  document.getElementById('st-modal').style.display = 'none'
+  _stDestroy('st-modal-canvas')
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('st-modal')?.style.display === 'flex') _stCloseModal() })
+
+function _stOpenIndicator(x) {
+  if (!x) return
+  const hist = _stArr(x.history).filter(p => Array.isArray(p))
+  const st = x.stats || {}
+  const meta = `<div class="st-kv" style="max-width:560px;margin-top:8px">
+    <span>Latest</span><span>${_stAuto(x.latest)} ${_stEsc(x.units || '')} (${_stEsc(x.as_of || 'n/a')})</span>
+    <span>z (3y) / dir z</span><span>${_stF(st.z_3y)} / ${_stF(st.dir_z)}</span>
+    <span>Stress percentile (10y)</span><span>${_stF(st.dir_pct, 1)}</span>
+    <span>Δ 1w / 1m / 3m</span><span>${_stAuto(st.chg_1w)} / ${_stAuto(st.chg_1m)} / ${_stAuto(st.chg_3m)}</span>
+    <span>Variance / autocorr trend</span><span>${_stEsc(st.var_trend || 'n/a')} / ${_stEsc(st.ac1_trend || 'n/a')}</span>
+    <span>Direction</span><span>${x.direction === -1 ? 'lower = more stress' : 'higher = more stress'}</span>
+    <span>Source</span><span>${_stEsc(x.source || 'n/a')} · ${_stEsc(x.frequency || '')}</span>
+    <span>History since</span><span>${_stEsc(st.history_start || 'n/a')} (${st.n_obs ?? '?'} obs)</span></div>
+    ${x.note ? `<div style="margin-top:6px">${_stEsc(x.note)}</div>` : ''}`
+  _stOpenModal(x.label || x.id, {
+    type: 'line',
+    data: { labels: hist.map(p => p[0]), datasets: [{ label: x.label, data: hist.map(p => p[1]),
+      borderColor: st.stress_zone ? '#f05252' : '#4f9eff', backgroundColor: 'rgba(79,158,255,.08)', fill: true,
+      borderWidth: 1.6, pointRadius: 0, tension: .15 }] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, macroWatermark: { enabled: true },
+        tooltip: { ..._ST_TOOLTIP, callbacks: { label: c => `${_stN(c.parsed.y) ? +c.parsed.y.toPrecision(5) : 'n/a'} ${x.units || ''}` } } },
+      scales: { x: { ticks: { ..._ST_TICK, maxTicksLimit: 8, maxRotation: 0 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { position: 'right', ticks: _ST_TICK, grid: _ST_GRID } } },
+  }, meta)
+}
+
+// ── 3. Auction monitor ──────────────────────────────────────────────────────
+function _stBn(v, ccy) {
+  if (!_stN(v)) return _ST_NA
+  const a = Math.abs(v)
+  const s = a >= 1e12 ? (v / 1e12).toFixed(2) + 'tn' : a >= 1e9 ? (v / 1e9).toFixed(a >= 1e11 ? 0 : 1) + 'bn' : a >= 1e6 ? (v / 1e6).toFixed(0) + 'm' : v.toFixed(0)
+  return (ccy ? `<span class="st-mut">${_stEsc(ccy)}</span> ` : '') + s
+}
+function _stRatingChip(r) {
+  if (r === 'strong') return '<span class="st-badge st-b-ok">strong</span>'
+  if (r === 'weak') return '<span class="st-badge st-b-err">weak</span>'
+  if (r === 'neutral') return '<span class="st-badge st-b-muted">neutral</span>'
+  return _ST_NA
+}
+
+function _stRenderAuctions() {
+  const A = _ST.d.auctions
+  const fEl = document.getElementById('st-auc-filter')
+  const upEl = document.getElementById('st-auc-upcoming'), reEl = document.getElementById('st-auc-recent')
+  const srcEl = document.getElementById('st-auc-sources'), ezEl = document.getElementById('st-auc-ez')
+  const mEl = document.getElementById('st-auc-method')
+  if (!A) { reEl.innerHTML = `<tbody><tr><td class="l">${_stMissing('auctions')}</td></tr></tbody>`; upEl.innerHTML = ''; return }
+  const up = _stArr(A.upcoming), rec = _stArr(A.recent)
+  const have = new Set([...up, ...rec].map(x => x.country))
+  const opts = ['ALL', ..._ST_COUNTRIES, 'EZ']
+  const cnt = c => c === 'ALL' ? rec.length : c === 'EZ' ? rec.filter(x => _ST_EZ.includes(x.country)).length : rec.filter(x => x.country === c).length
+  fEl.innerHTML = opts.map(c => `<button data-c="${c}" class="${_ST.aucCountry === c ? 'active' : ''}" style="${c !== 'ALL' && c !== 'EZ' && !have.has(c) ? 'opacity:.5' : ''}">${c === 'ALL' ? 'All' : c === 'EZ' ? 'Eurozone (DE+FR+IT)' : c} <span class="st-mut">${cnt(c)}</span></button>`).join('')
+  fEl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { _ST.aucCountry = b.dataset.c; _stSafe('st-auc-recent', _stRenderAuctions) }))
+  const sel = _ST.aucCountry
+  const match = x => sel === 'ALL' ? true : sel === 'EZ' ? _ST_EZ.includes(x.country) : x.country === sel
+
+  // Eurozone aggregate summary
+  if (sel === 'EZ') {
+    const sm = _stObj(_stObj(A.eurozone).summary)
+    ezEl.innerHTML = `<div class="st-scroll" style="margin-bottom:12px"><table class="st-table"><thead><tr><th class="l">Eurozone (last ~6w)</th><th>Auctions</th><th>Avg BTC</th><th>Avg z(BTC)</th><th>Strong</th><th>Neutral</th><th>Weak</th></tr></thead><tbody>
+      ${_ST_EZ.map(c => { const s = _stObj(sm[c]); return `<tr><td class="l">${_stCC(c)}</td><td>${s.n ?? _ST_NA}</td><td>${_stF(s.avg_btc)}</td><td>${_stF(s.avg_z_btc)}</td>
+        <td style="color:var(--green)">${s.strong ?? 0}</td><td>${s.neutral ?? 0}</td><td style="color:var(--red)">${s.weak ?? 0}</td></tr>` }).join('')}</tbody></table></div>`
+  } else ezEl.innerHTML = ''
+
+  const upF = up.filter(match).sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+  upEl.innerHTML = `<thead><tr><th class="l">Country</th><th class="l">Date</th><th class="l">Maturity</th><th class="l">Security</th><th>Size</th><th>Size (USD)</th></tr></thead><tbody>` +
+    (upF.length ? upF.map(u => `<tr><td class="l">${_stCC(u.country)}</td><td class="l">${_stEsc(u.date || '')} <span class="st-mut">${(() => { const d = _stDays(u.date); return d == null ? '' : d === 0 ? 'today' : 'in ' + d + 'd' })()}</span></td>
+      <td class="l">${_stEsc(u.tenor || u.instrument || '')}</td><td class="l st-sub" style="white-space:normal;min-width:160px">${_stEsc(u.security || '')}${u.id ? ` <span class="st-mut">${_stEsc(u.id)}</span>` : ''}</td>
+      <td title="${_stEsc(u.size_note || '')}">${_stBn(u.size_local, u.currency)}${u.size_note ? ' <span class="st-mut">*</span>' : ''}</td><td>${_stBn(u.size_usd, '$')}</td></tr>`).join('')
+      : `<tr><td class="l" colspan="6"><span class="st-mut">No upcoming auctions in the feed for this selection.</span></td></tr>`) + '</tbody>'
+
+  const reAll = rec.filter(match)
+  const AUC_CAP = 15
+  const reF = _ST.aucAll ? reAll : reAll.slice(0, AUC_CAP)
+  reEl.innerHTML = `<thead><tr><th class="l">Country</th><th class="l">Date</th><th class="l">Maturity</th><th class="l">Rating</th><th>Bid/cover</th><th>Tail (bp)</th>
+    <th>Offered</th><th>Sold</th><th>Retention</th><th class="l">Buyers (ind/dir/dlr)</th><th>Yield</th><th>Δ vs prior (bp)</th></tr></thead><tbody>` +
+    (reF.length ? reF.map((x, i) => {
+      const b = _stObj(x.buyers)
+      const buy = _stN(b.indirect_pct) ? `<span class="st-buyers"><span style="width:${b.indirect_pct}%;background:#4f9eff"></span><span style="width:${b.direct_pct || 0}%;background:#a48cff"></span><span style="width:${b.dealer_pct || 0}%;background:#f5a623"></span></span><span class="st-sub">${_stF(b.indirect_pct, 0)}/${_stF(b.direct_pct, 0)}/${_stF(b.dealer_pct, 0)}</span>` : _ST_NA
+      const hk = `${x.country}|${x.tenor}`
+      const hasHist = _stArr(_stObj(A.history)[hk]).length > 1
+      return `<tr class="${hasHist ? 'st-click' : ''}" data-hk="${_stEsc(hk)}" title="${_stEsc([x.security, x.id, x.source, x.yield_type ? 'yield: ' + x.yield_type : '', _stN(x.z_btc) ? 'z(BTC) ' + x.z_btc : '', _stN(x.z_tail) ? 'z(tail) ' + x.z_tail : '', _stN(x.n_hist) ? 'n=' + x.n_hist + ' comparable auctions' : '', hasHist ? 'click for history' : ''].filter(Boolean).join(' · '))}">
+        <td class="l">${_stCC(x.country)}</td><td class="l">${_stEsc(x.date || '')}</td>
+        <td class="l">${_stEsc(x.tenor || x.instrument || '')}${hasHist ? ' <span class="st-mut">▸</span>' : ''}</td>
+        <td class="l">${_stRatingChip(x.rating)}</td>
+        <td>${_stF(x.btc)}</td>
+        <td style="color:${_stN(x.tail_bp) ? (x.tail_bp > 0.5 ? 'var(--red)' : x.tail_bp < -0.5 ? 'var(--green)' : 'var(--text)') : ''}">${_stSigned(x.tail_bp, 1)}</td>
+        <td>${_stBn(x.offered)}</td><td>${_stBn(x.allotted)}</td><td>${_stN(x.retention) ? _stBn(x.retention) : x.country === 'DE' ? _ST_NA : '<span class="st-mut">—</span>'}</td>
+        <td class="l">${x.country === 'US' || _stN(b.indirect_pct) ? buy : _stN(b.customer_pct) ? `<span class="st-buyers"><span style="width:${b.dealer_pct || 0}%;background:#f5a623"></span><span style="width:${b.customer_pct}%;background:#4f9eff"></span><span style="width:${b.foreign_pct || 0}%;background:#a48cff"></span></span><span class="st-sub" title="dealer/customer/foreign">${_stF(b.dealer_pct, 0)}/${_stF(b.customer_pct, 0)}/${_stF(b.foreign_pct, 0)} dlr/cust/fgn</span>` : '<span class="st-mut">—</span>'}</td>
+        <td>${_stF(x.yield, 3, '%')}</td>
+        <td style="color:${_stN(x.yield_chg_bp) ? (x.yield_chg_bp > 0 ? 'var(--red)' : 'var(--green)') : ''}">${_stSigned(x.yield_chg_bp, 1)}</td></tr>`
+    }).join('') : `<tr><td class="l" colspan="12"><span class="st-mut">No recent results for this selection${sel !== 'ALL' && sel !== 'US' ? ' (collector may not cover it yet)' : ''}.</span></td></tr>`) +
+    (reAll.length > AUC_CAP ? `<tr><td class="l" colspan="12"><button class="st-filter-btn" id="st-auc-more" style="background:none;border:1px solid var(--border);color:var(--blue);padding:4px 11px;border-radius:5px;cursor:pointer;font-size:11px">${_ST.aucAll ? 'Show latest ' + AUC_CAP : 'Show all ' + reAll.length}</button></td></tr>` : '') + '</tbody>'
+  const more = document.getElementById('st-auc-more')
+  if (more) more.addEventListener('click', () => { _ST.aucAll = !_ST.aucAll; _stSafe('st-auc-recent', _stRenderAuctions) })
+  reEl.querySelectorAll('tr.st-click[data-hk]').forEach(tr => tr.addEventListener('click', () => _stOpenAuctionHist(tr.dataset.hk)))
+
+  mEl.innerHTML = [A.rating_method ? `<b>Rating:</b> ${_stEsc(A.rating_method)}` : '', A.tail_method ? `<b>Tail:</b> ${_stEsc(A.tail_method)}` : '',
+    '<span style="color:#4f9eff">■</span> indirect <span style="color:#a48cff">■</span> direct <span style="color:#f5a623">■</span> dealers'].filter(Boolean).join('<br>')
+  // per-country source status
+  const srcs = _stArr(A.sources)
+  const covered = new Set(srcs.map(s => (s.country || '').toUpperCase()).filter(Boolean))
+  let line = srcs.map(s => `<span title="${_stEsc((s.note || '') + (s.as_of ? ' · as of ' + s.as_of : ''))}">${_stEsc(s.name)} ${_stStatusBadge(s.status, s.note)} <span class="st-mut">${_stEsc(s.as_of || '')}</span></span>`).join('')
+  const missing = _ST_COUNTRIES.filter(c => !have.has(c) && !covered.has(c))
+  if (missing.length) line += `<span>${missing.map(_stCC).join(' ')} <span class="st-badge st-b-muted">no data yet</span></span>`
+  srcEl.innerHTML = line || _ST_NA
+}
+
+function _stOpenAuctionHist(hk) {
+  const A = _ST.d.auctions
+  const h = _stArr(_stObj(A && A.history)[hk])
+  if (h.length < 2) return
+  const labels = h.map(p => p[0])
+  _stOpenModal(`Auction history · ${hk.replace('|', ' ')}`, {
+    type: 'bar',
+    data: { labels, datasets: [
+      { type: 'line', label: 'Bid-to-cover', data: h.map(p => p[1]), borderColor: '#4f9eff', backgroundColor: '#4f9eff', pointRadius: 2, borderWidth: 1.5, yAxisID: 'y' },
+      { type: 'bar', label: 'Tail (bp)', data: h.map(p => p[2]), backgroundColor: h.map(p => _stN(p[2]) && p[2] > 0 ? 'rgba(240,82,82,.55)' : 'rgba(47,209,140,.45)'), yAxisID: 'y2' },
+      { type: 'line', label: 'Clearing yield %', data: h.map(p => p[3]), borderColor: '#ffc94e', backgroundColor: '#ffc94e', pointRadius: 0, borderWidth: 1.2, borderDash: [4, 3], yAxisID: 'y3', hidden: true },
+    ] },
+    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+      plugins: { macroWatermark: { enabled: true }, legend: { display: true, labels: { color: '#8a93ad', boxWidth: 10 } }, tooltip: _ST_TOOLTIP },
+      scales: { x: { ticks: { ..._ST_TICK, maxTicksLimit: 8, maxRotation: 0 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { position: 'left', title: { display: true, text: 'BTC', color: '#888' }, ticks: _ST_TICK, grid: _ST_GRID },
+        y2: { position: 'right', title: { display: true, text: 'tail bp', color: '#888' }, ticks: _ST_TICK, grid: { display: false } },
+        y3: { display: false } } },
+  }, `<div>${h.length} auctions · tail = clearing yield − prior-day close (proxy). Negative tail = stopped through (strong).</div>`)
+}
+
+// ── 4. Investor base ────────────────────────────────────────────────────────
+function _stRenderHoldings() {
+  const Hd = _ST.d.holdings
+  const fEl = document.getElementById('st-hold-filter')
+  const splitEl = document.getElementById('st-hold-split'), cbEl = document.getElementById('st-hold-cb')
+  const cmpEl = document.getElementById('st-hold-cmp'), notesEl = document.getElementById('st-hold-notes')
+  _stDestroy('st-hold-chart')
+  if (!Hd) { splitEl.innerHTML = _stMissing('holdings'); cbEl.innerHTML = ''; return }
+  const C = _stObj(Hd.countries)
+  const order = _stArr(Hd.order).length ? Hd.order : Object.keys(C)
+  if (!_ST.holdCountry || !C[_ST.holdCountry]) _ST.holdCountry = order.find(c => C[c]) || order[0]
+  const sel = _ST.holdCountry
+  fEl.innerHTML = order.map(c => `<button data-c="${_stEsc(c)}" class="${c === sel ? 'active' : ''}" ${C[c] ? '' : 'style="opacity:.5"'}>${_stEsc(c)}</button>`).join('')
+  fEl.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { _ST.holdCountry = b.dataset.c; _stSafe('st-hold-split', _stRenderHoldings) }))
+  const sectors = _stObj(Hd.sectors)
+  const cd = _stObj(C[sel])
+  const hol = _stObj(cd.holders), sh = _stObj(hol.share_pct)
+  const dates = _stArr(hol.dates)
+  document.getElementById('st-hold-title').textContent = `${cd.name || sel}: foreign vs domestic share of govt debt`
+  document.getElementById('st-hold-asof').innerHTML = hol.as_of ? `as of ${_stEsc(hol.as_of)} · ${_stEsc(hol.freq === 'A' ? 'annual' : hol.freq === 'Q' ? 'quarterly' : hol.freq || '')}` : _ST_NA
+  // stacked area: foreign + domestic sectors (falls back to foreign/domestic if sector split missing)
+  const canvas = document.getElementById('st-hold-chart')
+  if (dates.length && (sh.foreign || sh.domestic)) {
+    const domKeys = ['central_bank', 'banks', 'other_financial', 'households_other'].filter(k => _stArr(sh[k]).some(_stN))
+    const keys = domKeys.length >= 2 ? ['foreign', ...domKeys] : ['foreign', 'domestic']
+    const datasets = keys.filter(k => _stArr(sh[k]).length).map(k => ({
+      label: k === 'domestic' ? 'Domestic' : (sectors[k] || k) + (k !== 'foreign' ? ' (dom.)' : ''),
+      // stacked fill breaks on nulls (e.g. UK CB before APF) → plot as 0 when the date has other sector data
+      data: _stArr(sh[k]).map((v, i) => _stN(v) ? v : (keys.some(o => o !== k && _stN(_stArr(sh[o])[i])) ? 0 : null)), borderColor: _ST_SECTOR_COLOR[k], backgroundColor: _ST_SECTOR_COLOR[k] + '99',
+      fill: true, pointRadius: 0, borderWidth: 1, tension: .1, stack: 's', spanGaps: true }))
+    _macroChartInstances['st-hold-chart'] = new Chart(canvas.getContext('2d'), {
+      type: 'line', data: { labels: dates, datasets },
+      options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+        plugins: { macroWatermark: { enabled: true }, legend: { display: true, position: 'bottom', labels: { color: '#8a93ad', boxWidth: 10, font: { size: 10 } } },
+          tooltip: { ..._ST_TOOLTIP, callbacks: { label: c => `${c.dataset.label}: ${_stN(c.parsed.y) ? c.parsed.y.toFixed(1) + '%' : 'n/a'}` } } },
+        scales: { x: { ticks: { ..._ST_TICK, maxTicksLimit: 7, maxRotation: 0 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { stacked: true, position: 'right', min: 0, max: 100, ticks: { ..._ST_TICK, callback: v => v + '%' }, grid: _ST_GRID } } },
+    })
+  } else {
+    const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height)
+    document.getElementById('st-hold-asof').innerHTML = '<span class="st-badge st-b-muted">n/a</span> no holder time series'
+  }
+  // latest split bar
+  const ls = _stObj(cd.latest_split), items = _stArr(ls.items)
+  splitEl.innerHTML = `<div class="st-h">Latest holder split <span class="st-mut" style="text-transform:none;letter-spacing:0">${ls.as_of ? 'as of ' + _stEsc(ls.as_of) : ''}</span></div>` +
+    (items.length ? `<div class="st-split">${items.filter(it => _stN(it.share)).map(it => `<div title="${_stEsc(it.label)}: ${it.share.toFixed(1)}%" style="width:${it.share}%;background:${_ST_SECTOR_COLOR[it.key] || '#666'}"></div>`).join('')}</div>
+      <div class="st-legend">${items.map(it => `<span><i style="background:${_ST_SECTOR_COLOR[it.key] || '#666'}"></i>${_stEsc(it.label || it.key)} <b style="color:var(--text)">${_stF(it.share, 1, '%')}</b> <span class="st-mut">${_stAuto(it.value)}</span></span>`).join('')}</div>
+      <div class="st-note">Total ${_stAuto(ls.total)} ${_stEsc(ls.unit || '')} · ${_stEsc(ls.source || '')}</div>` : _ST_NA)
+  // central bank + QT
+  const cb = _stObj(cd.central_bank), qt = _stObj(cb.qt)
+  const u = cb.unit || ''
+  cbEl.innerHTML = `<div class="st-h">Central-bank holdings &amp; QT pace</div>` + (Object.keys(cb).length ? `
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+      <div><div class="st-sub">${_stEsc(cb.name || '')}</div>
+        <div style="font-size:20px;font-weight:700">${_stAuto(qt.level ?? _stArr(cb.values).slice(-1)[0])} <span class="st-mut">${_stEsc(u)}</span></div>
+        <div class="st-mut">as of ${_stEsc(qt.as_of || cb.as_of || 'n/a')}</div></div>
+      <div>${_stSpark(_stArr(cb.dates).map((d, i) => [d, _stArr(cb.values)[i]]), '#ff9a3c')}</div></div>
+    <table class="st-table" style="margin-top:8px"><thead><tr><th class="l">Window</th><th>Change</th><th>%</th><th>Annualised</th></tr></thead><tbody>
+      ${['3m', '6m', '12m'].map(w => `<tr><td class="l">${w}</td><td style="color:${_stN(qt['chg_' + w]) ? (qt['chg_' + w] < 0 ? 'var(--amber)' : 'var(--text)') : ''}">${_stN(qt['chg_' + w]) ? (qt['chg_' + w] > 0 ? '+' : '') + _stAuto(qt['chg_' + w]) : _ST_NA}</td><td>${_stSigned(qt['pct_' + w], 1, '%')}</td><td>${_stN(qt['ann_' + w]) ? (qt['ann_' + w] > 0 ? '+' : '') + _stAuto(qt['ann_' + w]) + ' ' + _stEsc(u) + '/yr' : _ST_NA}</td></tr>`).join('')}
+    </tbody></table><div class="st-note">Negative = runoff (QT). Source: ${_stEsc(cb.source || 'n/a')}</div>` : _ST_NA)
+  // extra (US TIC monthly / IT quarterly)
+  const ex = _stObj(cd.extra)
+  let exHtml = ''
+  Object.values(ex).forEach(e => { if (!e || typeof e !== 'object') return
+    const vals = _stArr(e.values).length ? e.values : _stArr(e.foreign_pct)
+    const last = vals.length ? vals[vals.length - 1] : null
+    exHtml += `<div>${_stEsc(e.label || 'Foreign holdings')}: <b style="color:var(--text)">${_stAuto(last)}</b> ${_stEsc(_stArr(e.values).length ? (e.unit || '') : '%')} <span class="st-mut">as of ${_stEsc(e.as_of || 'n/a')} · ${_stEsc(e.source || '')}</span></div>` })
+  // comparison
+  const cmp = _stArr(Hd.comparison)
+  cmpEl.innerHTML = `<thead><tr><th class="l">Country</th><th>Foreign %</th><th>Domestic %</th><th>CB %</th><th>Banks %</th><th>Ins/pens/funds %</th><th>Households/other %</th><th>CB QT 12m</th><th>CB QT 12m %</th><th>As of</th></tr></thead><tbody>` +
+    (cmp.length ? cmp.map(r => `<tr class="st-click" data-c="${_stEsc(r.country)}" title="${_stEsc(r.source || '')}"><td class="l">${_stCC(r.country)}</td>
+      <td title="${_stEsc(r.foreign_latest_as_of ? 'latest ' + r.foreign_latest + '% as of ' + r.foreign_latest_as_of + ' (' + (r.foreign_latest_source || '') + ')' : '')}">${_stF(r.foreign, 1)}${_stN(r.foreign_latest) && r.foreign_latest_as_of && r.foreign_latest_as_of !== r.as_of ? ` <span class="st-mut">(${r.foreign_latest.toFixed(1)} @${_stEsc(r.foreign_latest_as_of.slice(0, 7))})</span>` : ''}</td>
+      <td>${_stF(r.domestic, 1)}</td><td>${_stF(r.central_bank, 1)}</td><td>${_stF(r.banks, 1)}</td><td>${_stF(r.other_financial, 1)}</td><td>${_stF(r.households_other, 1)}</td>
+      <td>${_stN(r.cb_qt_ann_12m) ? (r.cb_qt_ann_12m > 0 ? '+' : '') + _stAuto(r.cb_qt_ann_12m) + ' <span class="st-mut">' + _stEsc(r.cb_unit || '') + '</span>' : _ST_NA}</td>
+      <td>${_stSigned(r.cb_qt_pct_12m, 1, '%')}</td><td class="st-sub">${_stEsc(r.as_of || '') || _ST_NA}</td></tr>`).join('')
+      : `<tr><td class="l" colspan="10">${_ST_NA}</td></tr>`) + '</tbody>'
+  cmpEl.querySelectorAll('tr[data-c]').forEach(tr => tr.addEventListener('click', () => { _ST.holdCountry = tr.dataset.c; _stSafe('st-hold-split', _stRenderHoldings) }))
+  notesEl.innerHTML = exHtml + _stArr(cd.notes).map(n => `<div>• ${_stEsc(n)}</div>`).join('') +
+    '<div>Sector categories are mapped from national/ECB classifications, so cross-country comparisons are approximate.</div>'
+}
+
+// ── 5. Fiscal / market context ──────────────────────────────────────────────
+function _stFiscalCell(o, fmt, opts = {}) {
+  o = _stObj(o)
+  const v = opts.key ? o[opts.key] : o.value
+  if (!_stN(v)) return `<td title="${_stTitle(o)}">${o.status && o.status !== 'ok' ? _stStatusBadge(o.status === 'missing' ? null : o.status, o.note) : _ST_NA}</td>`
+  let m = ''
+  if (o.source === 'manual') m += '<sup class="st-m">m</sup>'
+  if (o.estimate) m += '<sup class="st-m">e</sup>'
+  if (o.approximate) m += '<sup class="st-m">~</sup>'
+  if (o.stale) m += ' <span class="st-badge st-b-stale">stale</span>'
+  return `<td title="${_stTitle(o)}${o.year ? _stEsc('\nYear: ' + o.year) : ''}${_stN(o.prior_year) ? _stEsc('\nPrior year: ' + o.prior_year) : ''}">${fmt(v, o)}${m}</td>`
+}
+function _stRatingCell(r, agency) {
+  r = _stObj(r)
+  if (!r.rating) return `<td>${_ST_NA}</td>`
+  const ol = (r.outlook || '').toLowerCase()
+  const oc = ol.startsWith('neg') ? 'var(--red)' : ol.startsWith('pos') ? 'var(--green)' : 'var(--muted)'
+  const ab = ol ? ol.replace('stable', 'sta').replace('negative', 'neg').replace('positive', 'pos').replace('developing', 'dev').slice(0, 5) : ''
+  return `<td title="${_stEsc(`${agency}: ${r.rating}${r.outlook ? ' / ' + r.outlook : ''}\nLast action: ${r.last_action || 'n/a'}\nAs of: ${r.as_of || 'n/a'}\nSource: ${r.source || 'n/a'}`)}">
+    <b>${_stEsc(r.rating)}</b> <span style="color:${oc};font-size:10px">${_stEsc(ab)}</span>${r.source === 'manual' ? '<sup class="st-m">m</sup>' : ''}</td>`
+}
+function _stRenderFiscal() {
+  const el = document.getElementById('st-fiscal-table')
+  const F = _ST.d.fiscal
+  if (!F) { el.innerHTML = `<tbody><tr><td class="l">${_stMissing('fiscal')}</td></tr></tbody>`; return }
+  const C = _stObj(F.countries)
+  const order = _stArr(F.order).length ? F.order : Object.keys(C)
+  const head = `<thead><tr><th class="l">Country</th><th>Debt/GDP</th><th>Deficit/GDP</th><th>Interest % GDP</th><th>Interest % rev.</th>
+    <th>10y yield</th><th>Δ1m (bp)</th><th>Spread (bp)</th><th>Avg maturity</th><th>Issuance done</th><th>S&amp;P</th><th>Moody's</th><th>Fitch</th></tr></thead>`
+  const rows = order.map(c => {
+    const x = _stObj(C[c])
+    if (!C[c]) return `<tr><td class="l">${_stCC(c)}</td><td colspan="12" class="l">${_ST_NA}</td></tr>`
+    const y = _stObj(x.yield_10y), sp = _stObj(x.spread_10y), iss = _stObj(x.issuance), rt = _stObj(x.ratings)
+    const yHist = _stArr(y.history)
+    let issCell
+    if (_stN(iss.completed_pct)) {
+      const ahead = _stN(iss.ahead_of_pace_pp) ? iss.ahead_of_pace_pp : (_stN(iss.time_elapsed_pct) ? iss.completed_pct - iss.time_elapsed_pct : null)
+      issCell = `<td title="${_stTitle(iss)}${_stEsc(iss.program ? '\n' + iss.program : '')}${_stN(iss.time_elapsed_pct) ? _stEsc('\nTime elapsed: ' + iss.time_elapsed_pct + '%') : ''}">${iss.completed_pct.toFixed(0)}%${_stN(ahead) ? ` <span class="st-mut">(${ahead > 0 ? '+' : ''}${ahead.toFixed(0)}pp vs pace)</span>` : ''}${iss.source === 'manual' ? '<sup class="st-m">m</sup>' : ''}</td>`
+    } else {
+      issCell = `<td title="${_stTitle(iss)}${_stEsc(iss.program ? '\n' + iss.program : '')}">${_ST_NA}${iss.status === 'missing' ? ' <span class="st-mut">not entered</span>' : ''}${_stN(iss.time_elapsed_pct) ? ` <span class="st-mut">(${iss.time_elapsed_pct.toFixed(0)}% of yr elapsed)</span>` : ''}</td>`
+    }
+    const dIdx = (o) => _stN(o) ? o : null
+    return `<tr><td class="l" title="${_stEsc(x.name || c)}${x.benchmark ? _stEsc('\nBenchmark: ' + x.benchmark) : ''}">${_stCC(c)} <span class="st-sub" style="font-weight:400">${_stEsc(x.name || '')}</span></td>
+      ${_stFiscalCell(x.debt_gdp, v => `<span style="color:${v >= 120 ? 'var(--red)' : v >= 90 ? 'var(--amber)' : 'var(--text)'}">${v.toFixed(1)}%</span>`)}
+      ${_stFiscalCell(x.deficit_gdp, v => `<span style="color:${v >= 5 ? 'var(--red)' : v >= 3 ? 'var(--amber)' : 'var(--text)'}">${v.toFixed(1)}%</span>`)}
+      ${_stFiscalCell(x.interest_gdp || x.interest_net_gdp, v => v.toFixed(2) + '%')}
+      ${_stFiscalCell(x.interest_revenue || x.interest_net_revenue, v => `<span style="color:${v >= 12 ? 'var(--red)' : v >= 8 ? 'var(--amber)' : 'var(--text)'}">${v.toFixed(1)}%</span>`)}
+      ${_stFiscalCell(y, v => `<b>${v.toFixed(2)}%</b> ${yHist.length > 5 ? _stSpark(yHist.slice(-130), '#4f9eff').replace('width="84"', 'width="50"') : ''}`)}
+      <td title="${_stTitle(y)}">${_stN(dIdx(y.chg_1m_bp)) ? `<span style="color:${y.chg_1m_bp > 0 ? 'var(--red)' : 'var(--green)'}">${y.chg_1m_bp > 0 ? '+' : ''}${y.chg_1m_bp.toFixed(0)}</span>` : _ST_NA}</td>
+      ${_stFiscalCell(sp, (v, o) => o.source && o.source.startsWith('self') ? '<span class="st-mut">benchmark</span>' : `${v.toFixed(0)} <span class="st-mut">vs ${_stEsc((o.benchmark || '').replace(' 10y', ''))}</span>`, { key: 'value_bp' })}
+      ${_stFiscalCell(x.avg_maturity, v => v.toFixed(1) + 'y', { key: 'value_years' })}
+      ${issCell}
+      ${_stRatingCell(rt.sp, 'S&P')}${_stRatingCell(rt.moodys, "Moody's")}${_stRatingCell(rt.fitch, 'Fitch')}</tr>`
+  }).join('')
+  el.innerHTML = head + `<tbody>${rows}</tbody>`
+}
+
+// ── 6. Stress calendar ──────────────────────────────────────────────────────
+function _stRenderCalendar() {
+  const C = _ST.d.calendar
+  const tl = document.getElementById('st-cal-timeline'), list = document.getElementById('st-cal-list')
+  if (!C) { tl.innerHTML = ''; list.innerHTML = _stMissing('calendar'); return }
+  const H = 90
+  const ev = _stArr(C.events).filter(e => { const d = _stDays(e.date), de = _stDays(e.end_date || e.date)
+    return d != null && de >= 0 && d <= H }).sort((a, b) => a.date.localeCompare(b.date))
+  const sevCol = { high: '#f05252', med: '#f5a623', low: '#4a5168' }
+  // timeline strip
+  let ticks = ''
+  for (let d = 0; d <= H; d += 15) {
+    const dt = new Date(); dt.setDate(dt.getDate() + d)
+    ticks += `<span class="st-tick" style="left:${d / H * 100}%">${d === 0 ? 'today' : dt.toISOString().slice(5, 10)}</span>`
+  }
+  tl.innerHTML = ticks + ev.map(e => { const d = Math.max(0, _stDays(e.date))
+    return `<span class="st-dot" title="${_stEsc(e.date + ' · ' + (e.country || '') + ' · ' + (e.label || ''))}" style="left:${Math.min(100, d / H * 100)}%;background:${sevCol[e.severity] || '#4a5168'};${e.severity === 'high' ? 'width:12px;height:12px;' : ''}"></span>` }).join('')
+  // list grouped by month
+  let html = '', month = ''
+  ev.forEach(e => {
+    const m = e.date.slice(0, 7)
+    if (m !== month) { month = m
+      html += `<div class="st-h" style="margin:10px 0 4px">${new Date(m + '-01T00:00:00Z').toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })}</div>` }
+    html += _stCalItem(e)
+  })
+  const dc = _stObj(C.debt_ceiling)
+  if (dc.relevant) html += `<div class="st-cal-item sev-high"><span class="st-cal-d">${_stEsc(dc.x_date || 'TBD')}</span><span>${_stCC('US')}</span><span>Debt-ceiling X-date ${_stEsc(dc.note || '')}</span></div>`
+  else if (dc.note) html += `<div class="st-note">Debt ceiling: ${_stEsc(dc.note)}</div>`
+  const aw = _stArr(C.auction_weeks)
+  if (aw.length) html += `<div class="st-note">Auction supply: ${aw.map(w => `week of ${_stEsc(w.week_start)}: $${_stF(w.total_usd_bn, 0)}bn across ${w.n_auctions ?? '?'} auctions${w.heavy ? ' <span class="st-badge st-b-stale">heavy</span>' : ''}${_stN(w.ratio_total) ? ` (${(w.ratio_total * 100).toFixed(0)}% of baseline)` : ''}`).join(' · ')}</div>`
+  list.innerHTML = (ev.length ? '' : '<span class="st-mut">No events in the next 90 days.</span>') + html +
+    `<div class="st-legend" style="margin-top:10px"><span><i style="background:#f05252"></i>high</span><span><i style="background:#f5a623"></i>medium</span><span><i style="background:#4a5168"></i>low</span></div>`
+}
+
+// ── Footer: sources + stubs ─────────────────────────────────────────────────
+function _stRenderFooter() {
+  const el = document.getElementById('st-foot')
+  const names = { regime: 'Regime monitor', indicators: 'Indicators', auctions: 'Auctions', holdings: 'Investor base', fiscal: 'Fiscal', calendar: 'Calendar' }
+  let html = `<p style="font-weight:700;color:var(--text);margin-bottom:6px;">Data sources &amp; status</p>`
+  _ST_FILES.forEach(f => {
+    const d = _ST.d[f]
+    if (!d) { html += `<div><b style="color:var(--text)">${names[f]}:</b> ${_stStatusBadge(null)} file not available</div>`; return }
+    let srcs = _stArr(d.sources)
+    if (f === 'indicators') {
+      const bySrc = {}
+      _stArr(d.indicators).forEach(x => { const k = x.source || 'n/a'; (bySrc[k] = bySrc[k] || { ok: 0, stub: 0, error: 0 })[x.status === 'ok' ? 'ok' : x.status === 'stub' ? 'stub' : 'error']++ })
+      const nStub = _stArr(d.indicators).filter(x => x.status === 'stub').length, nErr = _stArr(d.indicators).filter(x => x.status === 'error').length
+      html += `<details style="margin-top:2px"><summary style="font-weight:400;color:var(--subtext)"><b style="color:var(--text)">${names[f]}:</b> ${Object.keys(bySrc).length} sources · ${nStub} stub · ${nErr} error (expand)</summary><div>${Object.entries(bySrc).map(([k, v]) => `${_stEsc(k)}${v.stub ? ' <span class="st-badge st-b-stub">stub</span>' : ''}${v.error ? ' <span class="st-badge st-b-err">' + v.error + ' err</span>' : ''}`).join(' · ')}</div></details>`
+      return
+    }
+    html += `<div><b style="color:var(--text)">${names[f]}:</b> ${srcs.map(s => `${_stEsc(s.name)} ${s.status !== 'ok' ? _stStatusBadge(s.status, s.note) : ''}<span class="st-mut">${s.as_of ? ' ' + _stEsc(s.as_of) : ''}</span>`).join(' · ') || _ST_NA}</div>`
+  })
+  const I = _ST.d.indicators
+  const byId = Object.fromEntries(_stArr(I && I.indicators).map(x => [x.id, x]))
+  const stubs = _stArr(I && I.indicators).filter(x => x.status === 'stub')
+  if (stubs.length) html += `<p style="margin-top:10px"><b style="color:var(--text)">Stubs (paid data, not shown):</b> ${stubs.map(x => `${_stEsc(x.label)}${x.proxy ? ` <span class="st-mut">→ proxy ${_stEsc((byId[x.proxy] || {}).label || x.proxy)}</span>` : ''}`).join('; ')}.</p>`
+  const errs = _stArr(I && I.indicators).filter(x => x.status === 'error')
+  if (errs.length) html += `<p><b style="color:var(--text)">Source blocked / errored:</b> ${errs.map(x => _stEsc(x.label)).join('; ')}.</p>`
+  const meth = Object.assign({}, _stObj(_ST.d.regime && _ST.d.regime.method))
+  const rules = _stObj(I && I.rules)
+  const dl = o => Object.entries(o).map(([k, v]) => `<dt>${_stEsc(k.replace(/_/g, ' '))}</dt><dd>${_stEsc(typeof v === 'string' ? v : JSON.stringify(v))}</dd>`).join('')
+  if (Object.keys(meth).length) html += `<details><summary>Regime methodology</summary><dl>${dl(meth)}</dl></details>`
+  if (Object.keys(rules).length) html += `<details><summary>Indicator statistics</summary><dl>${dl(rules)}</dl></details>`
+  html += `<p style="margin-top:10px">Regime scores are percentile-based heuristics, not forecasts. Manual tables (ratings, avg maturity, issuance programmes, calendar) are refreshed by hand and may lag.</p>`
+  el.innerHTML = html
+}
 
 // ── Public-build init ────────────────────────────────────────────────────────
 loadMacroSection()

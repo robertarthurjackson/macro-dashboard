@@ -3,3 +3,4 @@ __pycache__/
 data/
 site/data/
 .DS_Store
+.venv/
