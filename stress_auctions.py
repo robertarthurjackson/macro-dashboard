@@ -230,7 +230,8 @@ def collect_us(fx) -> dict:
         tips_flag = x.get("inflation_index_security") == "Yes"
         frn = x.get("floating_rate") == "Yes"
         if typ == "Bill":
-            tenor = f"{int(re.match(r'(\d+)', term).group(1))}W bill" if "Week" in term else None
+            weeks = re.match(r"(\d+)", term)
+            tenor = f"{int(weeks.group(1))}W bill" if "Week" in term and weeks else None
             if tenor is None:  # odd-dated bills (n-Day): skip from history
                 continue
             instrument = "Bill"
