@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-10T16:27:52Z",
+"fetched_at": "2026-10-11T15:01:45Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -24050,58 +24050,6 @@
 },
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 60189044400
-},
-"US|2024-07-29|912797HE0|13W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "13W bill",
-"tenor_years": 0.25,
-"security": "13-Week Bill (reopening)",
-"id": "912797HE0",
-"date": "2024-07-29",
-"currency": "USD",
-"offered": 76000000000.0,
-"allotted": 83814434700.0,
-"tendered": 236391174000.0,
-"retention": null,
-"btc": 3.01,
-"yield_": 5.285,
-"yield_type": "high investment rate",
-"pre_yield": null,
-"pre_yield_series": "FRED DGS3MO",
-"buyers": {
-"indirect_pct": 60.0,
-"direct_pct": 5.0,
-"dealer_pct": 35.0
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 83814434700
-},
-"US|2024-07-29|912797LZ8|26W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "26W bill",
-"tenor_years": 0.5,
-"security": "26-Week Bill",
-"id": "912797LZ8",
-"date": "2024-07-29",
-"currency": "USD",
-"offered": 70000000000.0,
-"allotted": 77197594300.0,
-"tendered": 213873193500.0,
-"retention": null,
-"btc": 2.95,
-"yield_": 5.126,
-"yield_type": "high investment rate",
-"pre_yield": null,
-"pre_yield_series": "FRED DGS6MO",
-"buyers": {
-"indirect_pct": 72.9,
-"direct_pct": 6.0,
-"dealer_pct": 21.1
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 77197594300
 },
 "CA|2024-08-01|CA135087S398|2Y": {
 "country": "CA",
