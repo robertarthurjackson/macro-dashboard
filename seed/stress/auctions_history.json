@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-12T20:39:45Z",
+"fetched_at": "2026-10-13T18:40:29Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -23989,7 +23989,7 @@
 "btc": 2.87,
 "yield_": 5.381,
 "yield_type": "high investment rate",
-"pre_yield": 5.49,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS1MO",
 "buyers": {
 "indirect_pct": 64.5,
@@ -24015,7 +24015,7 @@
 "btc": 2.74,
 "yield_": 5.346,
 "yield_type": "high investment rate",
-"pre_yield": 5.41,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS3MO",
 "buyers": {
 "indirect_pct": 55.3,
@@ -24024,32 +24024,6 @@
 },
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 85266342800
-},
-"US|2024-07-31|912797ME4|17W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "17W bill",
-"tenor_years": 0.327,
-"security": "17-Week Bill",
-"id": "912797ME4",
-"date": "2024-07-31",
-"currency": "USD",
-"offered": 60000000000.0,
-"allotted": 60189044400.0,
-"tendered": 194568256000.0,
-"retention": null,
-"btc": 3.24,
-"yield_": 5.249,
-"yield_type": "high investment rate",
-"pre_yield": null,
-"pre_yield_series": "FRED DGS3MO",
-"buyers": {
-"indirect_pct": 61.9,
-"direct_pct": 6.1,
-"dealer_pct": 32.0
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 60189044400
 },
 "CA|2024-08-01|CA135087S398|2Y": {
 "country": "CA",
@@ -32367,29 +32341,6 @@
 },
 "source": "Bank of Canada Valet (AUC_* groups)",
 "size_usd": 3227392200
-},
-"DE|2024-07-31|DE000BU27006|7Y": {
-"country": "DE",
-"instrument": "Bond",
-"tenor": "7Y",
-"tenor_years": 7.0,
-"security": "Bund 2.40% 2030-11-15",
-"id": "DE000BU27006",
-"date": "2024-07-31",
-"currency": "EUR",
-"offered": 3000000000,
-"allotted": 2472160000,
-"tendered": 5451000000,
-"retention": 527840000,
-"btc": 2.205,
-"yield_": 2.25,
-"yield_type": "weighted average yield",
-"pre_yield": 2.26,
-"pre_yield_series": "Bundesbank Svensson R07XX (7Y)",
-"auction_tail_bp": null,
-"buyers": null,
-"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
-"size_usd": 2783404944
 },
 "DE|2024-08-05|DE000BU0E147|6M bill": {
 "country": "DE",
@@ -55091,6 +55042,107 @@
 "buyers": null,
 "source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
 "size_usd": 3328160400
+},
+"US|2026-10-13|912797SU2|6W bill": {
+"country": "US",
+"instrument": "Bill",
+"tenor": "6W bill",
+"tenor_years": 0.115,
+"security": "6-Week Bill (reopening)",
+"id": "912797SU2",
+"date": "2026-10-13",
+"currency": "USD",
+"offered": 95000000000.0,
+"allotted": 100405610300.0,
+"tendered": 250877177700.0,
+"retention": null,
+"btc": 2.58,
+"yield_": 4.055,
+"yield_type": "high investment rate",
+"pre_yield": 4.14,
+"pre_yield_series": "FRED DGS1MO",
+"buyers": {
+"indirect_pct": 65.2,
+"direct_pct": 3.2,
+"dealer_pct": 31.7
+},
+"source": "US Treasury FiscalData auctions_query",
+"size_usd": 100405610300
+},
+"US|2026-10-13|912797UE5|26W bill": {
+"country": "US",
+"instrument": "Bill",
+"tenor": "26W bill",
+"tenor_years": 0.5,
+"security": "26-Week Bill (reopening)",
+"id": "912797UE5",
+"date": "2026-10-13",
+"currency": "USD",
+"offered": 82000000000.0,
+"allotted": 86664987000.0,
+"tendered": 231353452000.0,
+"retention": null,
+"btc": 2.76,
+"yield_": 4.351,
+"yield_type": "high investment rate",
+"pre_yield": 4.3,
+"pre_yield_series": "FRED DGS6MO",
+"buyers": {
+"indirect_pct": 66.3,
+"direct_pct": 10.5,
+"dealer_pct": 23.2
+},
+"source": "US Treasury FiscalData auctions_query",
+"size_usd": 86664987000
+},
+"US|2026-10-13|912797VT1|13W bill": {
+"country": "US",
+"instrument": "Bill",
+"tenor": "13W bill",
+"tenor_years": 0.25,
+"security": "13-Week Bill (reopening)",
+"id": "912797VT1",
+"date": "2026-10-13",
+"currency": "USD",
+"offered": 95000000000.0,
+"allotted": 100404693200.0,
+"tendered": 260234408200.0,
+"retention": null,
+"btc": 2.68,
+"yield_": 4.185,
+"yield_type": "high investment rate",
+"pre_yield": 4.23,
+"pre_yield_series": "FRED DGS3MO",
+"buyers": {
+"indirect_pct": 59.6,
+"direct_pct": 7.2,
+"dealer_pct": 33.2
+},
+"source": "US Treasury FiscalData auctions_query",
+"size_usd": 100404693200
+},
+"DE|2026-10-13|DE000BU25075|5Y": {
+"country": "DE",
+"instrument": "Note",
+"tenor": "5Y",
+"tenor_years": 5.0,
+"security": "Bobl 2.90% 2031-10-08",
+"id": "DE000BU25075",
+"date": "2026-10-13",
+"currency": "EUR",
+"offered": 5000000000,
+"allotted": 3352000000,
+"tendered": 3607000000,
+"retention": 1648000000,
+"btc": 1.076,
+"yield_": 3.22,
+"yield_type": "weighted average yield",
+"pre_yield": 3.22,
+"pre_yield_series": "Bundesbank Svensson R05XX (5Y)",
+"auction_tail_bp": null,
+"buyers": null,
+"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
+"size_usd": 3774016800
 }
 }
 }
