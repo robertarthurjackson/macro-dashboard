@@ -247,6 +247,17 @@ def boj(db: str, code: str) -> pd.Series:
 
 # ── derived-series builders ─────────────────────────────────────────────────
 
+def cnbc(symbol: str) -> pd.Series:
+    """Daily closes from CNBC's public chart API (no key), as a float Series."""
+    import macro_collector
+    rows = macro_collector._cnbc_fetch(symbol, "1990-01-01")
+    if not rows:
+        raise RuntimeError(f"CNBC returned no data for {symbol}")
+    s = pd.Series(dict(rows), dtype=float)
+    s.index = pd.to_datetime(s.index)
+    return s.sort_index()
+
+
 def spread(a: pd.Series, b: pd.Series, scale: float = 100.0, ffill_b: bool = True) -> pd.Series:
     """a - b on a's dates (b forward-filled), scaled (default % -> bp)."""
     b2 = b.reindex(a.index.union(b.index)).ffill().reindex(a.index) if ffill_b else b.reindex(a.index)
@@ -562,11 +573,11 @@ CATALOG: list[dict] = [
          regimes=[SF], direction=1, units="bp", source="FRED IRLTLT01ITM156N, IRLTLT01DEM156N (OECD)",
          frequency="monthly",
          fetch=lambda: spread(fred("IRLTLT01ITM156N"), fred("IRLTLT01DEM156N"), ffill_b=False),
-         note="Monthly average (same source as the dashboard's OAT-Bund spread)."),
+         note="Monthly average (OECD via FRED)."),
     dict(id="fr_de_10y", label="France - Germany 10y spread", group="sovereign_stress",
-         regimes=[SF], direction=1, units="bp", source="FRED IRLTLT01FRM156N, IRLTLT01DEM156N (OECD)",
-         frequency="monthly",
-         fetch=lambda: spread(fred("IRLTLT01FRM156N"), fred("IRLTLT01DEM156N"), ffill_b=False)),
+         regimes=[SF], direction=1, units="bp", source="CNBC FR10Y, DE10Y (daily closes)",
+         frequency="daily", fetch=lambda: spread(cnbc("FR10Y"), cnbc("DE10Y"), ffill_b=False),
+         note="OECD monthly averages on FRED lag ~6 weeks; CNBC monthly means match them within a few bp."),
     dict(id="sovereign_cds", label="Sovereign CDS (US/IT/FR/JP)", group="sovereign_stress",
          regimes=[SF], direction=1, units="bp", source="Markit (paid)", frequency="daily",
          stub=True, proxy="sovciss", note="Paid data; ECB SovCISS is the free composite proxy."),

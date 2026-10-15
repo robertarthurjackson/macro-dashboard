@@ -67,6 +67,33 @@ def _stooq_fetch(ticker: str, start: str) -> list[tuple[str, float]]:
     return out
 
 
+_CNBC_BARS_URL = ("https://ts-api.cnbc.com/harmony/app/bars/{sym}/1D/"
+                  "{start}000000/{end}000000/adjusted/EST5EDT.json")
+
+
+def _cnbc_fetch(symbol: str, start: str) -> list[tuple[str, float]]:
+    """Daily closes from CNBC's public chart API (no key). Used for European
+    10Y yields, which FRED only carries as OECD monthly averages (~6w lag);
+    CNBC monthly means track the OECD series within a few bp."""
+    url = _CNBC_BARS_URL.format(sym=symbol, start=start.replace("-", ""),
+                                end=(date.today() + timedelta(days=1)).strftime("%Y%m%d"))
+    try:
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
+        r.raise_for_status()
+        bars = r.json()["barData"]["priceBars"]
+    except Exception as exc:
+        logger.warning("CNBC fetch failed for %s: %s", symbol, exc)
+        return []
+    out: dict[str, float] = {}
+    for b in bars:
+        t = b.get("tradeTime") or ""
+        try:
+            out[f"{t[:4]}-{t[4:6]}-{t[6:8]}"] = float(b["close"])
+        except (TypeError, ValueError, KeyError):
+            continue
+    return sorted(out.items())
+
+
 def _yf_fetch(ticker: str, start: str) -> list[tuple[str, float]]:
     """Pull daily closes from Yahoo Finance for non-FRED macro instruments.
 
@@ -245,6 +272,8 @@ def _unpack_source(entry: tuple) -> tuple[str, str]:
         return ("ibitcsv", entry[0])
     if src.startswith("stooq:"):
         return ("stooq", src[6:])
+    if src.startswith("cnbc:"):
+        return ("cnbc", src[5:])
     return ("fred", entry[0])
 
 
@@ -268,6 +297,9 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     ("IRLTLT01DEM156N", "Germany 10Y",      "Global & Spreads","%",   "monthly"),
     ("IRLTLT01FRM156N", "France 10Y",       "Global & Spreads","%",   "monthly"),
     ("IRLTLT01GBM156N", "UK 10Y",           "Global & Spreads","%",   "monthly"),
+    # Daily FR/DE 10Y (CNBC, from 1994/1990); the OECD monthlies above lag ~6w
+    ("FR10Y_D",  "France 10Y (daily)",      "Global & Spreads","%",   "daily", "cnbc:FR10Y"),
+    ("DE10Y_D",  "Germany 10Y (daily)",     "Global & Spreads","%",   "daily", "cnbc:DE10Y"),
     ("DFII10",   "Real Yield 10Y",          "Global & Spreads","%",   "daily"),
 
     # FX & Dollar — ICE DXY comes from yfinance (FRED only has trade-weighted index)
@@ -439,6 +471,8 @@ def _fetch_series(entry: tuple, start: str, end: Optional[str] = None) -> list[t
         return _ibit_btc_holdings()
     if src_type == "stooq":
         return _stooq_fetch(src_arg, start)
+    if src_type == "cnbc":
+        return _cnbc_fetch(src_arg, start)
     return fred_client.get_series(src_arg, start_date=start, end_date=end)
 
 
@@ -506,7 +540,8 @@ def get_computed_series(name: str, days: Optional[int] = None) -> list[dict]:
     if name == "sofr_iorb":
         return _spread("SOFR", "IORB", days)
     if name == "fr_de_10y":
-        return _spread("IRLTLT01FRM156N", "IRLTLT01DEM156N", days)
+        return _spliced_spread(("FR10Y_D", "DE10Y_D"),
+                               ("IRLTLT01FRM156N", "IRLTLT01DEM156N"), days)
     if name == "reserves_gdp":
         return _reserves_over_denom("GDP", days)
     if name == "ample_reserves":
@@ -877,6 +912,17 @@ def _spread(long_id: str, short_id: str, days: Optional[int]) -> list[dict]:
         if ts in long_rows:
             out.append({"ts": ts, "value": round((long_rows[ts] - r["value"]) * 100, 1)})  # bps
     return out
+
+
+def _spliced_spread(daily: tuple[str, str], monthly: tuple[str, str],
+                    days: Optional[int]) -> list[dict]:
+    """Daily spread, extended back with the monthly spread before the daily
+    history starts (or used alone if the daily fetch failed)."""
+    d = _spread(*daily, days)
+    m = _spread(*monthly, days)
+    if not d:
+        return m
+    return [r for r in m if r["ts"] < d[0]["ts"]] + d
 
 
 def _forward_filled(rows: list[dict]) -> dict[str, float]:

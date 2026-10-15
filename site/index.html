@@ -2812,7 +2812,7 @@ const _MACRO_COLOR = {
   DFII10: '#ff9a3c',
   // Spreads
   '2s10s': '#2fd18c', '5s30s': '#ffc94e', sofr_iorb: '#4ecdc4',
-  fr_de_10y: '#ff6b9d', IRLTLT01FRM156N: '#4f9eff', IRLTLT01DEM156N: '#ffc94e',
+  fr_de_10y: '#ff6b9d', IRLTLT01FRM156N: '#4f9eff', IRLTLT01DEM156N: '#ffc94e', FR10Y_D: '#4f9eff', DE10Y_D: '#ffc94e',
   // Balance
   WALCL: '#3b82f6', WDTGAL: '#ff9a3c', WRESBAL: '#2fd18c',
   RRPONTSYD: '#a48cff', RPONTSYD: '#ff6b6b',
@@ -2871,8 +2871,8 @@ async function loadMacroCharts() {
     {sid:'2s10s',  name:'2s10s Spread (10Y − 2Y)'},
     {sid:'5s30s',  name:'5s30s Spread (30Y − 5Y)'},
     {sid:'fr_de_10y', name:'France−Germany 10Y Spread (OAT − Bund, bp)'},
-    {sid:'IRLTLT01FRM156N', name:'France 10-Year Yield (OAT, monthly)'},
-    {sid:'IRLTLT01DEM156N', name:'Germany 10-Year Yield (Bund, monthly)'},
+    {sid:'FR10Y_D', name:'France 10-Year Yield (OAT)'},
+    {sid:'DE10Y_D', name:'Germany 10-Year Yield (Bund)'},
     {sid:'RSTAR_HLW',    name:'R-star (HLW, NY Fed)'},
     {sid:'rstar_market', name:'R-star (Market 5y5y Real Fwd)'},
     {sid:'policy_gap',   name:'Policy Gap (Real FF − R-star)'},
@@ -3949,7 +3949,7 @@ function _renderTenorChartFor(sid) {
 function _miniChartLabelValue(v, sid) {
   if (v == null) return '—'
   // Rates and spreads use bp/% formatting
-  if (['DFF','SOFR','IORB','DGS3MO','DGS2','DGS5','DGS10','DGS30','DFII10','BAMLH0A0HYM2','IRLTLT01FRM156N','IRLTLT01DEM156N',
+  if (['DFF','SOFR','IORB','DGS3MO','DGS2','DGS5','DGS10','DGS30','DFII10','BAMLH0A0HYM2','IRLTLT01FRM156N','IRLTLT01DEM156N','FR10Y_D','DE10Y_D',
        'reserves_gdp','ample_reserves','cpi_yoy','pce_yoy','core_cpi_yoy',
        'walcl_13w','gld_flow_4w','ibit_flow_4w',
        'RSTAR_HLW','rstar_market','policy_gap',
