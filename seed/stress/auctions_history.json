@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-15T13:03:40Z",
+"fetched_at": "2026-10-15T15:58:40Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -55259,6 +55259,58 @@
 "buyers": null,
 "source": "MOF Japan auction result page",
 "size_usd": 12095771600
+},
+"US|2026-10-15|912797WF0|8W bill": {
+"country": "US",
+"instrument": "Bill",
+"tenor": "8W bill",
+"tenor_years": 0.154,
+"security": "8-Week Bill (reopening)",
+"id": "912797WF0",
+"date": "2026-10-15",
+"currency": "USD",
+"offered": 105000000000.0,
+"allotted": 112075623300.0,
+"tendered": 244853623300.0,
+"retention": null,
+"btc": 2.26,
+"yield_": 4.132,
+"yield_type": "high investment rate",
+"pre_yield": 4.26,
+"pre_yield_series": "FRED DGS3MO",
+"buyers": {
+"indirect_pct": 46.9,
+"direct_pct": 5.7,
+"dealer_pct": 47.4
+},
+"source": "US Treasury FiscalData auctions_query",
+"size_usd": 112075623300
+},
+"US|2026-10-15|912797VX2|4W bill": {
+"country": "US",
+"instrument": "Bill",
+"tenor": "4W bill",
+"tenor_years": 0.077,
+"security": "4-Week Bill (reopening)",
+"id": "912797VX2",
+"date": "2026-10-15",
+"currency": "USD",
+"offered": 110000000000.0,
+"allotted": 117413204400.0,
+"tendered": 289404764400.0,
+"retention": null,
+"btc": 2.56,
+"yield_": 4.068,
+"yield_type": "high investment rate",
+"pre_yield": 4.1,
+"pre_yield_series": "FRED DGS1MO",
+"buyers": {
+"indirect_pct": 63.3,
+"direct_pct": 5.8,
+"dealer_pct": 30.9
+},
+"source": "US Treasury FiscalData auctions_query",
+"size_usd": 117413204400
 }
 }
 }
