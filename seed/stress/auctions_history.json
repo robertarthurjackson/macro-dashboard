@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-14T16:07:09Z",
+"fetched_at": "2026-10-15T13:03:40Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -23937,7 +23937,7 @@
 "btc": 2.62,
 "yield_": 5.212,
 "yield_type": "high investment rate",
-"pre_yield": 5.29,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS3MO",
 "buyers": {
 "indirect_pct": 54.9,
@@ -23963,7 +23963,7 @@
 "btc": 2.67,
 "yield_": 4.881,
 "yield_type": "high investment rate",
-"pre_yield": 4.88,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS6MO",
 "buyers": {
 "indirect_pct": 54.5,
@@ -53381,29 +53381,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23352020480
 },
-"JP|2024-08-02|TB#1247|3M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "3M bill",
-"tenor_years": 0.25,
-"security": "T-Bill #1247 2024-11-05",
-"id": "TB#1247",
-"date": "2024-08-02",
-"currency": "JPY",
-"offered": 5199970000000,
-"allotted": 3947370000000,
-"tendered": 14425200000000,
-"retention": null,
-"btc": 3.654,
-"yield_": 0.121,
-"yield_type": "yield at average price",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": 0.99,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 24931588920
-},
 "JP|2024-08-08|TB#1248|6M bill": {
 "country": "JP",
 "instrument": "Bill",
@@ -55085,7 +55062,7 @@
 "btc": 2.79,
 "yield_": 4.313,
 "yield_type": "high investment rate",
-"pre_yield": 4.25,
+"pre_yield": 4.26,
 "pre_yield_series": "FRED DGS3MO",
 "buyers": {
 "indirect_pct": 54.2,
