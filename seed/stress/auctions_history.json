@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-15T15:58:40Z",
+"fetched_at": "2026-10-16T15:39:32Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -55276,7 +55276,7 @@
 "btc": 2.26,
 "yield_": 4.132,
 "yield_type": "high investment rate",
-"pre_yield": 4.26,
+"pre_yield": 4.28,
 "pre_yield_series": "FRED DGS3MO",
 "buyers": {
 "indirect_pct": 46.9,
@@ -55302,7 +55302,7 @@
 "btc": 2.56,
 "yield_": 4.068,
 "yield_type": "high investment rate",
-"pre_yield": 4.1,
+"pre_yield": 4.11,
 "pre_yield_series": "FRED DGS1MO",
 "buyers": {
 "indirect_pct": 63.3,
@@ -55311,6 +55311,56 @@
 },
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 117413204400
+},
+"CA|2026-10-15|CA135087V434|5Y": {
+"country": "CA",
+"instrument": "Bond",
+"tenor": "5Y",
+"tenor_years": 5.0,
+"security": "Canada 3.500% 2032-03-01",
+"id": "CA135087V434",
+"date": "2026-10-15",
+"currency": "CAD",
+"offered": 5000000000,
+"allotted": 5000000000,
+"tendered": 14654300000,
+"retention": null,
+"btc": 2.931,
+"yield_": 3.574,
+"yield_type": "average yield",
+"pre_yield": 3.55,
+"pre_yield_series": "BoC Valet BD.CDN.5YR.DQ.YLD",
+"auction_tail_bp": 0.25,
+"buyers": {
+"dealer_pct": 18.77,
+"customer_pct": 81.23,
+"foreign_pct": 69.13
+},
+"source": "Bank of Canada Valet (AUC_* groups)",
+"size_usd": 3504100000
+},
+"JP|2026-10-16|TB#1413|3M bill": {
+"country": "JP",
+"instrument": "Bill",
+"tenor": "3M bill",
+"tenor_years": 0.25,
+"security": "T-Bill #1413 2027-01-25",
+"id": "TB#1413",
+"date": "2026-10-16",
+"currency": "JPY",
+"offered": null,
+"allotted": 2529080000000,
+"tendered": 10869100000000,
+"retention": null,
+"btc": 4.298,
+"yield_": 1.2803,
+"yield_type": "yield at average price",
+"pre_yield": null,
+"pre_yield_series": null,
+"auction_tail_bp": 0.53,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 15973669280
 }
 }
 }
