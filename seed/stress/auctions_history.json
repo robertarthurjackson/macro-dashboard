@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-17T14:30:32Z",
+"fetched_at": "2026-10-18T14:54:12Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -23885,7 +23885,7 @@
 "btc": 2.55,
 "yield_": 3.81,
 "yield_type": "high yield",
-"pre_yield": 3.71,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS3",
 "buyers": {
 "indirect_pct": 64.4,
@@ -23911,7 +23911,7 @@
 "btc": 2.93,
 "yield_": 4.458,
 "yield_type": "high investment rate",
-"pre_yield": 4.34,
+"pre_yield": null,
 "pre_yield_series": "FRED DGS1",
 "buyers": {
 "indirect_pct": 54.7,
@@ -23920,58 +23920,6 @@
 },
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 49689669200
-},
-"US|2024-08-05|912797LC9|13W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "13W bill",
-"tenor_years": 0.25,
-"security": "13-Week Bill (reopening)",
-"id": "912797LC9",
-"date": "2024-08-05",
-"currency": "USD",
-"offered": 76000000000.0,
-"allotted": 82096009600.0,
-"tendered": 204987633600.0,
-"retention": null,
-"btc": 2.62,
-"yield_": 5.212,
-"yield_type": "high investment rate",
-"pre_yield": null,
-"pre_yield_series": "FRED DGS3MO",
-"buyers": {
-"indirect_pct": 54.9,
-"direct_pct": 5.1,
-"dealer_pct": 40.0
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 82096009600
-},
-"US|2024-08-05|912797MJ3|26W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "26W bill",
-"tenor_years": 0.5,
-"security": "26-Week Bill",
-"id": "912797MJ3",
-"date": "2024-08-05",
-"currency": "USD",
-"offered": 70000000000.0,
-"allotted": 75615418100.0,
-"tendered": 192536093100.0,
-"retention": null,
-"btc": 2.67,
-"yield_": 4.881,
-"yield_type": "high investment rate",
-"pre_yield": null,
-"pre_yield_series": "FRED DGS6MO",
-"buyers": {
-"indirect_pct": 54.5,
-"direct_pct": 3.9,
-"dealer_pct": 41.6
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 75615418100
 },
 "CA|2024-08-07|CA135087R895|5Y": {
 "country": "CA",
@@ -32266,29 +32214,6 @@
 },
 "source": "Bank of Canada Valet (AUC_* groups)",
 "size_usd": 3223772000
-},
-"DE|2024-08-05|DE000BU0E147|6M bill": {
-"country": "DE",
-"instrument": "Bill",
-"tenor": "6M bill",
-"tenor_years": 0.542,
-"security": "Bubill 2025-02-19",
-"id": "DE000BU0E147",
-"date": "2024-08-05",
-"currency": "EUR",
-"offered": 2000000000,
-"allotted": 1736000000,
-"tendered": 3506000000,
-"retention": 264000000,
-"btc": 2.02,
-"yield_": 3.076,
-"yield_type": "weighted average yield",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": null,
-"buyers": null,
-"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
-"size_usd": 1943104800
 },
 "DE|2024-08-06|DE000BU25034|5Y": {
 "country": "DE",
