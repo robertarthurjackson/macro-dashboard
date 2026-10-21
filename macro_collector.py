@@ -255,8 +255,171 @@ def _ibit_btc_holdings() -> list[tuple[str, float]]:
     return []
 
 
+# ── Central-bank statistics APIs (no key) ─────────────────────────────────────
+# Replacements for OECD MEI monetary aggregates on FRED, which stopped updating
+# (MABMM301* series end 2018-2023). Values are stored in billions of the
+# native currency so the overview shows e.g. "€17.65T" rather than raw units.
+
+_ECB_URL = "https://data-api.ecb.europa.eu/service/data/{flow}/{key}"
+_BOJ_URL = "https://www.stat-search.boj.or.jp/api/v1/getDataCode"
+_BOE_URL = "https://www.bankofengland.co.uk/boeapps/database/_iadb-fromshowcolumns.asp"
+
+
+def _month_start(period: str) -> str:
+    """'2026-08' / '202608' / '2026-Q3' → first day of that period."""
+    p = period.replace("-", "")
+    if "Q" in p:
+        y, q = p.split("Q")
+        return f"{y}-{(int(q) - 1) * 3 + 1:02d}-01"
+    return f"{p[:4]}-{p[4:6]}-01"
+
+
+def _ecb_fetch(arg: str, start: str) -> list[tuple[str, float]]:
+    """ECB Data Portal SDMX CSV. arg = 'FLOW/KEY[*scale]', e.g.
+    'BSI/M.U2.Y.V.M30.X.1.U2.2300.Z01.E*0.001' (M3, EUR m → EUR bn)."""
+    path, _, scale = arg.partition("*")
+    flow, _, key = path.partition("/")
+    mult = float(scale) if scale else 1.0
+    try:
+        r = requests.get(_ECB_URL.format(flow=flow, key=key), timeout=60,
+                         headers={"Accept": "text/csv"},
+                         params={"format": "csvdata", "detail": "dataonly",
+                                 "startPeriod": start[:7]})
+        r.raise_for_status()
+    except requests.RequestException as exc:
+        logger.warning("ECB fetch failed for %s: %s", arg, exc)
+        return []
+    out: list[tuple[str, float]] = []
+    for row in csv.DictReader(io.StringIO(r.text)):
+        try:
+            out.append((_month_start(row["TIME_PERIOD"]),
+                        round(float(row["OBS_VALUE"]) * mult, 4)))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return out
+
+
+def _boj_fetch(arg: str, start: str) -> list[tuple[str, float]]:
+    """Bank of Japan time-series API. arg = 'DB/CODE[*scale]', e.g.
+    'MD02/MAM1XAM3M3MO*0.1' (M3 avg outstanding SA, 100m JPY → JPY bn)."""
+    path, _, scale = arg.partition("*")
+    dbname, _, code = path.partition("/")
+    mult = float(scale) if scale else 1.0
+    try:
+        r = requests.get(_BOJ_URL, timeout=60, headers={"User-Agent": "Mozilla/5.0"},
+                         params={"format": "json", "lang": "en", "db": dbname,
+                                 "code": code, "startDate": start[:7].replace("-", "")})
+        r.raise_for_status()
+        vals = r.json()["RESULTSET"][0]["VALUES"]
+    except Exception as exc:
+        logger.warning("BoJ fetch failed for %s: %s", arg, exc)
+        return []
+    out: list[tuple[str, float]] = []
+    for ds, v in zip(vals.get("SURVEY_DATES", []), vals.get("VALUES", [])):
+        if v is None:
+            continue
+        try:
+            out.append((_month_start(str(ds)), round(float(v) * mult, 4)))
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def _boe_fetch(arg: str, start: str) -> list[tuple[str, float]]:
+    """Bank of England IADB CSV. arg = 'CODE[*scale]'. Monthly series are
+    dated month-end by the BoE; stored at month start like FRED monthlies."""
+    from datetime import datetime as _dtm
+    code, _, scale = arg.partition("*")
+    mult = float(scale) if scale else 1.0
+    d0 = max(start, "1963-01-01")
+    try:
+        r = requests.get(_BOE_URL, timeout=60, headers={"User-Agent": "Mozilla/5.0"},
+                         params={"csv.x": "yes", "SeriesCodes": code, "CSVF": "TN",
+                                 "UsingCodes": "Y", "VPD": "Y", "VFD": "N",
+                                 "Datefrom": _dtm.strptime(d0, "%Y-%m-%d").strftime("%d/%b/%Y"),
+                                 "Dateto": "now"})
+        r.raise_for_status()
+    except requests.RequestException as exc:
+        logger.warning("BoE fetch failed for %s: %s", arg, exc)
+        return []
+    if not r.text.startswith("DATE"):
+        logger.warning("BoE returned non-CSV for %s: %s", arg, r.text[:120])
+        return []
+    out: list[tuple[str, float]] = []
+    for row in csv.DictReader(io.StringIO(r.text)):
+        try:
+            d = _dtm.strptime(row["DATE"], "%d %b %Y").date()
+            out.append((d.replace(day=1).isoformat(), round(float(row[code]) * mult, 4)))
+        except (KeyError, TypeError, ValueError):
+            continue
+    return out
+
+
+def _fred_any(series_id: str, start: str) -> list[tuple[str, float]]:
+    """FRED via the API when a key is configured, else the public fredgraph CSV."""
+    try:
+        return fred_client.get_series(series_id, start_date=start)
+    except RuntimeError:
+        pass
+    try:
+        r = requests.get("https://fred.stlouisfed.org/graph/fredgraph.csv", timeout=60,
+                         params={"id": series_id, "cosd": start},
+                         headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+    except requests.RequestException as exc:
+        logger.warning("fredgraph fetch failed for %s: %s", series_id, exc)
+        return []
+    out: list[tuple[str, float]] = []
+    for row in list(csv.reader(io.StringIO(r.text)))[1:]:
+        try:
+            out.append((row[0], float(row[1])))
+        except (IndexError, ValueError):
+            continue
+    return out
+
+
+# Discontinued FRED/OECD series whose history is spliced in front of the live
+# replacement: {new_id: (old_fred_id, scale to the new units)}. The old points
+# before the new series starts are prepended only if the two overlap and their
+# levels agree within _SPLICE_TOL (same aggregate, different publisher); the
+# old segment is then ratio-adjusted at the join so there is no step.
+_SPLICE: dict[str, tuple[str, float]] = {
+    "EZ_M3": ("MABMM301EZQ189S", 1e-9),
+    "JP_M3": ("MABMM301JPM189S", 1e-9),
+    "UK_M3": ("MABMM301GBQ189S", 1e-9),
+    "EURIBOR3M": ("IR3TIB01EZM156N", 1.0),
+}
+_SPLICE_TOL = 0.03
+
+
+def _splice_old_history(sid: str, rows: list[tuple[str, float]],
+                        start: str) -> list[tuple[str, float]]:
+    old_id, scale = _SPLICE[sid]
+    if not rows:
+        return rows
+    first_new = rows[0][0]
+    if start >= first_new:
+        return rows  # caller did not ask for anything before the live series
+    old = [(d, v * scale) for d, v in _fred_any(old_id, start)]
+    new_by_date = dict(rows)
+    overlap = [(d, v, new_by_date[d]) for d, v in old if d in new_by_date and v]
+    if not overlap:
+        logger.info("Splice %s←%s: no overlap, not spliced", sid, old_id)
+        return rows
+    d0, ov, nv = overlap[0]
+    ratio = nv / ov
+    if abs(ratio - 1) > _SPLICE_TOL:
+        logger.info("Splice %s←%s: levels differ (%.3f at %s), not spliced",
+                    sid, old_id, ratio, d0)
+        return rows
+    head = [(d, round(v * ratio, 4)) for d, v in old if d < first_new]
+    logger.info("Splice %s←%s: +%d old points (ratio %.4f at %s)",
+                sid, old_id, len(head), ratio, d0)
+    return head + rows
+
+
 def _unpack_source(entry: tuple) -> tuple[str, str]:
-    """Return (source_type, source_arg). source_type is 'fred', 'yfinance', 'spdrgold', 'ibitcsv', or 'stooq'."""
+    """Return (source_type, source_arg). source_type is 'fred', 'yfinance', 'spdrgold', 'ibitcsv', 'stooq', 'cnbc', 'ecb', 'boj' or 'boe'."""
     if len(entry) <= 5:
         return ("fred", entry[0])
     src = entry[5] or "fred"
@@ -274,6 +437,9 @@ def _unpack_source(entry: tuple) -> tuple[str, str]:
         return ("stooq", src[6:])
     if src.startswith("cnbc:"):
         return ("cnbc", src[5:])
+    for prefix in ("ecb", "boj", "boe"):
+        if src.startswith(prefix + ":"):
+            return (prefix, src[len(prefix) + 1:])
     return ("fred", entry[0])
 
 
@@ -358,17 +524,30 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     ("BUSLOANS",         "C&I Loans",                 "Bank Credit",  "$B",  "monthly"),
     ("TOTLL",            "Total Bank Loans",          "Bank Credit",  "$B",  "weekly"),
     ("H8B1023NCBCMG",   "Commercial Bank Credit",    "Bank Credit",  "$B",  "weekly"),
-    # OECD global M3 series — note that 2024-01-01 start returns empty;
-    # must use start_date ~2015-01-01 to retrieve data (OECD lag applies).
-    ("MABMM301EZQ189S",  "Euro Area M3 (OECD)",      "Bank Credit",  "Index","quarterly"),
-    ("MABMM301JPM189S",  "Japan M3 (OECD)",          "Bank Credit",  "Index","monthly"),
+    # Foreign broad money. The OECD MEI M3 series on FRED (MABMM301*) stopped
+    # updating in 2018-2023, so these come straight from the central banks,
+    # in billions of local currency, with the OECD history spliced in front
+    # where it predates the central-bank series (see _SPLICE).
+    # China M3 (MABMM301CNM189S) is still the OECD series and ends 2018-12:
+    # no free keyless source for current China M2 was found (NBS is behind a
+    # WAF, the PBoC English tables stop at 2025, IMF MFS does not carry China).
+    ("EZ_M3",            "Euro Area M3 (ECB)",       "Bank Credit",  "€B",  "monthly",
+     "ecb:BSI/M.U2.Y.V.M30.X.1.U2.2300.Z01.E*0.001"),
+    ("JP_M3",            "Japan M3 (BoJ)",           "Bank Credit",  "¥B",  "monthly",
+     "boj:MD02/MAM1XAM3M3MO*0.1"),
     ("MABMM301CNM189S",  "China M3 (OECD)",          "Bank Credit",  "Index","monthly"),
-    ("MABMM301GBQ189S",  "UK M3 (OECD)",             "Bank Credit",  "Index","quarterly"),
+    # BoE's UK estimate of the euro-area M3 definition (not UK M4); this is
+    # what the OECD series carried.
+    ("UK_M3",            "UK M3 (BoE, EMU basis)",   "Bank Credit",  "£B",  "monthly",
+     "boe:LPMVWYZ*0.001"),
 
     # Shadow Banking US (§4.2.2)
     ("MMMFFAQ027S",      "MMF Total Assets",          "Shadow Banking","$B", "quarterly"),
     ("COMPOUT",          "Commercial Paper Outstandg","Shadow Banking","$B", "weekly"),
-    ("MABMM301USA189S",  "US Monetary Base Ext (OECD)","Shadow Banking","Index","quarterly"),
+    # Replaces MABMM301USA189S (OECD, annual, ended 2022), which was really US
+    # broad money and duplicated M2SL; the Fed's monetary base is what the
+    # label promised. Levels differ (~$5T vs ~$21T), so no splice.
+    ("BOGMBASE",         "US Monetary Base",          "Shadow Banking","$B", "monthly"),
     # FINRECEIVABLES does not exist on FRED — deferred to Opus.
     # GSE total liabilities — BOGZ1FL403190005Q exists but ends 2024-Q2 and
     # appears to be GSE misc liabilities (~$98B) rather than total credit-market
@@ -398,9 +577,11 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     # Spread OBFR - SOFR = offshore premium over pure US secured rate.
     # Note: OBFR starts 2016-03-01 (SOFR starts 2018-04-03); overlap from SOFR start.
     ("OBFR",             "Overnight Bank Funding Rate","Cross-Border",  "%",  "daily"),
-    # IR3TIB01EZM156N: Euro area 3M interbank rate (OECD). Monthly.
+    # 3M Euribor, monthly average, from the ECB (FM dataset). Replaces the OECD
+    # copy IR3TIB01EZM156N, which stopped at 2026-01 (identical values).
     # Used as the EUR-denominated funding rate in the cross-border spread.
-    ("IR3TIB01EZM156N",  "Euro Area 3M Interbank",    "Cross-Border",  "%",  "monthly"),
+    ("EURIBOR3M",        "Euro Area 3M Euribor",      "Cross-Border",  "%",  "monthly",
+     "ecb:FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"),
     # IR3TIB01USM156N: US 3M interbank / money market rate (OECD). Monthly.
     # Pairing with EUR rate gives cross-currency funding spread.
     ("IR3TIB01USM156N",  "US 3M Interbank Rate",      "Cross-Border",  "%",  "monthly"),
@@ -473,6 +654,12 @@ def _fetch_series(entry: tuple, start: str, end: Optional[str] = None) -> list[t
         return _stooq_fetch(src_arg, start)
     if src_type == "cnbc":
         return _cnbc_fetch(src_arg, start)
+    if src_type in ("ecb", "boj", "boe"):
+        fetch = {"ecb": _ecb_fetch, "boj": _boj_fetch, "boe": _boe_fetch}[src_type]
+        rows = fetch(src_arg, start)
+        if entry[0] in _SPLICE:
+            rows = _splice_old_history(entry[0], rows, start)
+        return rows
     return fred_client.get_series(src_arg, start_date=start, end_date=end)
 
 

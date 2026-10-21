@@ -2820,6 +2820,8 @@ const _MACRO_COLOR = {
   reserves_gdp: '#2fd18c', ample_reserves: '#a48cff',
   // Money/Credit/Inflation
   M2SL: '#4ecdc4', BAMLH0A0HYM2: '#ff6b6b',
+  EZ_M3: '#3b82f6', JP_M3: '#ff9a3c', UK_M3: '#4ecdc4', BOGMBASE: '#2fd18c',
+  EURIBOR3M: '#ffc94e',
   cpi_yoy: '#ff9a3c', pce_yoy: '#ffc94e',
   // FX
   DXY: '#4f9eff', DEXJPUS: '#ff9a3c', DEXUSEU: '#3b82f6',
@@ -3953,7 +3955,7 @@ function _miniChartLabelValue(v, sid) {
        'reserves_gdp','ample_reserves','cpi_yoy','pce_yoy','core_cpi_yoy',
        'walcl_13w','gld_flow_4w','ibit_flow_4w',
        'RSTAR_HLW','rstar_market','policy_gap',
-       'T5YIFR','T5YIE','T10YIE','T30YIEM'].includes(sid))
+       'T5YIFR','T5YIE','T10YIE','T30YIEM','EURIBOR3M'].includes(sid))
     return v.toFixed(2) + '%'
   if (['2s10s','5s30s','sofr_iorb','fr_de_10y'].includes(sid))
     return (v >= 0 ? '+' : '') + v.toFixed(0) + 'bp'
@@ -3974,6 +3976,10 @@ function _miniChartLabelValue(v, sid) {
     return '$' + v.toFixed(0) + 'M'
   }
   if (sid === 'M2SL') return '$' + (v/1000).toFixed(2) + 'T'
+  if (sid === 'BOGMBASE') return '$' + (v/1000).toFixed(2) + 'T'
+  if (sid === 'EZ_M3') return '€' + (v/1000).toFixed(2) + 'T'
+  if (sid === 'UK_M3') return '£' + (v/1000).toFixed(2) + 'T'
+  if (sid === 'JP_M3') return '¥' + (v/1000).toFixed(0) + 'T'
   if (sid === 'RRPONTSYD') return '$' + v.toFixed(1) + 'B'
   if (sid === 'RPONTSYD') return v >= 1 ? '$' + v.toFixed(1) + 'B' : '$' + (v*1000).toFixed(0) + 'M'
   // Commodities
@@ -4466,6 +4472,12 @@ function _fmtMacroPrice(v, units) {
   if (units === 'FX')    return v.toFixed(4)
   if (units === 'Index') return v.toFixed(1)
   if (units === 'USD')   return '$' + v.toFixed(2)
+  // Foreign broad money, stored in billions of local currency (EZ_M3, JP_M3, UK_M3)
+  if (['€B','£B','¥B'].includes(units)) {
+    const c = units[0]
+    if (Math.abs(v) >= 1000) return c + (v/1000).toFixed(2) + 'T'
+    return c + v.toFixed(0) + 'B'
+  }
   if (units === '$B') {
     if (Math.abs(v) >= 1000) return '$' + (v/1000).toFixed(2) + 'T'
     return '$' + v.toFixed(0) + 'B'
