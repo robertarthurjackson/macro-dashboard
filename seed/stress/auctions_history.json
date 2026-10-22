@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-22T15:51:25Z",
+"fetched_at": "2026-10-22T16:11:36Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -55116,6 +55116,33 @@
 "buyers": null,
 "source": "MOF Japan auction result page",
 "size_usd": 3399305900
+},
+"CA|2026-10-22|CA135087V277|2Y": {
+"country": "CA",
+"instrument": "Bond",
+"tenor": "2Y",
+"tenor_years": 2.0,
+"security": "Canada 3.000% 2028-11-01",
+"id": "CA135087V277",
+"date": "2026-10-22",
+"currency": "CAD",
+"offered": 5500000000,
+"allotted": 5500000000,
+"tendered": 14978300000,
+"retention": null,
+"btc": 2.723,
+"yield_": 3.31,
+"yield_type": "average yield",
+"pre_yield": 3.32,
+"pre_yield_series": "BoC Valet BD.CDN.2YR.DQ.YLD",
+"auction_tail_bp": 0.22,
+"buyers": {
+"dealer_pct": 59.88,
+"customer_pct": 40.12,
+"foreign_pct": 32.84
+},
+"source": "Bank of Canada Valet (AUC_* groups)",
+"size_usd": 3885002000
 }
 }
 }
