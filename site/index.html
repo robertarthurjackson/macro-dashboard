@@ -2725,7 +2725,7 @@ let _macroLoaded = false
 // Order categories so left column = Rates/Spreads/Money, right column = FX/Commodities/Inflation
 const _MACRO_CATEGORY_ORDER = [
   ['US Rates', 'Global & Spreads', 'Money & Credit'],
-  ['FX & Dollar', 'Commodities & Vol', 'Inflation'],
+  ['FX & Dollar', 'Commodities & Vol', 'Equities', 'Inflation'],
 ]
 
 async function loadMacroSection() {
@@ -4388,8 +4388,10 @@ function _renderMacroWatchlist(indicators) {
     ind._prior_ytd = ind.change_ytd != null ? ind.latest_value - ind.change_ytd : null
   }
 
-  // Sort each category: keep yield curve in maturity order, otherwise alpha
-  const RATE_ORDER = ['SOFR','IORB','Fed Funds','3M T-Bill','2Y UST','5Y UST','10Y UST','30Y UST']
+  // Sort each category: keep yield curve in maturity order and equities
+  // broad-to-narrow, otherwise alpha
+  const RATE_ORDER = ['SOFR','IORB','Fed Funds','3M T-Bill','2Y UST','5Y UST','10Y UST','30Y UST',
+                      'S&P 500','Nasdaq 100','Russell 2000','Dow Jones Industrials']
   for (const c of Object.keys(byCat)) {
     byCat[c].sort((a,b) => {
       const ai = RATE_ORDER.indexOf(a.display_name), bi = RATE_ORDER.indexOf(b.display_name)

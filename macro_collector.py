@@ -484,7 +484,7 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     ("GOLD",     "Gold (XAU)",              "Commodities & Vol", "USD","daily", "yf:GC=F"),
     ("MOVE",     "MOVE Index",              "Commodities & Vol", "Index","daily","yf:^MOVE"),
 
-    # Equities (SPX lives under Liquidity Overlays below; shown here too)
+    # Equities (SPX is below with the liquidity overlays, also category Equities)
     ("NDX",      "Nasdaq 100",              "Equities",     "Index","daily", "yf:^NDX"),
     ("RUT",      "Russell 2000",            "Equities",     "Index","daily", "yf:^RUT"),
     ("DJI",      "Dow Jones Industrials",   "Equities",     "Index","daily", "yf:^DJI"),
@@ -598,8 +598,8 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     ("THREEFYTP10",      "Term Premium 10Y (ACM)",    "Quality Overlays","%", "daily"),
 
     # Liquidity Overlays — price overlays for the composite chart (§4.5)
-    ("BTC-USD",  "Bitcoin",                           "Liquidity Overlays","USD","daily","yf:BTC-USD"),
-    ("SPX",      "S&P 500",                           "Liquidity Overlays","Index","daily","yf:^GSPC"),
+    ("BTC-USD",  "Bitcoin",                           "Commodities & Vol", "USD","daily","yf:BTC-USD"),
+    ("SPX",      "S&P 500",                           "Equities",          "Index","daily","yf:^GSPC"),
 
     # Debasement Watch — western-bid detectors (ETF creations/redemptions),
     # measured in metal/coins held in trust (price-independent, issuer-official).
