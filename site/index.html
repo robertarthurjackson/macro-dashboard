@@ -2186,6 +2186,7 @@
     <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-credit', this)">Credit &amp; Inflation</button>
     <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-fx',     this)">Fx</button>
     <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-cmdty',  this)">Commodities</button>
+    <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-eq',     this)">Equities</button>
     <button class="macro-nav-btn"        onclick="macroNavGo('macro-anchor-vol',    this)">Volatility</button>
   </div>
 
@@ -2395,6 +2396,11 @@
   <div class="macro-section" id="macro-anchor-cmdty">
     <div class="macro-section-title">Commodities</div>
     <div class="macro-chart-grid" id="macro-cmdty-grid"></div>
+  </div>
+
+  <div class="macro-section" id="macro-anchor-eq">
+    <div class="macro-section-title">Equities</div>
+    <div class="macro-chart-grid" id="macro-eq-grid"></div>
   </div>
 
   <div class="macro-section" id="macro-anchor-vol">
@@ -2829,7 +2835,9 @@ const _MACRO_COLOR = {
   // Commodities
   DCOILBRENTEU: '#ff9a3c', DCOILWTICO: '#4f9eff', DHHNGSP: '#2fd18c',
   PCOPPUSDM: '#ff6b6b', VIX: '#ffc94e', VVIX: '#a48cff',
-  GOLD: '#d4af37', MOVE: '#4ecdc4',
+  GOLD: '#d4af37', MOVE: '#4ecdc4', 'BTC-USD': '#f7931a',
+  // Equities
+  SPX: '#4f9eff', NDX: '#a48cff', RUT: '#2fd18c', DJI: '#ffc94e',
   // Inflation forwards
   T5YIFR: '#ffc94e', T5YIE: '#ff9a3c', T10YIE: '#ffa94e', T30YIEM: '#ffb86c',
   // Debasement watch
@@ -2939,6 +2947,13 @@ async function loadMacroCharts() {
     {sid:'DCOILWTICO',   name:'WTI Oil'},
     {sid:'DHHNGSP',      name:'Natural Gas'},
     {sid:'PCOPPUSDM',    name:'Copper'},
+    {sid:'BTC-USD',      name:'Bitcoin'},
+  ]
+  const equities = [
+    {sid:'SPX', name:'S&P 500'},
+    {sid:'NDX', name:'Nasdaq 100'},
+    {sid:'RUT', name:'Russell 2000'},
+    {sid:'DJI', name:'Dow Jones Industrials'},
   ]
   const vol = [
     {sid:'VIX',  name:'VIX'},
@@ -2946,7 +2961,7 @@ async function loadMacroCharts() {
     {sid:'MOVE', name:'MOVE Index'},
   ]
   // Pre-fetch 10y of data for every series so range switches are instant
-  const allSeries = [...yields, ...fed, ...moneysupply, ...debase, ...velocity, ...fiscal, ...credit, ...fx, ...cmdty, ...vol,
+  const allSeries = [...yields, ...fed, ...moneysupply, ...debase, ...velocity, ...fiscal, ...credit, ...fx, ...cmdty, ...equities, ...vol,
                      // dual-chart inputs (realized-vol-vs-MOVE, avg-debt-cost-vs-10Y, SRF split)
                      {sid:'rv10y_20d'}, {sid:'avg_debt_rate'}, {sid:'srf_turn'}, {sid:'srf_stress'},
                      // snapshot also needs the underlying tenor series
@@ -2978,6 +2993,7 @@ async function loadMacroCharts() {
   _renderSrfSplitChart()
   _renderMacroChartGrid('macro-fx-grid',          fx)
   _renderMacroChartGrid('macro-cmdty-grid',       cmdty)
+  _renderMacroChartGrid('macro-eq-grid',          equities)
   _renderMacroChartGrid('macro-vol-grid',         vol)
 
   // ── Repression Signposts live values (series already prefetched above) ────
@@ -3986,6 +4002,9 @@ function _miniChartLabelValue(v, sid) {
   if (['DCOILBRENTEU','DCOILWTICO','DHHNGSP'].includes(sid)) return '$' + v.toFixed(2)
   if (sid === 'PCOPPUSDM') return '$' + v.toFixed(0)
   if (sid === 'GOLD') return '$' + v.toFixed(2)
+  if (sid === 'BTC-USD') return '$' + Math.round(v).toLocaleString()
+  // Equity indices
+  if (['SPX','NDX','RUT','DJI'].includes(sid)) return Math.round(v).toLocaleString()
   // Inflation indices
   if (['CPIAUCNS','CPILFENS','PCEPILFE'].includes(sid)) return v.toFixed(2)
   // ETF holdings in trust

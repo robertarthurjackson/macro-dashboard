@@ -484,6 +484,11 @@ MACRO_SERIES: list[tuple[str, str, str, str, str]] = [
     ("GOLD",     "Gold (XAU)",              "Commodities & Vol", "USD","daily", "yf:GC=F"),
     ("MOVE",     "MOVE Index",              "Commodities & Vol", "Index","daily","yf:^MOVE"),
 
+    # Equities (SPX lives under Liquidity Overlays below; shown here too)
+    ("NDX",      "Nasdaq 100",              "Equities",     "Index","daily", "yf:^NDX"),
+    ("RUT",      "Russell 2000",            "Equities",     "Index","daily", "yf:^RUT"),
+    ("DJI",      "Dow Jones Industrials",   "Equities",     "Index","daily", "yf:^DJI"),
+
     # Money & Credit
     ("M2SL",     "M2 Money Supply",         "Money & Credit","$B", "weekly"),
     ("WALCL",    "Fed Balance Sheet",       "Money & Credit","$M", "weekly"),
