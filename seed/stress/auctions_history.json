@@ -23703,7 +23703,7 @@
 "btc": 2.95,
 "yield_": 5.207,
 "yield_type": "high investment rate",
-"pre_yield": null,
+"pre_yield": 5.33,
 "pre_yield_series": "FRED DGS3MO",
 "buyers": {
 "indirect_pct": 63.5,
@@ -23729,7 +23729,7 @@
 "btc": 2.73,
 "yield_": 4.982,
 "yield_type": "high investment rate",
-"pre_yield": null,
+"pre_yield": 5.02,
 "pre_yield_series": "FRED DGS6MO",
 "buyers": {
 "indirect_pct": 53.7,

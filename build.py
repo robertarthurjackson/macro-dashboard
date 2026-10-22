@@ -22,6 +22,7 @@ logger = logging.getLogger("build")
 ROOT = Path(__file__).parent
 DATA_DIR = ROOT / "site" / "data"
 SEED_FILE = ROOT / "seed" / "ibit_btc.json"
+MAX_EMPTY_FRAC = 0.2
 
 import database as db          # noqa: E402
 import macro_collector as mc   # noqa: E402
@@ -58,6 +59,12 @@ def main() -> None:
               if n == 0 and not db.get_latest_macro_value(sid)]
     if failed:
         logger.warning("Series with no data at all: %s", failed)
+    # A source outage (e.g. FRED returning HTML) empties dozens of series at
+    # once. Fail the job before touching seed/ or site/data/ so the previous
+    # good deploy stays live; a normal run has zero or a handful empty.
+    if len(failed) > MAX_EMPTY_FRAC * len(results):
+        raise SystemExit(f"Aborting: {len(failed)}/{len(results)} series empty "
+                         f"(limit {MAX_EMPTY_FRAC:.0%}) — likely a source outage")
 
     # IBIT seed: merge accumulated history, then re-export with today's point
     if SEED_FILE.exists():

@@ -1251,12 +1251,15 @@ def build_auctions() -> dict:
             upcoming += res.get("upcoming", [])
             fresh += res.get("records", [])
 
-    # merge with accumulated history (fresh wins); keep ~HIST_YEARS
+    # merge with accumulated history (fresh wins); keep ~HIST_YEARS. A field
+    # that comes back None (e.g. FRED-derived pre_yield or FX-based size_usd
+    # during a FRED outage) keeps its stored value instead of erasing it.
     merged = dict(stored)
     for r in fresh:
         if r.get("size_usd") is None:
             r["size_usd"] = to_usd(r.get("allotted") or r.get("offered"), r.get("currency"), fx)
-        merged[rec_key(r)] = r
+        old = merged.get(rec_key(r)) or {}
+        merged[rec_key(r)] = {**old, **{k: v for k, v in r.items() if v is not None or k not in old}}
     cutoff = iso(TODAY - timedelta(days=int(365 * HIST_YEARS)))
     merged = {k: v for k, v in merged.items() if v.get("date", "") >= cutoff}
     try:
