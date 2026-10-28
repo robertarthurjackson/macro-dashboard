@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-27T16:54:33Z",
+"fetched_at": "2026-10-28T17:29:04Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -23608,58 +23608,6 @@
 },
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 75157884800
-},
-"US|2024-08-15|912797LT2|8W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "8W bill",
-"tenor_years": 0.154,
-"security": "8-Week Bill (reopening)",
-"id": "912797LT2",
-"date": "2024-08-15",
-"currency": "USD",
-"offered": 90000000000.0,
-"allotted": 90285821800.0,
-"tendered": 249552417100.0,
-"retention": null,
-"btc": 2.77,
-"yield_": 5.289,
-"yield_type": "high investment rate",
-"pre_yield": 5.32,
-"pre_yield_series": "FRED DGS3MO",
-"buyers": {
-"indirect_pct": 63.0,
-"direct_pct": 3.6,
-"dealer_pct": 33.4
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 90285821800
-},
-"US|2024-08-15|912797LH8|4W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "4W bill",
-"tenor_years": 0.077,
-"security": "4-Week Bill (reopening)",
-"id": "912797LH8",
-"date": "2024-08-15",
-"currency": "USD",
-"offered": 95000000000.0,
-"allotted": 95301199100.0,
-"tendered": 275537679100.0,
-"retention": null,
-"btc": 2.9,
-"yield_": 5.355,
-"yield_type": "high investment rate",
-"pre_yield": 5.49,
-"pre_yield_series": "FRED DGS1MO",
-"buyers": {
-"indirect_pct": 63.8,
-"direct_pct": 7.6,
-"dealer_pct": 28.6
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 95301199100
 },
 "CA|2024-08-21|CA135087S216|10Y": {
 "country": "CA",
@@ -54881,6 +54829,29 @@
 "buyers": null,
 "source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
 "size_usd": 4244824164
+},
+"DE|2026-10-28|DE000BU2Z072|10Y": {
+"country": "DE",
+"instrument": "Bond",
+"tenor": "10Y",
+"tenor_years": 10.0,
+"security": "Bund 3.00% 2036-08-15",
+"id": "DE000BU2Z072",
+"date": "2026-10-28",
+"currency": "EUR",
+"offered": 5500000000,
+"allotted": 3890000000,
+"tendered": 4460000000,
+"retention": 1610000000,
+"btc": 1.147,
+"yield_": 3.37,
+"yield_type": "weighted average yield",
+"pre_yield": 3.42,
+"pre_yield_series": "Bundesbank Svensson R10XX (10Y)",
+"auction_tail_bp": null,
+"buyers": null,
+"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
+"size_usd": 4356411000
 }
 }
 }
