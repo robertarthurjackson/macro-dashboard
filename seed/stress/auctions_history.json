@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-28T17:29:04Z",
+"fetched_at": "2026-10-29T17:41:03Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -48716,29 +48716,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 1593112500
 },
-"JP|2024-08-16|JGB#29|10Y Linker": {
-"country": "JP",
-"instrument": "Linker",
-"tenor": "10Y Linker",
-"tenor_years": 10,
-"security": "JGB 10Y Linker #29 0.005% 2034-03-10",
-"id": "JGB#29",
-"date": "2024-08-16",
-"currency": "JPY",
-"offered": 250000000000,
-"allotted": 249900000000,
-"tendered": 738500000000,
-"retention": null,
-"btc": 2.955,
-"yield_": -0.426,
-"yield_type": "highest accepted (lowest price) yield",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": null,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 1593112500
-},
 "JP|2024-11-11|JGB#29|10Y Linker": {
 "country": "JP",
 "instrument": "Linker",
@@ -52603,29 +52580,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23570160000
 },
-"JP|2024-08-16|TB#1250|3M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "3M bill",
-"tenor_years": 0.25,
-"security": "T-Bill #1250 2024-11-18",
-"id": "TB#1250",
-"date": "2024-08-16",
-"currency": "JPY",
-"offered": 4899960000000,
-"allotted": 3726160000000,
-"tendered": 12910000000000,
-"retention": null,
-"btc": 3.465,
-"yield_": 0.1119,
-"yield_type": "yield at average price",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": 0.64,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 23754270000
-},
 "JP|2024-08-19|TB#1251|12M bill": {
 "country": "JP",
 "instrument": "Bill",
@@ -53693,7 +53647,7 @@
 "id": "JGB#383",
 "date": "2026-09-01",
 "currency": "JPY",
-"offered": null,
+"offered": 2600000000000,
 "allotted": 1989600000000,
 "tendered": 6538500000000,
 "retention": null,
@@ -53704,7 +53658,7 @@
 "pre_yield_series": "MOF JGB curve 10Y",
 "auction_tail_bp": 1.6,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 12683700000
 },
 "JP|2026-09-03|JGB#91|30Y": {
@@ -53716,7 +53670,7 @@
 "id": "JGB#91",
 "date": "2026-09-03",
 "currency": "JPY",
-"offered": null,
+"offered": 600000000000,
 "allotted": 456200000000,
 "tendered": 1728100000000,
 "retention": null,
@@ -53727,7 +53681,7 @@
 "pre_yield_series": "MOF JGB curve 30Y",
 "auction_tail_bp": 2.1,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 2908275000
 },
 "JP|2026-09-04|TB#1404|3M bill": {
@@ -53739,7 +53693,7 @@
 "id": "TB#1404",
 "date": "2026-09-04",
 "currency": "JPY",
-"offered": null,
+"offered": 3499980000000,
 "allotted": 2703680000000,
 "tendered": 9697000000000,
 "retention": null,
@@ -53750,7 +53704,7 @@
 "pre_yield_series": null,
 "auction_tail_bp": 1.05,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 17235960000
 },
 "JP|2026-09-08|JGB#187|5Y": {
@@ -53762,7 +53716,7 @@
 "id": "JGB#187",
 "date": "2026-09-08",
 "currency": "JPY",
-"offered": null,
+"offered": 2500000000000,
 "allotted": 1915400000000,
 "tendered": 6554300000000,
 "retention": null,
@@ -53773,7 +53727,7 @@
 "pre_yield_series": "MOF JGB curve 5Y",
 "auction_tail_bp": 0.9,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 12210675000
 },
 "JP|2026-09-09|TB#1405|6M bill": {
@@ -53785,7 +53739,7 @@
 "id": "TB#1405",
 "date": "2026-09-09",
 "currency": "JPY",
-"offered": null,
+"offered": 2999970000000,
 "allotted": 2301470000000,
 "tendered": 8911400000000,
 "retention": null,
@@ -53796,7 +53750,7 @@
 "pre_yield_series": null,
 "auction_tail_bp": 1.22,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 14671871250
 },
 "JP|2026-09-11|TB#1406|3M bill": {
@@ -53808,7 +53762,7 @@
 "id": "TB#1406",
 "date": "2026-09-11",
 "currency": "JPY",
-"offered": null,
+"offered": 3499990000000,
 "allotted": 2682690000000,
 "tendered": 8946810000000,
 "retention": null,
@@ -53819,7 +53773,7 @@
 "pre_yield_series": null,
 "auction_tail_bp": 7.18,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 17102148750
 },
 "JP|2026-09-15|JGB#197|20Y": {
@@ -53831,7 +53785,7 @@
 "id": "JGB#197",
 "date": "2026-09-15",
 "currency": "JPY",
-"offered": null,
+"offered": 700000000000,
 "allotted": 532100000000,
 "tendered": 2131300000000,
 "retention": null,
@@ -53842,7 +53796,7 @@
 "pre_yield_series": "MOF JGB curve 20Y",
 "auction_tail_bp": 1.3,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 3392137500
 },
 "JP|2026-09-16|TB#1407|12M bill": {
@@ -53854,7 +53808,7 @@
 "id": "TB#1407",
 "date": "2026-09-16",
 "currency": "JPY",
-"offered": null,
+"offered": 2499990000000,
 "allotted": 1916890000000,
 "tendered": 9171460000000,
 "retention": null,
@@ -53865,7 +53819,7 @@
 "pre_yield_series": "MOF JGB curve 1Y",
 "auction_tail_bp": 1.35,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 12220173750
 },
 "JP|2026-09-17|TB#1408|3M bill": {
@@ -53877,7 +53831,7 @@
 "id": "TB#1408",
 "date": "2026-09-17",
 "currency": "JPY",
-"offered": null,
+"offered": 3499980000000,
 "allotted": 2682480000000,
 "tendered": 8628200000000,
 "retention": null,
@@ -53888,7 +53842,7 @@
 "pre_yield_series": null,
 "auction_tail_bp": 2.25,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 17100810000
 },
 "JP|2026-09-25|TB#1409|3M bill": {
@@ -53900,7 +53854,7 @@
 "id": "TB#1409",
 "date": "2026-09-25",
 "currency": "JPY",
-"offered": null,
+"offered": 3499960000000,
 "allotted": 2688460000000,
 "tendered": 8893500000000,
 "retention": null,
@@ -53911,7 +53865,7 @@
 "pre_yield_series": null,
 "auction_tail_bp": 1.54,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 17138932500
 },
 "JP|2026-09-29|JGB#19|40Y": {
@@ -53923,18 +53877,18 @@
 "id": "JGB#19",
 "date": "2026-09-29",
 "currency": "JPY",
-"offered": null,
+"offered": 300000000000,
 "allotted": 299700000000,
 "tendered": 928000000000,
 "retention": null,
 "btc": 3.096,
-"yield_": null,
+"yield_": 4.125,
 "yield_type": "highest accepted (lowest price) yield",
 "pre_yield": 4.124,
 "pre_yield_series": "MOF JGB curve 40Y",
 "auction_tail_bp": null,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 1910587500
 },
 "JP|2026-09-30|JGB#489|2Y": {
@@ -53946,7 +53900,7 @@
 "id": "JGB#489",
 "date": "2026-09-30",
 "currency": "JPY",
-"offered": null,
+"offered": 2800000000000,
 "allotted": 2145300000000,
 "tendered": 8344800000000,
 "retention": null,
@@ -53957,7 +53911,7 @@
 "pre_yield_series": "MOF JGB curve 2Y",
 "auction_tail_bp": 0.7,
 "buyers": null,
-"source": "MOF Japan auction result page",
+"source": "MOF Japan historical auction results (xls)",
 "size_usd": 13676287500
 },
 "JP|2026-10-02|TB#1410|3M bill": {
@@ -54852,6 +54806,79 @@
 "buyers": null,
 "source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
 "size_usd": 4356411000
+},
+"CA|2026-10-29|CA135087U931|10Y": {
+"country": "CA",
+"instrument": "Bond",
+"tenor": "10Y",
+"tenor_years": 10.0,
+"security": "Canada 3.500% 2036-12-01",
+"id": "CA135087U931",
+"date": "2026-10-29",
+"currency": "CAD",
+"offered": 5000000000,
+"allotted": 5000000000,
+"tendered": 12553900000,
+"retention": null,
+"btc": 2.511,
+"yield_": 3.887,
+"yield_type": "average yield",
+"pre_yield": 3.87,
+"pre_yield_series": "BoC Valet BD.CDN.10YR.DQ.YLD",
+"auction_tail_bp": 0.38,
+"buyers": {
+"dealer_pct": 48.88,
+"customer_pct": 51.12,
+"foreign_pct": 43.16
+},
+"source": "Bank of Canada Valet (AUC_* groups)",
+"size_usd": 3573215000
+},
+"JP|2026-10-29|TB#1416|3M bill": {
+"country": "JP",
+"instrument": "Bill",
+"tenor": "3M bill",
+"tenor_years": 0.25,
+"security": "T-Bill #1416 2027-02-08",
+"id": "TB#1416",
+"date": "2026-10-29",
+"currency": "JPY",
+"offered": null,
+"allotted": 2529680000000,
+"tendered": 9803200000000,
+"retention": null,
+"btc": 3.875,
+"yield_": 1.2706,
+"yield_type": "yield at average price",
+"pre_yield": null,
+"pre_yield_series": null,
+"auction_tail_bp": 0.56,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 16126710000
+},
+"JP|2026-10-29|JGB#490|2Y": {
+"country": "JP",
+"instrument": "Note",
+"tenor": "2Y",
+"tenor_years": 2,
+"security": "JGB 2Y #490 1.9% 2028-11-01",
+"id": "JGB#490",
+"date": "2026-10-29",
+"currency": "JPY",
+"offered": null,
+"allotted": 2118400000000,
+"tendered": 8539200000000,
+"retention": null,
+"btc": 4.031,
+"yield_": 1.912,
+"yield_type": "highest accepted (lowest price) yield",
+"pre_yield": 1.915,
+"pre_yield_series": "MOF JGB curve 2Y",
+"auction_tail_bp": 0.7,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 13504800000
 }
 }
 }
