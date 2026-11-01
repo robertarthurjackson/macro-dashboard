@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-10-31T16:30:08Z",
+"fetched_at": "2026-11-01T17:21:11Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -23557,58 +23557,6 @@
 "source": "US Treasury FiscalData auctions_query",
 "size_usd": 17272241000
 },
-"US|2024-08-19|912797LE5|13W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "13W bill",
-"tenor_years": 0.25,
-"security": "13-Week Bill (reopening)",
-"id": "912797LE5",
-"date": "2024-08-19",
-"currency": "USD",
-"offered": 76000000000.0,
-"allotted": 81600640500.0,
-"tendered": 242890269600.0,
-"retention": null,
-"btc": 3.12,
-"yield_": 5.192,
-"yield_type": "high investment rate",
-"pre_yield": 5.33,
-"pre_yield_series": "FRED DGS3MO",
-"buyers": {
-"indirect_pct": 64.8,
-"direct_pct": 5.0,
-"dealer_pct": 30.1
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 81600640500
-},
-"US|2024-08-19|912797KA4|26W bill": {
-"country": "US",
-"instrument": "Bill",
-"tenor": "26W bill",
-"tenor_years": 0.5,
-"security": "26-Week Bill (reopening)",
-"id": "912797KA4",
-"date": "2024-08-19",
-"currency": "USD",
-"offered": 70000000000.0,
-"allotted": 75157884800.0,
-"tendered": 218583846900.0,
-"retention": null,
-"btc": 3.05,
-"yield_": 4.956,
-"yield_type": "high investment rate",
-"pre_yield": 5.02,
-"pre_yield_series": "FRED DGS6MO",
-"buyers": {
-"indirect_pct": 58.2,
-"direct_pct": 7.2,
-"dealer_pct": 34.6
-},
-"source": "US Treasury FiscalData auctions_query",
-"size_usd": 75157884800
-},
 "CA|2024-08-21|CA135087S216|10Y": {
 "country": "CA",
 "instrument": "Bond",
@@ -31787,29 +31735,6 @@
 },
 "source": "Bank of Canada Valet (AUC_* groups)",
 "size_usd": 3287357800
-},
-"DE|2024-08-19|DE000BU0E204|12M bill": {
-"country": "DE",
-"instrument": "Bill",
-"tenor": "12M bill",
-"tenor_years": 1.002,
-"security": "Bubill 2025-08-20",
-"id": "DE000BU0E204",
-"date": "2024-08-19",
-"currency": "EUR",
-"offered": 3000000000,
-"allotted": 1685000000,
-"tendered": 2305000000,
-"retention": 1315000000,
-"btc": 1.368,
-"yield_": 2.831,
-"yield_type": "weighted average yield",
-"pre_yield": 2.82,
-"pre_yield_series": "Bundesbank Svensson R01XX (1Y)",
-"auction_tail_bp": null,
-"buyers": null,
-"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
-"size_usd": 1887031500
 },
 "DE|2024-08-20|DE000BU3Z005|10Y Green": {
 "country": "DE",
@@ -52579,29 +52504,6 @@
 "buyers": null,
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23570160000
-},
-"JP|2024-08-19|TB#1251|12M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "12M bill",
-"tenor_years": 1.0,
-"security": "T-Bill #1251 2025-08-20",
-"id": "TB#1251",
-"date": "2024-08-19",
-"currency": "JPY",
-"offered": 3200000000000,
-"allotted": 2432700000000,
-"tendered": 7481700000000,
-"retention": null,
-"btc": 3.075,
-"yield_": 0.2255,
-"yield_type": "yield at average price",
-"pre_yield": 0.245,
-"pre_yield_series": "MOF JGB curve 1Y",
-"auction_tail_bp": 2.81,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 15508462500
 },
 "JP|2024-08-23|TB#1252|3M bill": {
 "country": "JP",
