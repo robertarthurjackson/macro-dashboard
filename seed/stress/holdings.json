@@ -1,6 +1,6 @@
 {
-"fetched_at": "2026-11-04T18:55:01Z",
-"partial": true,
+"fetched_at": "2026-11-05T19:11:36Z",
+"partial": false,
 "raw": {
 "US.z1.total": {
 "freq": "Q",
@@ -10489,7 +10489,7 @@
 428.0
 ],
 "as_of": "2026-09-30",
-"status": "stale",
+"status": "ok",
 "fetcher": "ECB BSI"
 },
 "FR.cb": {
@@ -11049,7 +11049,7 @@
 665.667
 ],
 "as_of": "2026-09-30",
-"status": "stale",
+"status": "ok",
 "fetcher": "ECB BSI"
 },
 "IT.cb": {
@@ -11609,7 +11609,7 @@
 487.718
 ],
 "as_of": "2026-09-30",
-"status": "stale",
+"status": "ok",
 "fetcher": "ECB BSI"
 },
 "DE.estat.total": {
@@ -14024,7 +14024,8 @@
 "2026-06-30",
 "2026-07-31",
 "2026-08-31",
-"2026-09-30"
+"2026-09-30",
+"2026-10-31"
 ],
 "values": [
 93.503,
@@ -14300,9 +14301,10 @@
 518.342,
 519.382,
 519.928,
-504.008
+504.008,
+505.277
 ],
-"as_of": "2026-09-30",
+"as_of": "2026-10-31",
 "status": "ok",
 "fetcher": "JP BoJ"
 },
@@ -17364,9 +17366,9 @@
 },
 {
 "name": "ECB BSI",
-"status": "stale",
+"status": "ok",
 "as_of": "2026-09-30",
-"note": "HTTPError: 504 Server Error: Gateway Time-out for url: https://data-api.ecb.europa.eu/service/data/BSI/M.DE+FR+IT.N.N.A30.A.1.U2.2100.Z01.E?startPeriod=2003-01&detail=dataonly (serving cached data)"
+"note": ""
 },
 {
 "name": "Eurostat",
@@ -17383,7 +17385,7 @@
 {
 "name": "JP BoJ",
 "status": "ok",
-"as_of": "2026-09-30",
+"as_of": "2026-10-31",
 "note": ""
 },
 {

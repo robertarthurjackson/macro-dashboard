@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-04T18:54:30Z",
+"fetched_at": "2026-11-05T19:11:25Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -52260,29 +52260,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23477728000
 },
-"JP|2024-08-23|TB#1252|3M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "3M bill",
-"tenor_years": 0.25,
-"security": "T-Bill #1252 2024-11-25",
-"id": "TB#1252",
-"date": "2024-08-23",
-"currency": "JPY",
-"offered": 4899950000000,
-"allotted": 3719950000000,
-"tendered": 12885500000000,
-"retention": null,
-"btc": 3.464,
-"yield_": 0.0974,
-"yield_type": "yield at average price",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": 0.69,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 23621682500
-},
 "JP|2024-08-30|TB#1253|3M bill": {
 "country": "JP",
 "instrument": "Bill",
@@ -54989,6 +54966,29 @@
 "buyers": null,
 "source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
 "size_usd": 892604643
+},
+"JP|2026-11-05|JGB#384|10Y": {
+"country": "JP",
+"instrument": "Bond",
+"tenor": "10Y",
+"tenor_years": 10,
+"security": "JGB 10Y #384 3.1% 2036-09-20",
+"id": "JGB#384",
+"date": "2026-11-05",
+"currency": "JPY",
+"offered": null,
+"allotted": 1971900000000,
+"tendered": 6335500000000,
+"retention": null,
+"btc": 3.213,
+"yield_": 2.8,
+"yield_type": "highest accepted (lowest price) yield",
+"pre_yield": 2.855,
+"pre_yield_series": "MOF JGB curve 10Y",
+"auction_tail_bp": 3.2,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 12521565000
 }
 }
 }
