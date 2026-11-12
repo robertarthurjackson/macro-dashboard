@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-11T19:02:35Z",
+"fetched_at": "2026-11-12T19:17:59Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -51681,29 +51681,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23366809600
 },
-"JP|2024-08-30|TB#1253|3M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "3M bill",
-"tenor_years": 0.25,
-"security": "T-Bill #1253 2024-12-02",
-"id": "TB#1253",
-"date": "2024-08-30",
-"currency": "JPY",
-"offered": 4899980000000,
-"allotted": 3718280000000,
-"tendered": 13279000000000,
-"retention": null,
-"btc": 3.571,
-"yield_": 0.0946,
-"yield_type": "yield at average price",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": 0.77,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 23499529600
-},
 "JP|2024-09-06|TB#1254|3M bill": {
 "country": "JP",
 "instrument": "Bill",
@@ -54598,6 +54575,56 @@
 "buyers": null,
 "source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
 "size_usd": 1202401200
+},
+"CA|2026-11-12|CA135087V509|2Y": {
+"country": "CA",
+"instrument": "Bond",
+"tenor": "2Y",
+"tenor_years": 2.0,
+"security": "Canada 3.250% 2029-02-01",
+"id": "CA135087V509",
+"date": "2026-11-12",
+"currency": "CAD",
+"offered": 5500000000,
+"allotted": 5500000000,
+"tendered": 14837125000,
+"retention": null,
+"btc": 2.698,
+"yield_": 3.377,
+"yield_type": "average yield",
+"pre_yield": 3.25,
+"pre_yield_series": "BoC Valet BD.CDN.2YR.DQ.YLD",
+"auction_tail_bp": 0.21,
+"buyers": {
+"dealer_pct": 47.18,
+"customer_pct": 52.82,
+"foreign_pct": 36.57
+},
+"source": "Bank of Canada Valet (AUC_* groups)",
+"size_usd": 3899049000
+},
+"JP|2026-11-12|JGB#189|5Y": {
+"country": "JP",
+"instrument": "Note",
+"tenor": "5Y",
+"tenor_years": 5,
+"security": "JGB 5Y #189 2.2% 2031-09-20",
+"id": "JGB#189",
+"date": "2026-11-12",
+"currency": "JPY",
+"offered": null,
+"allotted": 1897200000000,
+"tendered": 6964600000000,
+"retention": null,
+"btc": 3.671,
+"yield_": 2.19,
+"yield_type": "highest accepted (lowest price) yield",
+"pre_yield": 2.214,
+"pre_yield_series": "MOF JGB curve 5Y",
+"auction_tail_bp": 0.4,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 11990304000
 }
 }
 }
