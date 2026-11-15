@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-14T17:38:44Z",
+"fetched_at": "2026-11-15T18:16:54Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -31233,29 +31233,6 @@
 },
 "source": "Bank of Canada Valet (AUC_* groups)",
 "size_usd": 3261022800
-},
-"DE|2024-09-02|DE000BU0E154|6M bill": {
-"country": "DE",
-"instrument": "Bill",
-"tenor": "6M bill",
-"tenor_years": 0.542,
-"security": "Bubill 2025-03-19",
-"id": "DE000BU0E154",
-"date": "2024-09-02",
-"currency": "EUR",
-"offered": 2000000000,
-"allotted": 1975000000,
-"tendered": 2940000000,
-"retention": 25000000,
-"btc": 1.489,
-"yield_": 3.125,
-"yield_type": "weighted average yield",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": null,
-"buyers": null,
-"source": "Deutsche Finanzagentur auction results (emissionshistorie_en.xlsx)",
-"size_usd": 2202915000
 },
 "DE|2024-09-03|DE000BU22064|2Y": {
 "country": "DE",
