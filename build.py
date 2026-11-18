@@ -130,6 +130,10 @@ def build_stress() -> None:
         import stress_indicators
         stress_indicators.build_indicators()
 
+    def _leading():
+        import stress_leading
+        stress_leading.build_leading()
+
     def _auctions():
         import stress_auctions
         dump("auctions.json", stress_auctions.build_auctions())
@@ -150,7 +154,7 @@ def build_stress() -> None:
         import stress_regime
         stress_regime.build_regime()
 
-    for name, fn in (("indicators", _indicators), ("auctions", _auctions),
+    for name, fn in (("indicators", _indicators), ("leading", _leading), ("auctions", _auctions),
                      ("holdings", _holdings), ("fiscal", _fiscal),
                      ("calendar", _calendar), ("regime", _regime)):
         try:
