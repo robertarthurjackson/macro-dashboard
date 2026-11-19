@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-18T20:41:19Z",
+"fetched_at": "2026-11-19T19:51:29Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -51364,29 +51364,6 @@
 "source": "MOF Japan historical auction results (xls)",
 "size_usd": 23119091840
 },
-"JP|2024-09-06|TB#1254|3M bill": {
-"country": "JP",
-"instrument": "Bill",
-"tenor": "3M bill",
-"tenor_years": 0.25,
-"security": "T-Bill #1254 2024-12-09",
-"id": "TB#1254",
-"date": "2024-09-06",
-"currency": "JPY",
-"offered": 4599970000000,
-"allotted": 3468670000000,
-"tendered": 14560900000000,
-"retention": null,
-"btc": 4.198,
-"yield_": 0.0778,
-"yield_type": "yield at average price",
-"pre_yield": null,
-"pre_yield_series": null,
-"auction_tail_bp": 0.44,
-"buyers": null,
-"source": "MOF Japan historical auction results (xls)",
-"size_usd": 21689593510
-},
 "JP|2024-09-09|TB#1255|6M bill": {
 "country": "JP",
 "instrument": "Bill",
@@ -54665,6 +54642,33 @@
 "buyers": null,
 "source": "MOF Japan auction result page",
 "size_usd": 3287827400
+},
+"CA|2026-11-19|CA135087V434|5Y": {
+"country": "CA",
+"instrument": "Bond",
+"tenor": "5Y",
+"tenor_years": 5.0,
+"security": "Canada 3.500% 2032-03-01",
+"id": "CA135087V434",
+"date": "2026-11-19",
+"currency": "CAD",
+"offered": 5000000000,
+"allotted": 5000000000,
+"tendered": 13392400000,
+"retention": null,
+"btc": 2.678,
+"yield_": 3.568,
+"yield_type": "average yield",
+"pre_yield": 3.52,
+"pre_yield_series": "BoC Valet BD.CDN.5YR.DQ.YLD",
+"auction_tail_bp": 0.34,
+"buyers": {
+"dealer_pct": 46.56,
+"customer_pct": 53.44,
+"foreign_pct": 44.2
+},
+"source": "Bank of Canada Valet (AUC_* groups)",
+"size_usd": 3507295000
 }
 }
 }
