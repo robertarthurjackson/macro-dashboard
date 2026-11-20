@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-19T19:51:29Z",
+"fetched_at": "2026-11-20T19:26:06Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -54669,6 +54669,29 @@
 },
 "source": "Bank of Canada Valet (AUC_* groups)",
 "size_usd": 3507295000
+},
+"JP|2026-11-20|TB#1421|3M bill": {
+"country": "JP",
+"instrument": "Bill",
+"tenor": "3M bill",
+"tenor_years": 0.25,
+"security": "T-Bill #1421 2027-03-01",
+"id": "TB#1421",
+"date": "2026-11-20",
+"currency": "JPY",
+"offered": null,
+"allotted": 2392800000000,
+"tendered": 8788500000000,
+"retention": null,
+"btc": 3.673,
+"yield_": 1.2617,
+"yield_type": "yield at average price",
+"pre_yield": null,
+"pre_yield_series": null,
+"auction_tail_bp": 1.25,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 14962178400
 }
 }
 }
