@@ -1,5 +1,5 @@
 {
-"fetched_at": "2026-11-26T20:39:55Z",
+"fetched_at": "2026-11-27T20:21:28Z",
 "records": {
 "US|2026-10-08|912810UW6|30Y": {
 "country": "US",
@@ -54239,6 +54239,29 @@
 "buyers": null,
 "source": "MOF Japan auction result page",
 "size_usd": 1887180400
+},
+"JP|2026-11-27|TB#1422|3M bill": {
+"country": "JP",
+"instrument": "Bill",
+"tenor": "3M bill",
+"tenor_years": 0.25,
+"security": "T-Bill #1422 2027-03-08",
+"id": "TB#1422",
+"date": "2026-11-27",
+"currency": "JPY",
+"offered": null,
+"allotted": 2392780000000,
+"tendered": 8894600000000,
+"retention": null,
+"btc": 3.717,
+"yield_": 1.2582,
+"yield_type": "yield at average price",
+"pre_yield": null,
+"pre_yield_series": null,
+"auction_tail_bp": 1.24,
+"buyers": null,
+"source": "MOF Japan auction result page",
+"size_usd": 15072121220
 }
 }
 }
